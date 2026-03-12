@@ -5,4 +5,4 @@ Projecte base (buit) per la fase d'execució de Projecte Integrat de Software 20
 - [@TonMartinGonzalez](https://github.com/TonMartin777) (TonMartinGonzalez)
 - [@DavidBenitoGimenez](https://github.com/DavidBenitoGimenez) (DavidBenitoGimenez)
 - [@didacgasulla](https://github.com/didacgasulla) (Didac Gasulla Rabionet)
-- [@usuari4](https://github.com/usuari4) (NomCognom1Cognom2)
+- [@Quimvi](https://github.com/Quimvi) (QuimVilàRoset)

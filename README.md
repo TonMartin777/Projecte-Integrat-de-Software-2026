@@ -3,6 +3,6 @@ Projecte base (buit) per la fase d'execució de Projecte Integrat de Software 20
 
 ## Contribuidors
 - [@TonMartinGonzalez](https://github.com/TonMartin777) (TonMartinGonzalez)
-- [@usuari2](https://github.com/usuari2) (NomCognom1Cognom2)
+- [@DavidBenitoGimenez](https://github.com/DavidBenitoGimenez) (DavidBenitoGimenez)
 - [@didacgasulla](https://github.com/didacgasulla) (Didac Gasulla Rabionet)
-- [@usuari4](https://github.com/usuari4) (NomCognom1Cognom2)
+- [@QuimVilaRoset](https://github.com/Quimvi) (QuimVilàRoset)

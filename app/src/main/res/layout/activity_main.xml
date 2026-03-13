@@ -5,6 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#0D0707"
     tools:context=".MainActivity">
 
     <LinearLayout
@@ -19,18 +20,21 @@
         <LinearLayout
             android:id="@+id/TopBar"
             android:layout_width="match_parent"
-            android:layout_height="57dp"
+            android:layout_height="79dp"
             android:layout_weight="1"
-            android:background="#000000"
+            android:background="#5D5D5D"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
             <ImageButton
                 android:id="@+id/userButton"
-                android:layout_width="1dp"
-                android:layout_height="42dp"
+                android:layout_width="55dp"
+                android:layout_height="match_parent"
                 android:layout_weight="2"
-                tools:srcCompat="@tools:sample/avatars" />
+                android:background="@null"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_launcher_background"
+                tools:srcCompat="@drawable/user_icon" />
 
             <ImageView
                 android:id="@+id/appLogo"
@@ -41,32 +45,35 @@
 
             <ImageButton
                 android:id="@+id/imageButton4"
-                android:layout_width="9dp"
-                android:layout_height="38dp"
+                android:layout_width="63dp"
+                android:layout_height="33dp"
                 android:layout_weight="2"
-                app:srcCompat="@android:drawable/ic_popup_reminder" />
+                android:background="@null"
+                android:scaleType="fitCenter"
+                app:srcCompat="@drawable/noti_icon" />
 
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/searchBar"
             android:layout_width="match_parent"
-            android:layout_height="71dp"
+            android:layout_height="81dp"
             android:layout_weight="1"
-            android:background="#4D4949"
+            android:background="#8E8B8B"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
             <ImageView
                 android:id="@+id/searchLogo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="51dp"
+                android:layout_height="32dp"
                 android:layout_weight="1"
-                app:srcCompat="@android:drawable/ic_search_category_default" />
+                android:scaleType="fitCenter"
+                app:srcCompat="@drawable/search_icon" />
 
             <EditText
                 android:id="@+id/searchEvent"
-                android:layout_width="wrap_content"
+                android:layout_width="146dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:ems="10"
@@ -75,7 +82,7 @@
 
             <ImageButton
                 android:id="@+id/filterEvent"
-                android:layout_width="wrap_content"
+                android:layout_width="62dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 app:srcCompat="@android:drawable/ic_menu_sort_by_size" />
@@ -86,7 +93,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="8"
-            android:background="#DCDADA"
+            android:background="#D1D1D1"
             android:orientation="horizontal">
 
             <androidx.recyclerview.widget.RecyclerView

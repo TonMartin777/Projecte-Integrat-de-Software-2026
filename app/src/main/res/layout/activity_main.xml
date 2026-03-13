@@ -57,7 +57,7 @@
         <LinearLayout
             android:id="@+id/searchBar"
             android:layout_width="match_parent"
-            android:layout_height="81dp"
+            android:layout_height="62dp"
             android:layout_weight="1"
             android:background="#8E8B8B"
             android:gravity="center_vertical"
@@ -78,7 +78,7 @@
                 android:layout_weight="1"
                 android:ems="10"
                 android:inputType="text"
-                android:text="Name" />
+                android:text="Search" />
 
             <ImageButton
                 android:id="@+id/filterEvent"

@@ -7,7 +7,9 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 
 public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHolder> {
 
@@ -27,8 +29,11 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
     @Override
     public void onBindViewHolder(EventViewHolder holder, int position) {
         Event event = eventList.get(position);
-        holder.nombre.setText(event.getNombre());
-        holder.fecha.setText(event.getFecha());
+        holder.nombre.setText(event.getTitulo());
+
+        // DateTimeFormatter es el equivalente de SimpleDateFormat para LocalDateTime
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm",   Locale.getDefault());
+        holder.fecha.setText(event.getFechaHora().format(formatter));
     }
 
     @Override

@@ -1,5 +1,7 @@
 package edu.ub.pis2526.projecte;
 
+import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +31,15 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
         Event event = eventList.get(position);
         holder.nombre.setText(event.getNombre());
         holder.fecha.setText(event.getFecha());
+
+        holder.itemView.setOnClickListener(v -> {
+            Context context = v.getContext();
+            Intent intent = new Intent(context, EventDetailActivity.class);
+            intent.putExtra("nombre", event.getNombre());
+            intent.putExtra("fecha", event.getFecha());
+            intent.putExtra("ubicacion", event.getUbicacion());
+            context.startActivity(intent);
+        });
     }
 
     @Override

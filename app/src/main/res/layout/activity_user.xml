@@ -62,6 +62,7 @@
         app:layout_constraintTop_toBottomOf="@+id/correuTxt" />
 
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/meusEventsList"
         android:layout_width="407dp"
         android:layout_height="275dp"
         android:layout_marginTop="16dp"

@@ -2,7 +2,6 @@ package edu.ub.pis2526.projecte;
 import com.bumptech.glide.Glide;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -15,33 +14,29 @@ public class EventDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_detail);
 
-        String nombre = getIntent().getStringExtra("nombre");
-        String fecha = getIntent().getStringExtra("fecha");
-        String ubicacion = getIntent().getStringExtra("ubicacion");
+        String titulo = getIntent().getStringExtra("titulo");
         String descripcion = getIntent().getStringExtra("descripcion");
-        String categoria = getIntent().getStringExtra("categoria");
+        String fecha = getIntent().getStringExtra("fecha");
         String hora = getIntent().getStringExtra("hora");
-        String imagenUrl = getIntent().getStringExtra("imagenUrl");
+        String foto = getIntent().getStringExtra("foto");
+        double lat = getIntent().getDoubleExtra("lat", 0);
+        double lng = getIntent().getDoubleExtra("lng", 0);
 
         TextView tvNombre = findViewById(R.id.detailNombre);
         TextView tvFecha = findViewById(R.id.detailFecha);
-        TextView tvUbicacion = findViewById(R.id.detailUbicacion);
         TextView tvDescripcion = findViewById(R.id.detailDescripcion);
-        TextView tvCategoria = findViewById(R.id.detailCategoria);
         TextView tvHora = findViewById(R.id.detailHora);
+        TextView tvUbicacion = findViewById(R.id.detailUbicacion);
         ImageView imgEvento = findViewById(R.id.detailImagen);
 
-        tvNombre.setText(nombre);
+        tvNombre.setText(titulo);
         tvFecha.setText(fecha);
-        tvUbicacion.setText(ubicacion);
         tvDescripcion.setText(descripcion);
-        tvCategoria.setText(categoria);
         tvHora.setText(hora);
-
-        Log.d("DEBUG", "URL de imagen: " + imagenUrl);
+        tvUbicacion.setText("Lat: " + lat + ", Lng: " + lng);
 
         Glide.with(this)
-                .load(imagenUrl)
+                .load(foto)
                 .into(imgEvento);
     }
 }

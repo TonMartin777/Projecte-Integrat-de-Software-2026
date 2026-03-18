@@ -1,15 +1,17 @@
 package edu.ub.pis2526.projecte;
 
+import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
+import com.bumptech.glide.Glide;
 
-import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Locale;
 
 public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHolder> {
 
@@ -30,10 +32,26 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
     public void onBindViewHolder(EventViewHolder holder, int position) {
         Event event = eventList.get(position);
         holder.nombre.setText(event.getTitulo());
+        holder.fecha.setText(event.getFechaHora().toLocalDate().toString());
 
-        // DateTimeFormatter es el equivalente de SimpleDateFormat para LocalDateTime
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm",   Locale.getDefault());
-        holder.fecha.setText(event.getFechaHora().format(formatter));
+        Glide.with(holder.itemView.getContext())
+                .load(event.getFoto())
+                .into(holder.imagen);
+
+        holder.itemView.setOnClickListener(v -> {
+            Context context = v.getContext();
+            Intent intent = new Intent(context, EventDetailActivity.class);
+            intent.putExtra("titulo", event.getTitulo());
+            intent.putExtra("descripcion", event.getDescripcion());
+            intent.putExtra("fecha", event.getFechaHora().toLocalDate().toString());
+            intent.putExtra("hora", event.getFechaHora().toLocalTime().toString());
+            intent.putExtra("foto", event.getFoto());
+            if (event.getCoordenadas() != null) {
+                intent.putExtra("lat", event.getCoordenadas()[0]);
+                intent.putExtra("lng", event.getCoordenadas()[1]);
+            }
+            context.startActivity(intent);
+        });
     }
 
     @Override
@@ -41,11 +59,13 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
 
     public static class EventViewHolder extends RecyclerView.ViewHolder {
         TextView nombre, fecha;
+        ImageView imagen;
 
         public EventViewHolder(View itemView) {
             super(itemView);
             nombre = itemView.findViewById(R.id.eventNombre);
             fecha = itemView.findViewById(R.id.eventFecha);
+            imagen = itemView.findViewById(R.id.eventImagen);
         }
     }
 }

@@ -48,6 +48,8 @@ public class Event {
      * Usa el Geocoder para obtener las coordenadas.
      * Devuelve true si se han podido obtener las coordenadas.
      */
+
+    /*
     public boolean setUbicacionPorDireccion(String direccion, Context context) {
         try {
             Geocoder geocoder = new Geocoder(context, Locale.getDefault());
@@ -67,7 +69,10 @@ public class Event {
         }
         return false;
     }
-
+     */
+    public boolean setUbicacionPorDireccion(String direccion, Context context) {
+        return false; // Desactivado temporalmente
+    }
     /**
      * Indica si el evento tiene coordenadas asignadas.
      * Útil para validar antes de guardar el evento.

@@ -78,7 +78,7 @@
                 android:layout_weight="1"
                 android:ems="10"
                 android:inputType="text"
-                android:text="Search" />
+                android:hint="Search" />
 
             <ImageButton
                 android:id="@+id/filterEvent"

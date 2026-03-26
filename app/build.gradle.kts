@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace = "edu.ub.pis2526.projecte"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "edu.ub.pis2526.projecte"
         minSdk = 28
-        targetSdk = 35
+        targetSdk = 36  // CANVIE ESTO PERO IGUAL AHORA HAY ALGO QUE NO FUNCIONA
         versionCode = 1
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -44,16 +44,12 @@ dependencies {
     implementation(libs.recyclerview)
     implementation(libs.cardview)
 
-    // --- CONFIGURACIÓ FIREBASE ---
-    // El BoM gestiona les versions automàticament per a totes les llibreries de Firebase
-    implementation(platform("com.google.firebase:firebase-bom:33.9.0"))
+    // CONFIGURACIÓ FIREBASE
 
-    // No cal posar versions aquí perquè ja les gestiona el BoM
-    implementation("com.google.firebase:firebase-analytics")
-    implementation("com.google.firebase:firebase-database")  // Realtime Database
-    implementation("com.google.firebase:firebase-firestore") // Cloud Firestore
+    implementation("com.google.firebase:firebase-firestore:25.1.4")
+    implementation("com.google.firebase:firebase-analytics:22.4.0")
 
-    // --- ALTRES ---
+    //  ALTRES
     implementation("com.github.bumptech.glide:glide:4.16.0")
 
     // Tests

@@ -68,7 +68,12 @@ public class CreateEventActivity extends AppCompatActivity {
             return;
         }
 
-        User creador = new User("usuario_activo"); // TODO: reemplazar con el usuario real
+        String nomUsuari    = getIntent().getStringExtra("NOM_USUARI");
+        String correoUsuari = getIntent().getStringExtra("CORREO_USUARI");
+        User creador = new User(
+                nomUsuari    != null ? nomUsuari    : "usuari_desconegut",
+                correoUsuari != null ? correoUsuari : ""
+        );
         Event evento = new Event(titulo, descripcion, fechaHoraSeleccionada, direccion, creador, this);
 
         eventRepository.save(evento,

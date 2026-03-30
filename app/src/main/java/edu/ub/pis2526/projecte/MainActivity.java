@@ -124,6 +124,8 @@ public class MainActivity extends AppCompatActivity {
     ImageButton userButton = findViewById(R.id.userButton);
     userButton.setOnClickListener(v -> {
       Intent intent = new Intent(this, UserActivity.class);
+      intent.putExtra("NOM_USUARI",    getIntent().getStringExtra("NOM_USUARI"));
+      intent.putExtra("CORREO_USUARI", getIntent().getStringExtra("CORREO_USUARI"));
       startActivity(intent);
     });
 

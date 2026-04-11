@@ -11,14 +11,25 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHolder> {
 
     private List<Event> eventList;
+    private List<Event> listaCompleta;
 
     public EventAdapter(List<Event> eventList) {
         this.eventList = eventList;
+        this.listaCompleta = new ArrayList<>(eventList);
+    }
+
+    public void actualizarLista(List<Event> nuevaLista) {
+        listaCompleta.clear();
+        listaCompleta.addAll(nuevaLista);
+        eventList.clear();
+        eventList.addAll(nuevaLista);
+        notifyDataSetChanged();
     }
 
     @Override
@@ -67,5 +78,20 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
             fecha = itemView.findViewById(R.id.eventFecha);
             imagen = itemView.findViewById(R.id.eventImagen);
         }
+    }
+
+    public void filtrar(String texto) {
+        eventList.clear();
+        if (texto.isEmpty()) {
+            eventList.addAll(listaCompleta);
+        } else {
+            String textoBusqueda = texto.toLowerCase();
+            for (Event e : listaCompleta) {
+                if (e.getTitulo().toLowerCase().contains(textoBusqueda)) {
+                    eventList.add(e);
+                }
+            }
+        }
+        notifyDataSetChanged();
     }
 }

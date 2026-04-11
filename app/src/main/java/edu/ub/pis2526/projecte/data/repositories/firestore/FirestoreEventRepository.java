@@ -1,12 +1,15 @@
 package edu.ub.pis2526.projecte.data.repositories.firestore;
 
 import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import edu.ub.pis2526.projecte.Event;
@@ -46,6 +49,39 @@ public class FirestoreEventRepository implements EventRepository {
                 .document(evento.getId())
                 .set(eventoMap)
                 .addOnSuccessListener(unused -> onSuccess.onSuccess())
+                .addOnFailureListener(onFailure::onFailure);
+    }
+    @Override
+    public void getAll(OnEventsLoadedListener onLoaded, OnFailureListener onFailure) {
+        db.collection("events")
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    List<Event> eventos = new ArrayList<>();
+                    for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
+
+                        String id          = doc.getString("id");
+                        String titulo      = doc.getString("titulo");
+                        String descripcion = doc.getString("descripcion");
+                        String foto        = doc.getString("foto");
+
+                        // Convertir Timestamp → LocalDateTime
+                        Timestamp ts = doc.getTimestamp("fechaHora");
+                        LocalDateTime fechaHora = ts.toDate()
+                                .toInstant()
+                                .atZone(ZoneOffset.UTC)
+                                .toLocalDateTime();
+
+                        // Reconstruir el creador
+                        Map<String, Object> creadorMap = (Map<String, Object>) doc.get("creador");
+                        User creador = new User(
+                                creadorMap != null ? (String) creadorMap.get("nom") : ""
+                        );
+
+                        eventos.add(Event.fromFirestore(id, titulo, descripcion, foto, fechaHora, creador));
+
+                    }
+                    onLoaded.onEventsLoaded(eventos);
+                })
                 .addOnFailureListener(onFailure::onFailure);
     }
 }

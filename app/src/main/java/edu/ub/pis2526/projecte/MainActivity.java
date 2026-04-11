@@ -2,6 +2,7 @@ package edu.ub.pis2526.projecte;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ImageButton;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,7 +14,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import edu.ub.pis2526.projecte.data.repositories.firestore.FirestoreEventRepository;
 import edu.ub.pis2526.projecte.databinding.ActivityMainBinding;
+import androidx.appcompat.widget.SearchView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -27,98 +30,34 @@ public class MainActivity extends AppCompatActivity {
     RecyclerView recyclerView = findViewById(R.id.recyclerEvents);
     recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+// Adaptador con lista vacía inicial
     List<Event> eventos = new ArrayList<>();
-    User pruebas = new User("pruebas");
+    EventAdapter adapter = new EventAdapter(eventos);
+    recyclerView.setAdapter(adapter);
 
-    eventos.add(new Event(
-            "Concierto de Rock",
-            "Concierto de rock en vivo en el Palau Sant Jordi.",
-            LocalDateTime.of(2026, 6, 12, 21, 0),
-            "Carrer de Mallorca 401, Barcelona",
-            pruebas, this
-    ));
-    eventos.get(0).setFoto("https://picsum.photos/seed/rock/400/300");
+// Cargar desde Firestore
+    FirestoreEventRepository repo = new FirestoreEventRepository();
+    repo.getAll(
+            eventosFirestore -> {
+              adapter.actualizarLista(eventosFirestore); // NUEVO — reemplaza las dos líneas anteriores
+            },
+            e -> Log.e("MainActivity", "Error cargando eventos", e)
+    );
 
-    eventos.add(new Event(
-            "Festival de Jazz",
-            "Festival de jazz internacional en el centro de Madrid.",
-            LocalDateTime.of(2026, 7, 5, 19, 30),
-            "Plaza Mayor, Madrid",
-            pruebas, this
-    ));
-    eventos.get(1).setFoto("https://picsum.photos/seed/jazz/400/300");
+    SearchView searchView = findViewById(R.id.searchEvent);
+    searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+      @Override
+      public boolean onQueryTextSubmit(String query) {
+        return false;
+      }
 
-    eventos.add(new Event(
-            "Partido de Volley",
-            "Partido de voleibol amateur abierto a todos.",
-            LocalDateTime.of(2026, 5, 21, 18, 0),
-            "Carrer de Pallars 100, Barcelona",
-            pruebas, this
-    ));
-    eventos.get(2).setFoto("https://picsum.photos/seed/volley/400/300");
+      @Override
+      public boolean onQueryTextChange(String newText) {
+        adapter.filtrar(newText);
+        return true;
+      }
+    });
 
-    eventos.add(new Event(
-            "Ruta de Senderismo",
-            "Ruta de senderismo por la montaña de Montserrat.",
-            LocalDateTime.of(2026, 4, 18, 9, 0),
-            "Montserrat, Barcelona",
-            pruebas, this
-    ));
-    eventos.get(3).setFoto("https://picsum.photos/seed/hiking/400/300");
-
-    eventos.add(new Event(
-            "Exposición de Arte",
-            "Exposición de arte contemporáneo en el MACBA.",
-            LocalDateTime.of(2026, 6, 1, 11, 0),
-            "Plaça dels Àngels 1, Barcelona",
-            pruebas, this
-    ));
-    eventos.get(4).setFoto("https://picsum.photos/seed/art/400/300");
-
-    eventos.add(new Event(
-            "Torneo de Ajedrez",
-            "Torneo de ajedrez abierto para todos los niveles.",
-            LocalDateTime.of(2026, 5, 10, 16, 0),
-            "Carrer de Balmes 50, Barcelona",
-            pruebas, this
-    ));
-    eventos.get(5).setFoto("https://picsum.photos/seed/chess/400/300");
-
-    eventos.add(new Event(
-            "Concierto de Flamenco",
-            "Espectáculo de flamenco en directo en el Tablao.",
-            LocalDateTime.of(2026, 7, 20, 22, 0),
-            "Carrer dels Flassaders 40, Barcelona",
-            pruebas, this
-    ));
-    eventos.get(6).setFoto("https://picsum.photos/seed/flamenco/400/300");
-
-    eventos.add(new Event(
-            "Maratón Popular",
-            "Carrera popular de 10km por el centro de la ciudad.",
-            LocalDateTime.of(2026, 4, 26, 8, 30),
-            "Passeig de Gràcia, Barcelona",
-            pruebas, this
-    ));
-    eventos.get(7).setFoto("https://picsum.photos/seed/marathon/400/300");
-
-    eventos.add(new Event(
-            "Taller de Cocina",
-            "Aprende a cocinar platos mediterráneos con chefs locales.",
-            LocalDateTime.of(2026, 5, 15, 17, 0),
-            "Mercat de la Boqueria, Barcelona",
-            pruebas, this
-    ));
-    eventos.get(8).setFoto("https://picsum.photos/seed/cooking/400/300");
-
-    eventos.add(new Event(
-            "Noche de Cine",
-            "Proyección de películas clásicas al aire libre.",
-            LocalDateTime.of(2026, 8, 3, 21, 30),
-            "Parc de la Ciutadella, Barcelona",
-            pruebas, this
-    ));
-    eventos.get(9).setFoto("https://picsum.photos/seed/cinema/400/300");
 
     // Boton User
     ImageButton userButton = findViewById(R.id.userButton);
@@ -128,8 +67,6 @@ public class MainActivity extends AppCompatActivity {
       intent.putExtra("CORREO_USUARI", getIntent().getStringExtra("CORREO_USUARI"));
       startActivity(intent);
     });
-
-    EventAdapter adapter = new EventAdapter(eventos);
-    recyclerView.setAdapter(adapter);
   }
+
 }

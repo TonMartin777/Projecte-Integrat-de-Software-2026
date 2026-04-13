@@ -23,6 +23,13 @@
         android:layout_height="wrap_content"
         android:hint="Dirección (Ej: Carrer de Mallorca 401, Barcelona)"/>
 
+    <EditText
+        android:id="@+id/editFoto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="URL de la imagen (opcional)"
+        android:inputType="textUri"/>
+
     <Button
         android:id="@+id/btnFecha"
         android:layout_width="match_parent"

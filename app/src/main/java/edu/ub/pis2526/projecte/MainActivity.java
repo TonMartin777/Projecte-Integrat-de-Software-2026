@@ -21,6 +21,8 @@ import androidx.appcompat.widget.SearchView;
 public class MainActivity extends AppCompatActivity {
 
   private ActivityMainBinding binding;
+  private EventAdapter adapter;
+  private FirestoreEventRepository repo;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -31,8 +33,10 @@ public class MainActivity extends AppCompatActivity {
     recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
 // Adaptador con lista vacía inicial
+    repo = new FirestoreEventRepository();
+
     List<Event> eventos = new ArrayList<>();
-    EventAdapter adapter = new EventAdapter(eventos);
+    adapter = new EventAdapter(eventos);
     recyclerView.setAdapter(adapter);
 
 // Cargar desde Firestore
@@ -69,4 +73,12 @@ public class MainActivity extends AppCompatActivity {
     });
   }
 
+  @Override
+  protected void onResume() {
+    super.onResume();
+    repo.getAll(
+            eventosFirestore -> adapter.actualizarLista(eventosFirestore),
+            e -> Log.e("MainActivity", "Error cargando eventos", e)
+    );
+  }
 }

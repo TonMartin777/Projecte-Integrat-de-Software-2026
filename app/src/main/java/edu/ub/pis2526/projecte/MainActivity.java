@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
     });
 
 
-    // Boton User
+    // Button User
     ImageButton userButton = findViewById(R.id.userButton);
     userButton.setOnClickListener(v -> {
       Intent intent = new Intent(this, UserActivity.class);

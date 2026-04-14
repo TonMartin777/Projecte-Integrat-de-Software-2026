@@ -51,6 +51,7 @@ dependencies {
 
     //  ALTRES
     implementation("com.github.bumptech.glide:glide:4.16.0")
+    implementation(libs.firebase.firestore)
 
     // Tests
     testImplementation(libs.junit)

@@ -28,6 +28,14 @@ public class Event {
     // ─── CONSTRUCTOR ────────────────────────────────────────────────────────────
 
     // Aviso: para cuando se use este constructor, en el COntext solo hay que escribir "this". Se usa para sacar la ubicación
+// Constructor vacío (requerido por Firestore)
+// Constructor vacío (para Firestore)
+    public Event() {
+        this.categorias = new ArrayList<>();
+        this.participantes = new ArrayList<>();
+    }
+
+    // Constructor original — NO tocar
     public Event(String titulo, String descripcion, LocalDateTime fechaHora, String direccion, User creador, Context context) {
         this.titulo = titulo;
         this.descripcion = descripcion;
@@ -36,10 +44,21 @@ public class Event {
         this.fechaHora = fechaHora;
         this.creador = creador;
         this.foto = null;
-
         this.id = UUID.randomUUID().toString();
         setUbicacionPorDireccion(direccion, context);
     }
+
+    public static Event fromFirestore(String id, String titulo, String descripcion, String foto, LocalDateTime fechaHora, User creador) {
+        Event e = new Event();
+        e.id = id;
+        e.titulo = titulo;
+        e.descripcion = descripcion;
+        e.fechaHora = fechaHora;
+        e.foto = foto;
+        e.creador = creador;
+        return e;
+    }
+
     // ─── UBICACIÓN ──────────────────────────────────────────────────────────────
 
     /**
@@ -116,6 +135,7 @@ public class Event {
     public boolean tieneCategoria(Categorias categoria) {
         return categorias.contains(categoria);
     }
+
 
     // ─── GETTERS Y SETTERS ───────────────────────────────────────────────────────
 

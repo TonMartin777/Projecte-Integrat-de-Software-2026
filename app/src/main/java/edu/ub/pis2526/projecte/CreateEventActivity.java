@@ -22,7 +22,8 @@ import edu.ub.pis2526.projecte.domain.repositories.EventRepository;
 
 public class CreateEventActivity extends AppCompatActivity {
 
-    private EditText editTitulo, editDescripcion, editDireccion;
+    private EditText editTitulo, editDescripcion, editDireccion, editFoto; // añade editFoto
+
     private Button btnFecha, btnCrear;
     private LocalDateTime fechaHoraSeleccionada;
 
@@ -40,6 +41,7 @@ public class CreateEventActivity extends AppCompatActivity {
         editDireccion   = findViewById(R.id.editDireccion);
         btnFecha        = findViewById(R.id.btnFecha);
         btnCrear        = findViewById(R.id.btnCrear);
+        editFoto        = findViewById(R.id.editFoto);
 
         btnFecha.setOnClickListener(v -> mostrarSelectorFechaHora());
         btnCrear.setOnClickListener(v -> crearEvento());
@@ -74,7 +76,12 @@ public class CreateEventActivity extends AppCompatActivity {
                 nomUsuari    != null ? nomUsuari    : "usuari_desconegut",
                 correoUsuari != null ? correoUsuari : ""
         );
+        String foto = editFoto.getText().toString().trim();
+
         Event evento = new Event(titulo, descripcion, fechaHoraSeleccionada, direccion, creador, this);
+        if (!foto.isEmpty()) {
+            evento.setFoto(foto); // solo si el usuario ha introducido algo
+        }
 
         eventRepository.save(evento,
                 () -> {

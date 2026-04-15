@@ -21,6 +21,7 @@ public class UserActivity extends AppCompatActivity {
     private EventAdapter eventAdapter;
     private List<Event> listaMisEventos;
     private FirestoreEventRepository eventRepository;
+    private String nomUsuarioActual;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,7 +29,7 @@ public class UserActivity extends AppCompatActivity {
         setContentView(R.layout.activity_user);
 
         // Rep les dades passades per Intent
-        String nom    = getIntent().getStringExtra("NOM_USUARI");
+        nomUsuarioActual = getIntent().getStringExtra("NOM_USUARI");
         String correo = getIntent().getStringExtra("CORREO_USUARI");
 
         // Mostra les dades als TextViews
@@ -36,14 +37,14 @@ public class UserActivity extends AppCompatActivity {
         TextView correuTxt = findViewById(R.id.correuTxt);
         TextView telefonTxt = findViewById(R.id.telefonTxt);
 
-        if (nom != null)    nomTxt.setText("Nom: " + nom);
+        if (nomUsuarioActual != null)    nomTxt.setText("Nom: " + nomUsuarioActual);
         if (correo != null) correuTxt.setText("Correu: " + correo);
         telefonTxt.setText("");
 
         Button crearEventBtn = findViewById(R.id.crearEventBtn);
         crearEventBtn.setOnClickListener(v -> {
             Intent intent = new Intent(this, CreateEventActivity.class);
-            intent.putExtra("NOM_USUARI",    nom);
+            intent.putExtra("NOM_USUARI",    nomUsuarioActual);
             intent.putExtra("CORREO_USUARI", correo);
             startActivity(intent);
         });
@@ -56,10 +57,15 @@ public class UserActivity extends AppCompatActivity {
         recyclerView.setAdapter(eventAdapter);
 
         eventRepository = new FirestoreEventRepository();
+    }
 
-        // Si tenim el nom de l'usuari, busquem els seus esdeveniments
-        if (nom != null) {
-            cargarEventosDelUsuario(nom);
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // Cada vegada que l'activitat torna al primer pla, demanem els events actualitzats
+        if (nomUsuarioActual != null) {
+            cargarEventosDelUsuario(nomUsuarioActual);
         }
     }
 

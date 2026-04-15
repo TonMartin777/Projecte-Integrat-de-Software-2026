@@ -62,6 +62,11 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
                 intent.putExtra("lat", event.getCoordenadas()[0]);
                 intent.putExtra("lng", event.getCoordenadas()[1]);
             }
+            // Pasar la URL de Google Maps si existe
+            String mapsUrl = event.getLinkGoogleMapsString();
+            if (mapsUrl != null) {
+                intent.putExtra("maps_url", mapsUrl);
+            }
             context.startActivity(intent);
         });
     }

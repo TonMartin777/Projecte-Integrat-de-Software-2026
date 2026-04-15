@@ -68,6 +68,7 @@ public class Event {
      * Devuelve true si se han podido obtener las coordenadas.
      */
 
+
     /*
     public boolean setUbicacionPorDireccion(String direccion, Context context) {
         try {
@@ -88,10 +89,15 @@ public class Event {
         }
         return false;
     }
+
+
+
      */
     public boolean setUbicacionPorDireccion(String direccion, Context context) {
-        return false; // Desactivado temporalmente
+        this.linkGoogleMaps = Uri.parse(direccion);
+        return false;
     }
+
     /**
      * Indica si el evento tiene coordenadas asignadas.
      * Útil para validar antes de guardar el evento.
@@ -149,9 +155,17 @@ public class Event {
     public void setFechaHora(LocalDateTime fecha) { this.fechaHora = fecha; }
 
     public double[] getCoordenadas() { return coordenadas; }
-    // No hay setter directo de coordenadas, usar setUbicacionPorDireccion()
 
-    public Uri getLinkGoogleMaps() { return linkGoogleMaps; }
+    public void setCoordenadas(double[] coords) {
+        this.coordenadas = coords;
+        if (coords != null) {
+            this.linkGoogleMaps = Uri.parse("https://maps.google.com/?q=" + coords[0] + "," + coords[1]);
+        }
+    }
+
+    public String getLinkGoogleMapsString() {
+        return linkGoogleMaps != null ? linkGoogleMaps.toString() : null;
+    }
 
     public String getFoto() { return foto; }
     public void setFoto(String foto) { this.foto = foto; }
@@ -168,5 +182,14 @@ public class Event {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    // setters para el maps
+    public void setLinkGoogleMaps(Uri uri) {
+        this.linkGoogleMaps = uri;
+    }
+
+    public void setLinkGoogleMapsString(String url) {
+        this.linkGoogleMaps = url != null ? Uri.parse(url) : null;
     }
 }

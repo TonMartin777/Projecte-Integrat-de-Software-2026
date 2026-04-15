@@ -71,6 +71,12 @@ public class MainActivity extends AppCompatActivity {
       intent.putExtra("CORREO_USUARI", getIntent().getStringExtra("CORREO_USUARI"));
       startActivity(intent);
     });
+
+    // Button map
+    ImageButton mapButton = findViewById(R.id.mapButton);
+    mapButton.setOnClickListener(v -> {
+      startActivity(new Intent(this, MapActivity.class));
+    });
   }
 
   @Override

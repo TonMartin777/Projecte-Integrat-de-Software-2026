@@ -78,6 +78,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Unirse al evento" />
+        <Button
+            android:id="@+id/btnAbrirMapa"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Abrir mapa" />
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

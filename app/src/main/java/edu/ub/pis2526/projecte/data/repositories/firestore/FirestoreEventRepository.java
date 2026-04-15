@@ -44,6 +44,15 @@ public class FirestoreEventRepository implements EventRepository {
         eventoMap.put("categorias",    new ArrayList<>());
         eventoMap.put("participantes", new ArrayList<>());
         eventoMap.put("creador",       creadorMap);
+        if (evento.getLinkGoogleMapsString() != null) {
+            eventoMap.put("mapsUrl", evento.getLinkGoogleMapsString());
+        }
+
+        // Guardar coordenadas si existen
+        if (evento.getCoordenadas() != null) {
+            eventoMap.put("lat", evento.getCoordenadas()[0]);
+            eventoMap.put("lng", evento.getCoordenadas()[1]);
+        }
 
         db.collection("events")
                 .document(evento.getId())
@@ -66,17 +75,32 @@ public class FirestoreEventRepository implements EventRepository {
                         String foto        = doc.getString("foto");
 
                         Timestamp ts = doc.getTimestamp("fechaHora");
-                        LocalDateTime fechaHora = ts.toDate()
-                                .toInstant()
-                                .atZone(ZoneOffset.UTC)
-                                .toLocalDateTime();
+                        LocalDateTime fechaHora = null;
+                        if (ts != null) {
+                            fechaHora = ts.toDate()
+                                    .toInstant()
+                                    .atZone(ZoneOffset.UTC)
+                                    .toLocalDateTime();
+                        }
 
                         Map<String, Object> creadorMap = (Map<String, Object>) doc.get("creador");
                         User creador = new User(
                                 creadorMap != null ? (String) creadorMap.get("nom") : ""
                         );
 
-                        eventos.add(Event.fromFirestore(id, titulo, descripcion, foto, fechaHora, creador));
+                        Event evento = Event.fromFirestore(id, titulo, descripcion, foto, fechaHora, creador);
+
+                        Double lat = doc.getDouble("lat");
+                        Double lng = doc.getDouble("lng");
+                        if (lat != null && lng != null) {
+                            evento.setCoordenadas(new double[]{lat, lng});
+                        }
+                        String mapsUrl = doc.getString("mapsUrl");
+                        if (mapsUrl != null) {
+                            evento.setLinkGoogleMapsString(mapsUrl);
+                        }
+
+                        eventos.add(evento);
                     }
                     onLoaded.onEventsLoaded(eventos);
                 })
@@ -119,9 +143,21 @@ public class FirestoreEventRepository implements EventRepository {
                             );
                         }
 
+                        // Crear evento (necesita un constructor que acepte estos parámetros)
                         Event event = new Event(titulo, descripcion, fechaHora, "", creador, null);
                         event.setId(id);
                         event.setFoto(foto);
+
+                        // Recuperar coordenadas
+                        Double lat = doc.getDouble("lat");
+                        Double lng = doc.getDouble("lng");
+                        if (lat != null && lng != null) {
+                            event.setCoordenadas(new double[]{lat, lng});
+                        }
+                        String mapsUrl = doc.getString("mapsUrl");
+                        if (mapsUrl != null) {
+                            event.setLinkGoogleMapsString(mapsUrl);
+                        }
 
                         userEvents.add(event);
                     }

@@ -106,7 +106,6 @@ public class FirestoreUserRepository {
                     .addOnSuccessListener(unused -> {
                         // Esborrem el document antic
                         db.collection(COLLECTION).document(oldNom).delete();
-                        // NOTA: Aquí hauries d'actualitzar també els 'events' de l'usuari
                         listener.onUpdateSuccess();
                     })
                     .addOnFailureListener(listener::onUpdateError);

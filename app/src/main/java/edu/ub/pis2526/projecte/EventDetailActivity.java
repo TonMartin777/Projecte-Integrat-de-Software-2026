@@ -21,7 +21,9 @@ public class EventDetailActivity extends AppCompatActivity {
         String foto = getIntent().getStringExtra("foto");
         double lat = getIntent().getDoubleExtra("lat", 0);
         double lng = getIntent().getDoubleExtra("lng", 0);
+        String creador = getIntent().getStringExtra("creador");
 
+        TextView tvCreador = findViewById(R.id.detailCreador);
         TextView tvNombre = findViewById(R.id.detailNombre);
         TextView tvFecha = findViewById(R.id.detailFecha);
         TextView tvDescripcion = findViewById(R.id.detailDescripcion);
@@ -34,6 +36,7 @@ public class EventDetailActivity extends AppCompatActivity {
         tvDescripcion.setText(descripcion);
         tvHora.setText(hora);
         tvUbicacion.setText("Lat: " + lat + ", Lng: " + lng);
+        tvCreador.setText("Creado por: " + creador);
 
         Glide.with(this)
                 .load(foto)

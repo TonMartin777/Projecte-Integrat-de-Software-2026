@@ -57,6 +57,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
             intent.putExtra("fecha", event.getFechaHora().toLocalDate().toString());
             intent.putExtra("hora", event.getFechaHora().toLocalTime().toString());
             intent.putExtra("foto", event.getFoto());
+            intent.putExtra("creador", event.getCreador().getNom());
             if (event.getCoordenadas() != null) {
                 intent.putExtra("lat", event.getCoordenadas()[0]);
                 intent.putExtra("lng", event.getCoordenadas()[1]);

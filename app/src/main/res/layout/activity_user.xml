@@ -1,86 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#A29C9A"
-    tools:context=".UserActivity">
+    android:fillViewport="true"
+    android:background="#A29C9A">
 
-    <ImageView
-        android:id="@+id/fotoPerfil"
-        android:layout_width="256dp"
-        android:layout_height="238dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/user_icon" />
-
-    <TextView
-        android:id="@+id/nomTxt"
-        android:layout_width="180dp"
-        android:layout_height="22dp"
-        android:layout_marginTop="20dp"
-        android:text="Nom"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.502"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/fotoPerfil" />
-
-    <TextView
-        android:id="@+id/telefonTxt"
-        android:layout_width="180dp"
-        android:layout_height="22dp"
-        android:layout_marginTop="20dp"
-        android:text="Telèfon"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.502"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/nomTxt" />
-
-    <TextView
-        android:id="@+id/correuTxt"
-        android:layout_width="180dp"
-        android:layout_height="22dp"
-        android:layout_marginTop="20dp"
-        android:text="Correu"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.502"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/telefonTxt" />
-
-    <Button
-        android:id="@+id/editPerfilBtn"
-        android:layout_width="wrap_content"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/main"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="Editar Perfil"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/correuTxt" />
+        tools:context=".UserActivity">
 
-    <Button
-        android:id="@+id/crearEventBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="88dp"
-        android:text="Crear Evento"
-        app:layout_constraintBottom_toTopOf="@+id/meusEventsList"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.501"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/correuTxt" />
+        <ImageView
+            android:id="@+id/fotoPerfil"
+            android:layout_width="256dp"
+            android:layout_height="238dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/user_icon" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/meusEventsList"
-        android:layout_width="402dp"
-        android:layout_height="216dp"
-        android:layout_marginTop="88dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.444"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editPerfilBtn" />
+        <TextView
+            android:id="@+id/nomTxt"
+            android:layout_width="180dp"
+            android:layout_height="22dp"
+            android:layout_marginTop="20dp"
+            android:text="Nom"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.502"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/fotoPerfil" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <TextView
+            android:id="@+id/telefonTxt"
+            android:layout_width="180dp"
+            android:layout_height="22dp"
+            android:layout_marginTop="20dp"
+            android:text="Telèfon"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.502"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/nomTxt" />
+
+        <TextView
+            android:id="@+id/correuTxt"
+            android:layout_width="180dp"
+            android:layout_height="22dp"
+            android:layout_marginTop="20dp"
+            android:text="Correu"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.502"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/telefonTxt" />
+
+        <Button
+            android:id="@+id/editPerfilBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Editar Perfil"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/correuTxt" />
+
+        <Button
+            android:id="@+id/crearEventBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="88dp"
+            android:text="Crear Evento"
+            app:layout_constraintBottom_toTopOf="@+id/meusEventsList"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.501"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/correuTxt" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/meusEventsList"
+            android:layout_width="402dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="88dp"
+            android:nestedScrollingEnabled="false"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.444"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/editPerfilBtn" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.core.widget.NestedScrollView>

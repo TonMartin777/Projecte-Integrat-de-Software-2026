@@ -49,6 +49,15 @@ public class UserActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+        Button editPerfilBtn = findViewById(R.id.editPerfilBtn);
+        editPerfilBtn.setOnClickListener(v -> {
+            Intent intent = new Intent(this, EditProfileActivity.class);
+            // Passem les dades actuals perquè es mostrin a la pantalla d'edició
+            intent.putExtra("NOM_USUARI", nomUsuarioActual);
+            intent.putExtra("CORREO_USUARI", getIntent().getStringExtra("CORREO_USUARI"));
+            startActivity(intent);
+        });
+
         recyclerView = findViewById(R.id.meusEventsList);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 

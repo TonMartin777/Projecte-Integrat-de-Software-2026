@@ -1,11 +1,15 @@
 package edu.ub.pis2526.projecte;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.PickVisualMediaRequest;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class EditProfileActivity extends AppCompatActivity {
@@ -13,6 +17,15 @@ public class EditProfileActivity extends AppCompatActivity {
     private EditText inputNom, inputCorreu, inputContrasenya;
     private ImageView fotoPerfil;
     private Button guardarBtn;
+    private Uri imageUri;
+
+    private final ActivityResultLauncher<PickVisualMediaRequest> pickMedia =
+            registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
+                if (uri != null) {
+                    imageUri = uri;
+                    fotoPerfil.setImageURI(uri); // Mostrem la imatge seleccionada
+                }
+            });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +48,9 @@ public class EditProfileActivity extends AppCompatActivity {
 
         // --- CANVIAR FOTO ---
         fotoPerfil.setOnClickListener(v -> {
-            Toast.makeText(this, "Obrint galeria...", Toast.LENGTH_SHORT).show();
+            pickMedia.launch(new PickVisualMediaRequest.Builder()
+                    .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
+                    .build());
         });
 
         // --- GUARDAR ---

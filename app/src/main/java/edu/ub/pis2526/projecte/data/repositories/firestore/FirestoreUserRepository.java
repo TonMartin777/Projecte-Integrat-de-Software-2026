@@ -83,4 +83,33 @@ public class FirestoreUserRepository {
                 })
                 .addOnFailureListener(listener::onLoginError);
     }
+
+    public interface OnUpdateListener {
+        void onUpdateSuccess();
+        void onUpdateError(Exception e);
+    }
+
+    public void updateUser(String oldNom, String newNom, String newCorreo, String newContrasenya, OnUpdateListener listener) {
+        Map<String, Object> userMap = new HashMap<>();
+        userMap.put("nom", newNom);
+        userMap.put("correo", newCorreo);
+        userMap.put("contrasenya", newContrasenya);
+
+        if (oldNom.equals(newNom)) {
+            // Si el nom és el mateix, només actualitzem els camps
+            db.collection(COLLECTION).document(oldNom).update(userMap)
+                    .addOnSuccessListener(unused -> listener.onUpdateSuccess())
+                    .addOnFailureListener(listener::onUpdateError);
+        } else {
+            // Si el nom canvia, hem de crear un nou document amb la nova ID (nom)
+            db.collection(COLLECTION).document(newNom).set(userMap)
+                    .addOnSuccessListener(unused -> {
+                        // Esborrem el document antic
+                        db.collection(COLLECTION).document(oldNom).delete();
+                        // NOTA: Aquí hauries d'actualitzar també els 'events' de l'usuari
+                        listener.onUpdateSuccess();
+                    })
+                    .addOnFailureListener(listener::onUpdateError);
+        }
+    }
 }

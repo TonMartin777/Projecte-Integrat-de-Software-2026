@@ -45,6 +45,7 @@ dependencies {
     implementation(libs.cardview)
 
     // CONFIGURACIÓ FIREBASE
+
     implementation("com.google.firebase:firebase-firestore:25.1.4")
     implementation("com.google.firebase:firebase-analytics:22.4.0")
     implementation("com.google.firebase:firebase-storage:20.3.0")

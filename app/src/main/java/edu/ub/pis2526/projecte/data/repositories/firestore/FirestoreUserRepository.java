@@ -1,6 +1,7 @@
 package edu.ub.pis2526.projecte.data.repositories.firestore;
 
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.WriteBatch;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -89,26 +90,54 @@ public class FirestoreUserRepository {
         void onUpdateError(Exception e);
     }
 
-    public void updateUser(String oldNom, String newNom, String newCorreo, String newContrasenya, OnUpdateListener listener) {
-        Map<String, Object> userMap = new HashMap<>();
-        userMap.put("nom", newNom);
-        userMap.put("correo", newCorreo);
-        userMap.put("contrasenya", newContrasenya);
+    public void updateUser(String oldNom, String newNom, String newCorreo, String newContrasenya, String fotoUrl, OnUpdateListener listener) {
 
-        if (oldNom.equals(newNom)) {
-            // Si el nom és el mateix, només actualitzem els camps
-            db.collection(COLLECTION).document(oldNom).update(userMap)
-                    .addOnSuccessListener(unused -> listener.onUpdateSuccess())
-                    .addOnFailureListener(listener::onUpdateError);
-        } else {
-            // Si el nom canvia, hem de crear un nou document amb la nova ID (nom)
-            db.collection(COLLECTION).document(newNom).set(userMap)
-                    .addOnSuccessListener(unused -> {
-                        // Esborrem el document antic
-                        db.collection(COLLECTION).document(oldNom).delete();
-                        listener.onUpdateSuccess();
-                    })
-                    .addOnFailureListener(listener::onUpdateError);
-        }
+        // Primer anem a buscar les dades actuals de l'usuari a la base de dades
+        db.collection(COLLECTION).document(oldNom).get().addOnSuccessListener(documentSnapshot -> {
+            if (!documentSnapshot.exists()) {
+                listener.onUpdateError(new Exception("L'usuari no existeix"));
+                return;
+            }
+
+            // Recuperem la contrasenya actual que hi ha a Firebase
+            String contrasenyaActual = documentSnapshot.getString("contrasenya");
+
+            // Decidim quina contrasenya farem servir:
+            // Si la 'newContrasenya' està buida, usem la 'contrasenyaActual'
+            String contrasenyaFinal = (newContrasenya == null || newContrasenya.isEmpty())
+                    ? contrasenyaActual
+                    : newContrasenya;
+
+            // Preparem el mapa de dades amb la contrasenya correcta
+            Map<String, Object> userMap = new HashMap<>();
+            userMap.put("nom", newNom);
+            userMap.put("correo", newCorreo);
+            userMap.put("contrasenya", contrasenyaFinal); // Ara ja no es perdrà mai
+            if (fotoUrl != null) userMap.put("foto", fotoUrl);
+
+            // 5. Ara procedim amb la lògica que ja tenies (update o batch)
+            if (oldNom.equals(newNom)) {
+                // El nom no canvia, actualitzem el document existent
+                db.collection(COLLECTION).document(oldNom).update(userMap)
+                        .addOnSuccessListener(unused -> listener.onUpdateSuccess())
+                        .addOnFailureListener(listener::onUpdateError);
+            } else {
+                // El nom ha canviat, hem de fer el procés de copiar i esborrar
+                WriteBatch batch = db.batch();
+                batch.set(db.collection(COLLECTION).document(newNom), userMap);
+
+                db.collection("events").whereEqualTo("creador.nom", oldNom).get()
+                        .addOnSuccessListener(queryDocumentSnapshots -> {
+                            for (com.google.firebase.firestore.DocumentSnapshot doc : queryDocumentSnapshots) {
+                                batch.update(doc.getReference(), "creador.nom", newNom);
+                            }
+                            batch.delete(db.collection(COLLECTION).document(oldNom));
+                            batch.commit()
+                                    .addOnSuccessListener(unused -> listener.onUpdateSuccess())
+                                    .addOnFailureListener(listener::onUpdateError);
+                        })
+                        .addOnFailureListener(listener::onUpdateError);
+            }
+        }).addOnFailureListener(listener::onUpdateError);
     }
 }

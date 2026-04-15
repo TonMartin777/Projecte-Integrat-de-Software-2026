@@ -47,7 +47,7 @@ dependencies {
     // CONFIGURACIÓ FIREBASE
     implementation("com.google.firebase:firebase-firestore:25.1.4")
     implementation("com.google.firebase:firebase-analytics:22.4.0")
-    implementation ("com.google.firebase:firebase-storage")
+    implementation ("com.google.firebase:firebase-storage:21.0.1")
 
     //  ALTRES
     implementation("com.github.bumptech.glide:glide:4.16.0")

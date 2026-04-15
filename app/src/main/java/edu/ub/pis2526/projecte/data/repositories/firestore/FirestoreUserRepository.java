@@ -15,6 +15,7 @@ public class FirestoreUserRepository {
     // Interfície d'escoltadors
     public interface OnSignUpListener {
         void onSignUpSuccess();
+
         void onSignUpError(Exception e);
     }
 
@@ -42,8 +43,8 @@ public class FirestoreUserRepository {
 
                     //  si el nom esta lliure, guardem l'usuari
                     Map<String, Object> userMap = new HashMap<>();
-                    userMap.put("nom",        nom);
-                    userMap.put("correo",     correo);
+                    userMap.put("nom", nom);
+                    userMap.put("correo", correo);
                     userMap.put("contrasenya", contrasenya);
 
                     db.collection(COLLECTION)
@@ -55,5 +56,31 @@ public class FirestoreUserRepository {
                             .addOnFailureListener(listener::onSignUpError);
                 })
                 .addOnFailureListener(listener::onSignUpError);
+    }
+
+    public interface OnLoginListener {
+        void onLoginSuccess(String nom, String correo);
+
+        void onLoginError(Exception e);
+    }
+
+    public void login(String nom, String contrasenya, OnLoginListener listener) {
+        db.collection(COLLECTION)
+                .document(nom)
+                .get()
+                .addOnSuccessListener(document -> {
+                    if (!document.exists()) {
+                        listener.onLoginError(new Exception("Usuari no trobat"));
+                        return;
+                    }
+                    String contrasenyaGuardada = document.getString("contrasenya");
+                    if (!contrasenya.equals(contrasenyaGuardada)) {
+                        listener.onLoginError(new Exception("Contrasenya incorrecta"));
+                        return;
+                    }
+                    String correo = document.getString("correo");
+                    listener.onLoginSuccess(nom, correo);
+                })
+                .addOnFailureListener(listener::onLoginError);
     }
 }

@@ -51,6 +51,7 @@ public class FirestoreEventRepository implements EventRepository {
                 .addOnSuccessListener(unused -> onSuccess.onSuccess())
                 .addOnFailureListener(onFailure::onFailure);
     }
+
     @Override
     public void getAll(OnEventsLoadedListener onLoaded, OnFailureListener onFailure) {
         db.collection("events")
@@ -64,74 +65,68 @@ public class FirestoreEventRepository implements EventRepository {
                         String descripcion = doc.getString("descripcion");
                         String foto        = doc.getString("foto");
 
-                        // Convertir Timestamp → LocalDateTime
                         Timestamp ts = doc.getTimestamp("fechaHora");
                         LocalDateTime fechaHora = ts.toDate()
                                 .toInstant()
                                 .atZone(ZoneOffset.UTC)
                                 .toLocalDateTime();
 
-                        // Reconstruir el creador
                         Map<String, Object> creadorMap = (Map<String, Object>) doc.get("creador");
                         User creador = new User(
                                 creadorMap != null ? (String) creadorMap.get("nom") : ""
                         );
 
                         eventos.add(Event.fromFirestore(id, titulo, descripcion, foto, fechaHora, creador));
-
                     }
                     onLoaded.onEventsLoaded(eventos);
                 })
                 .addOnFailureListener(onFailure::onFailure);
     }
 
-    // Interfície per avisar quan les dades estiguin llestes
-    public interface OnEventsLoadedListener {
+    public interface OnUserEventsListener {
         void onSuccess(List<Event> events);
         void onFailure(Exception e);
     }
 
-    // Mètode per buscar els events d'un usuari
-    public void getEventsByCreador(String nomCreador, OnEventsLoadedListener listener) {
+    public void getEventsByCreador(String nomCreador, OnUserEventsListener listener) {
         db.collection("events")
-                .whereEqualTo("creador.nom", nomCreador) // Filtrem per nom del creador
+                .whereEqualTo("creador.nom", nomCreador)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     List<Event> userEvents = new ArrayList<>();
 
-                    for (com.google.firebase.firestore.DocumentSnapshot doc : queryDocumentSnapshots) {
-                        // Reconstruïm l'event des de la base de dades
-                        String id = doc.getString("id");
-                        String titulo = doc.getString("titulo");
+                    for (DocumentSnapshot doc : queryDocumentSnapshots) {
+                        String id          = doc.getString("id");
+                        String titulo      = doc.getString("titulo");
                         String descripcion = doc.getString("descripcion");
-                        String foto = doc.getString("foto");
+                        String foto        = doc.getString("foto");
 
-                        // Convertir el Timestamp de Firebase a LocalDateTime
-                        com.google.firebase.Timestamp timestamp = doc.getTimestamp("fechaHora");
-                        java.time.LocalDateTime fechaHora = null;
+                        Timestamp timestamp = doc.getTimestamp("fechaHora");
+                        LocalDateTime fechaHora = null;
                         if (timestamp != null) {
-                            fechaHora = java.time.LocalDateTime.ofInstant(
+                            fechaHora = LocalDateTime.ofInstant(
                                     timestamp.toDate().toInstant(),
                                     java.time.ZoneId.systemDefault()
                             );
                         }
 
-                        // Reconstruir el creador
                         Map<String, Object> creadorMap = (Map<String, Object>) doc.get("creador");
                         User creador = new User("");
                         if (creadorMap != null) {
-                            creador = new User((String) creadorMap.get("nom"), (String) creadorMap.get("correo"));
+                            creador = new User(
+                                    (String) creadorMap.get("nom"),
+                                    (String) creadorMap.get("correo")
+                            );
                         }
 
-                        // Creem l'objecte (passem un string buit a l'adreça i null al context perquè ja el tenim creat)
                         Event event = new Event(titulo, descripcion, fechaHora, "", creador, null);
-                        event.setId(id); // Assignem l'ID real de Firebase
+                        event.setId(id);
                         event.setFoto(foto);
 
                         userEvents.add(event);
                     }
                     listener.onSuccess(userEvents);
                 })
-                .addOnFailureListener(listener::onFailure);
+                .addOnFailureListener(e -> listener.onFailure(e));
     }
 }

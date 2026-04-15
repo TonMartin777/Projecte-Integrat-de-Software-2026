@@ -64,13 +64,12 @@ public class UserActivity extends AppCompatActivity {
     }
 
     private void cargarEventosDelUsuario(String nomUsuario) {
-        eventRepository.getEventsByCreador(nomUsuario, new FirestoreEventRepository.OnEventsLoadedListener() {
+        eventRepository.getEventsByCreador(nomUsuario, new FirestoreEventRepository.OnUserEventsListener() {
             @Override
             public void onSuccess(List<Event> events) {
-                // Netejem la llista per evitar duplicats i afegim els nous
                 listaMisEventos.clear();
                 listaMisEventos.addAll(events);
-                eventAdapter.notifyDataSetChanged(); // Avisem a l'adaptador que redibuixi la llista
+                eventAdapter.notifyDataSetChanged();
             }
 
             @Override

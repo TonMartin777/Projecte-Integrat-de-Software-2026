@@ -11,7 +11,7 @@
         android:id="@+id/tvTitol"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Crear compte"
+        android:text="Iniciar sessió"
         android:textSize="28sp"
         android:textStyle="bold"
         app:layout_constraintTop_toTopOf="parent"
@@ -31,44 +31,22 @@
         android:layout_marginTop="32dp"/>
 
     <EditText
-        android:id="@+id/etCorreo"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="Correu electrònic"
-        android:inputType="textEmailAddress"
-        app:layout_constraintTop_toBottomOf="@id/etNom"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp"/>
-
-    <EditText
         android:id="@+id/etContrasenya"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="Contrasenya"
         android:inputType="textPassword"
-        app:layout_constraintTop_toBottomOf="@id/etCorreo"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp"/>
-
-    <EditText
-        android:id="@+id/etConfirmaContrasenya"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="Confirma la contrasenya"
-        android:inputType="textPassword"
-        app:layout_constraintTop_toBottomOf="@id/etContrasenya"
+        app:layout_constraintTop_toBottomOf="@id/etNom"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="16dp"/>
 
     <Button
-        android:id="@+id/btnRegistrar"
+        android:id="@+id/btnLogin"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Registrar-se"
-        app:layout_constraintTop_toBottomOf="@id/etConfirmaContrasenya"
+        android:text="Iniciar sessió"
+        app:layout_constraintTop_toBottomOf="@id/etContrasenya"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="32dp"/>
@@ -80,9 +58,21 @@
         android:text=""
         android:textColor="#D32F2F"
         android:textAlignment="center"
-        app:layout_constraintTop_toBottomOf="@id/btnRegistrar"
+        app:layout_constraintTop_toBottomOf="@id/btnLogin"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="16dp"/>
+
+    <TextView
+        android:id="@+id/tvAnarARegistre"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="No tens compte? Registra't"
+        android:textColor="#6200EE"
+        android:padding="8dp"
+        app:layout_constraintTop_toBottomOf="@id/tvError"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

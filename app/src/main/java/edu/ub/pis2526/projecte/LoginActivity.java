@@ -7,18 +7,18 @@ import android.view.View;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
-import edu.ub.pis2526.projecte.databinding.ActivitySignUpBinding;
+import edu.ub.pis2526.projecte.databinding.ActivityLoginBinding;
 
-public class SignUpActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity {
 
-    private SignUpViewModel signUpViewModel;
-    private ActivitySignUpBinding binding;
+    private LoginViewModel loginViewModel;
+    private ActivityLoginBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        binding = ActivitySignUpBinding.inflate(getLayoutInflater());
+        binding = ActivityLoginBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         initViewModel();
@@ -26,14 +26,16 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     private void initViewModel() {
-        signUpViewModel = new ViewModelProvider(this).get(SignUpViewModel.class);
+        loginViewModel = new ViewModelProvider(this).get(LoginViewModel.class);
         initObservers();
     }
 
     private void initObservers() {
-        signUpViewModel.getSignUpState().observe(this, state -> {
+        loginViewModel.getLoginState().observe(this, state -> {
             if (state.success) {
-                Intent intent = new Intent(this, LoginActivity.class);
+                Intent intent = new Intent(this, MainActivity.class);
+                intent.putExtra("NOM_USUARI",    state.nom);
+                intent.putExtra("CORREO_USUARI", state.correo);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 startActivity(intent);
                 finish();
@@ -45,15 +47,16 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     private void initWidgetListeners() {
-        binding.btnRegistrar.setOnClickListener(v -> {
+        binding.btnLogin.setOnClickListener(v -> {
             binding.tvError.setVisibility(View.GONE);
-
-            signUpViewModel.signUp(
+            loginViewModel.login(
                     binding.etNom.getText().toString().trim(),
-                    binding.etCorreo.getText().toString().trim(),
-                    binding.etContrasenya.getText().toString(),
-                    binding.etConfirmaContrasenya.getText().toString()
+                    binding.etContrasenya.getText().toString()
             );
+        });
+
+        binding.tvAnarARegistre.setOnClickListener(v -> {
+            startActivity(new Intent(this, SignUpActivity.class));
         });
     }
 }

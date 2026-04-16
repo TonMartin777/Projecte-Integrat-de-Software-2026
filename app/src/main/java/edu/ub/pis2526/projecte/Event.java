@@ -28,6 +28,14 @@ public class Event {
     // ─── CONSTRUCTOR ────────────────────────────────────────────────────────────
 
     // Aviso: para cuando se use este constructor, en el COntext solo hay que escribir "this". Se usa para sacar la ubicación
+// Constructor vacío (requerido por Firestore)
+// Constructor vacío (para Firestore)
+    public Event() {
+        this.categorias = new ArrayList<>();
+        this.participantes = new ArrayList<>();
+    }
+
+    // Constructor original — NO tocar
     public Event(String titulo, String descripcion, LocalDateTime fechaHora, String direccion, User creador, Context context) {
         this.titulo = titulo;
         this.descripcion = descripcion;
@@ -36,10 +44,21 @@ public class Event {
         this.fechaHora = fechaHora;
         this.creador = creador;
         this.foto = null;
-
         this.id = UUID.randomUUID().toString();
         setUbicacionPorDireccion(direccion, context);
     }
+
+    public static Event fromFirestore(String id, String titulo, String descripcion, String foto, LocalDateTime fechaHora, User creador) {
+        Event e = new Event();
+        e.id = id;
+        e.titulo = titulo;
+        e.descripcion = descripcion;
+        e.fechaHora = fechaHora;
+        e.foto = foto;
+        e.creador = creador;
+        return e;
+    }
+
     // ─── UBICACIÓN ──────────────────────────────────────────────────────────────
 
     /**
@@ -48,6 +67,7 @@ public class Event {
      * Usa el Geocoder para obtener las coordenadas.
      * Devuelve true si se han podido obtener las coordenadas.
      */
+
 
     /*
     public boolean setUbicacionPorDireccion(String direccion, Context context) {
@@ -69,10 +89,15 @@ public class Event {
         }
         return false;
     }
+
+
+
      */
     public boolean setUbicacionPorDireccion(String direccion, Context context) {
-        return false; // Desactivado temporalmente
+        this.linkGoogleMaps = Uri.parse(direccion);
+        return false;
     }
+
     /**
      * Indica si el evento tiene coordenadas asignadas.
      * Útil para validar antes de guardar el evento.
@@ -117,6 +142,7 @@ public class Event {
         return categorias.contains(categoria);
     }
 
+
     // ─── GETTERS Y SETTERS ───────────────────────────────────────────────────────
 
     public String getTitulo() { return titulo; }
@@ -129,9 +155,17 @@ public class Event {
     public void setFechaHora(LocalDateTime fecha) { this.fechaHora = fecha; }
 
     public double[] getCoordenadas() { return coordenadas; }
-    // No hay setter directo de coordenadas, usar setUbicacionPorDireccion()
 
-    public Uri getLinkGoogleMaps() { return linkGoogleMaps; }
+    public void setCoordenadas(double[] coords) {
+        this.coordenadas = coords;
+        if (coords != null) {
+            this.linkGoogleMaps = Uri.parse("https://maps.google.com/?q=" + coords[0] + "," + coords[1]);
+        }
+    }
+
+    public String getLinkGoogleMapsString() {
+        return linkGoogleMaps != null ? linkGoogleMaps.toString() : null;
+    }
 
     public String getFoto() { return foto; }
     public void setFoto(String foto) { this.foto = foto; }
@@ -145,4 +179,17 @@ public class Event {
 
     // ID para el evento
     public String getId() { return id; }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    // setters para el maps
+    public void setLinkGoogleMaps(Uri uri) {
+        this.linkGoogleMaps = uri;
+    }
+
+    public void setLinkGoogleMapsString(String url) {
+        this.linkGoogleMaps = url != null ? Uri.parse(url) : null;
+    }
 }

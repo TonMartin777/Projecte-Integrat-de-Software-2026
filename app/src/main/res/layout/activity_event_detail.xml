@@ -9,8 +9,8 @@
     tools:context=".EventDetailActivity">
 
     <LinearLayout
-        android:layout_width="347dp"
-        android:layout_height="539dp"
+        android:layout_width="352dp"
+        android:layout_height="634dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -20,42 +20,69 @@
         <ImageView
             android:id="@+id/detailImagen"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="231dp"
             android:layout_marginBottom="16dp"
             app:srcCompat="@drawable/ic_launcher_background" />
 
         <TextView
             android:id="@+id/detailNombre"
             android:layout_width="match_parent"
+            android:layout_height="29dp"
+            android:text="Nombre"
+            android:textSize="24dp" />
+
+        <TextView
+            android:id="@+id/detailDescripcion"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="TextView" />
+            android:text="Descripcion"
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/detailFecha"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="TextView" />
-
-        <TextView
-            android:id="@+id/detailUbicacion"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="TextView" />
-
-        <TextView
-            android:id="@+id/detailDescripcion"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <TextView
-            android:id="@+id/detailCategoria"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:text="Fecha"
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/detailHora"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="TextView" />
+            android:text="Hora"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/detailUbicacion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Ubicacion"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/detailCategoria"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Categoria"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/detailCreador"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Creador"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/btnUnirse"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Unirse al evento" />
+        <Button
+            android:id="@+id/btnAbrirMapa"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Abrir mapa" />
+
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

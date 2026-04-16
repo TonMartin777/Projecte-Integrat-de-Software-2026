@@ -8,6 +8,12 @@ public interface EventRepository {
     void save(Event evento, OnSuccessListener onSuccess, OnFailureListener onFailure);
     void getAll(OnEventsLoadedListener onLoaded, OnFailureListener onFailure);
 
+    void delete(String eventId, OnDeleteListener listener);
+
+    interface OnDeleteListener {
+        void onSuccess();
+        void onFailure(Exception e);
+    }
     interface OnSuccessListener {
         void onSuccess();
     }

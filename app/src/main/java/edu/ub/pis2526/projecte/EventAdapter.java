@@ -22,15 +22,23 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
     private List<Event> eventList;
     private List<Event> listaCompleta;
     private OnEventDeleteListener deleteListener;
+    private String nomUsuari;
 
     public interface OnEventDeleteListener {
         void onDeleteClick(Event event, int position);
     }
-
-    public EventAdapter(List<Event> eventList, OnEventDeleteListener listener) {
-        this.eventList = eventList;
+    public EventAdapter(List<Event> eventList, String nomUsuari, OnEventDeleteListener listener) {
+        this.eventList = new ArrayList<>(eventList);
         this.listaCompleta = new ArrayList<>(eventList);
+        this.nomUsuari = nomUsuari;
         this.deleteListener = listener;
+    }
+
+    public EventAdapter(List<Event> eventList, String nomUsuari) {
+        this.eventList = new ArrayList<>(eventList);
+        this.listaCompleta = new ArrayList<>(eventList);
+        this.nomUsuari = nomUsuari;
+        this.deleteListener = null;
     }
 
     @NonNull
@@ -72,6 +80,8 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
             Intent intent = new Intent(context, EventDetailActivity.class);
             intent.putExtra("titulo", event.getTitulo());
             intent.putExtra("descripcion", event.getDescripcion());
+            intent.putExtra("eventoId", event.getId());
+            intent.putExtra("NOM_USUARI", nomUsuari);
             if (event.getFechaHora() != null) {
                 intent.putExtra("fecha", event.getFechaHora().toLocalDate().toString());
                 intent.putExtra("hora", event.getFechaHora().toLocalTime().toString());

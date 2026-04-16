@@ -36,15 +36,14 @@ public class MainActivity extends AppCompatActivity {
     recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
     List<Event> listaEventos = new ArrayList<>();
-    adapter = new EventAdapter(listaEventos, (event, position) -> {
-
-    });
+    String nomUsuari = getIntent().getStringExtra("NOM_USUARI");
+    adapter = new EventAdapter(listaEventos, nomUsuari);
     recyclerView.setAdapter(adapter);
 
 
     cargarEventos();
 
-    //  Configuració del Cercador (SearchView)
+    //  Configuració del Cercador (SearchView
     SearchView searchView = findViewById(R.id.searchEvent);
     searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
       @Override

@@ -4,12 +4,15 @@ import com.bumptech.glide.Glide;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import edu.ub.pis2526.projecte.data.repositories.firestore.FirestoreEventRepository;
 
 public class EventDetailActivity extends AppCompatActivity {
 
@@ -66,6 +69,40 @@ public class EventDetailActivity extends AppCompatActivity {
                     Toast.makeText(this, "Ubicación no disponible", Toast.LENGTH_SHORT).show();
                 }
             }
+        });
+
+
+        String eventoId  = getIntent().getStringExtra("eventoId");
+        String nomUsuari = getIntent().getStringExtra("NOM_USUARI");
+
+        TextView tvParticipantes = findViewById(R.id.detailParticipantes);
+        Button btnUnirse = findViewById(R.id.btnUnirse);
+
+        FirestoreEventRepository repo = new FirestoreEventRepository();
+
+        repo.getParticipantes(eventoId,
+                participantes -> {
+                    tvParticipantes.setText("Participantes: " + participantes.size());
+                    if (participantes.contains(nomUsuari)) {
+                        btnUnirse.setText("Ya te has unido");
+                        btnUnirse.setEnabled(false);
+                    }
+                },
+                e -> Log.e("EventDetail", "Error cargando participantes", e)
+        );
+
+        btnUnirse.setOnClickListener(v -> {
+            repo.unirse(eventoId, nomUsuari,
+                    () -> {
+                        int actual = Integer.parseInt(
+                                tvParticipantes.getText().toString().replaceAll("[^0-9]", "")
+                        );
+                        tvParticipantes.setText("Participantes: " + (actual + 1));
+                        btnUnirse.setText("Ya te has unido");
+                        btnUnirse.setEnabled(false);
+                    },
+                    e -> Toast.makeText(this, "Error al unirse", Toast.LENGTH_SHORT).show()
+            );
         });
     }
 }

@@ -3,9 +3,12 @@ package edu.ub.pis2526.projecte;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -23,31 +26,71 @@ public class UserActivity extends AppCompatActivity {
     private List<Event> listaMisEventos;
     private FirestoreEventRepository eventRepository;
 
+    // --- VARIABLES GLOBALS RECUPERADES ---
+    private String nomUsuarioActual;
+    private String correoUsuarioActual;
+    private ActivityResultLauncher<Intent> editProfileLauncher;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user);
 
-        eventRepository = new FirestoreEventRepository(); // Inicialitzem el repo
+        eventRepository = new FirestoreEventRepository();
 
-        // Rep les dades passades per Intent
-        String nom    = getIntent().getStringExtra("NOM_USUARI");
-        String correo = getIntent().getStringExtra("CORREO_USUARI");
+        // Recuperem les dades i les guardem a les variables globals
+        nomUsuarioActual = getIntent().getStringExtra("NOM_USUARI");
+        correoUsuarioActual = getIntent().getStringExtra("CORREO_USUARI");
 
         // Mostra les dades als TextViews
-        TextView nomTxt    = findViewById(R.id.nomTxt);
+        TextView nomTxt = findViewById(R.id.nomTxt);
         TextView correuTxt = findViewById(R.id.correuTxt);
         TextView telefonTxt = findViewById(R.id.telefonTxt);
 
-        if (nom != null)    nomTxt.setText("Nom: " + nom);
-        if (correo != null) correuTxt.setText("Correu: " + correo);
+        if (nomUsuarioActual != null) nomTxt.setText("Nom: " + nomUsuarioActual);
+        if (correoUsuarioActual != null) correuTxt.setText("Correu: " + correoUsuarioActual);
         telefonTxt.setText("");
+
+        // --- RECUPEREM EL RECEPTOR PER L'EDICIÓ DEL PERFIL ---
+        editProfileLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                        String nouNom = result.getData().getStringExtra("NOU_NOM");
+                        String nouCorreu = result.getData().getStringExtra("NOU_CORREU");
+                        String novaFoto = result.getData().getStringExtra("NOVA_FOTO");
+
+                        if (nouNom != null) nomUsuarioActual = nouNom;
+                        if (nouCorreu != null) correoUsuarioActual = nouCorreu;
+
+                        nomTxt.setText("Nom: " + nomUsuarioActual);
+                        correuTxt.setText("Correu: " + correoUsuarioActual);
+
+                        if (novaFoto != null) {
+                            ImageView fotoPerfil = findViewById(R.id.fotoPerfil);
+                            com.bumptech.glide.Glide.with(this).load(novaFoto).into(fotoPerfil);
+                        }
+
+                        // Recarreguem els events si el nom ha canviat
+                        cargarEventosDelUsuario(nomUsuarioActual);
+                    }
+                }
+        );
+
+        // --- RECUPEREM EL BOTÓ D'EDITAR PERFIL ---
+        Button editPerfilBtn = findViewById(R.id.editPerfilBtn);
+        editPerfilBtn.setOnClickListener(v -> {
+            Intent intent = new Intent(this, EditProfileActivity.class);
+            intent.putExtra("NOM_USUARI", nomUsuarioActual);
+            intent.putExtra("CORREO_USUARI", correoUsuarioActual);
+            editProfileLauncher.launch(intent); // Fem servir el launcher aquí
+        });
 
         Button crearEventBtn = findViewById(R.id.crearEventBtn);
         crearEventBtn.setOnClickListener(v -> {
             Intent intent = new Intent(this, CreateEventActivity.class);
-            intent.putExtra("NOM_USUARI",    nom);
-            intent.putExtra("CORREO_USUARI", correo);
+            intent.putExtra("NOM_USUARI", nomUsuarioActual);
+            intent.putExtra("CORREO_USUARI", correoUsuarioActual);
             startActivity(intent);
         });
 
@@ -56,6 +99,7 @@ public class UserActivity extends AppCompatActivity {
 
         listaMisEventos = new ArrayList<>();
 
+        // --- LA TEVA LÒGICA D'ESBORRAR EVENTS MANTINGUDA INTACTA ---
         eventAdapter = new EventAdapter(listaMisEventos, (event, position) -> {
             new AlertDialog.Builder(this)
                     .setTitle("Eliminar esdeveniment")
@@ -82,8 +126,17 @@ public class UserActivity extends AppCompatActivity {
         recyclerView.setAdapter(eventAdapter);
 
         // Si tenim el nom de l'usuari, busquem els seus esdeveniments
-        if (nom != null) {
-            cargarEventosDelUsuario(nom);
+        if (nomUsuarioActual != null) {
+            cargarEventosDelUsuario(nomUsuarioActual);
+        }
+    }
+
+    // --- RECUPEREM EL MÈTODE ONRESUME ---
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (nomUsuarioActual != null) {
+            cargarEventosDelUsuario(nomUsuarioActual);
         }
     }
 

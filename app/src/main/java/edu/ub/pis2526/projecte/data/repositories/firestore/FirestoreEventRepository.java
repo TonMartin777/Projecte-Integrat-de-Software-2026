@@ -51,6 +51,14 @@ public class FirestoreEventRepository implements EventRepository {
                 .addOnSuccessListener(unused -> onSuccess.onSuccess())
                 .addOnFailureListener(onFailure::onFailure);
     }
+    @Override
+    public void delete(String eventId, OnDeleteListener listener) {
+        db.collection("events")
+                .document(eventId)
+                .delete()
+                .addOnSuccessListener(unused -> listener.onSuccess())
+                .addOnFailureListener(listener::onFailure);
+    }
 
     @Override
     public void getAll(OnEventsLoadedListener onLoaded, OnFailureListener onFailure) {

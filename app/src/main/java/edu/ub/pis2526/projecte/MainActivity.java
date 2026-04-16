@@ -8,15 +8,13 @@ import android.widget.ImageButton;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.appcompat.widget.SearchView;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import edu.ub.pis2526.projecte.data.repositories.firestore.FirestoreEventRepository;
 import edu.ub.pis2526.projecte.databinding.ActivityMainBinding;
-import androidx.appcompat.widget.SearchView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -27,27 +25,26 @@ public class MainActivity extends AppCompatActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+
     binding = ActivityMainBinding.inflate(getLayoutInflater());
     setContentView(binding.getRoot());
+
+    repo = new FirestoreEventRepository();
+
+    //  Configuració del RecyclerView
     RecyclerView recyclerView = findViewById(R.id.recyclerEvents);
     recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-// Adaptador con lista vacía inicial
-    repo = new FirestoreEventRepository();
+    List<Event> listaEventos = new ArrayList<>();
+    adapter = new EventAdapter(listaEventos, (event, position) -> {
 
-    List<Event> eventos = new ArrayList<>();
-    adapter = new EventAdapter(eventos);
+    });
     recyclerView.setAdapter(adapter);
 
-// Cargar desde Firestore
-    FirestoreEventRepository repo = new FirestoreEventRepository();
-    repo.getAll(
-            eventosFirestore -> {
-              adapter.actualizarLista(eventosFirestore); // NUEVO — reemplaza las dos líneas anteriores
-            },
-            e -> Log.e("MainActivity", "Error cargando eventos", e)
-    );
 
+    cargarEventos();
+
+    //  Configuració del Cercador (SearchView)
     SearchView searchView = findViewById(R.id.searchEvent);
     searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
       @Override
@@ -62,23 +59,29 @@ public class MainActivity extends AppCompatActivity {
       }
     });
 
-
-    // Button User
+    //  Botó d'usuari
     ImageButton userButton = findViewById(R.id.userButton);
     userButton.setOnClickListener(v -> {
       Intent intent = new Intent(this, UserActivity.class);
+      // Passem els strings que van arribar del Login
       intent.putExtra("NOM_USUARI",    getIntent().getStringExtra("NOM_USUARI"));
       intent.putExtra("CORREO_USUARI", getIntent().getStringExtra("CORREO_USUARI"));
       startActivity(intent);
     });
   }
 
-  @Override
-  protected void onResume() {
-    super.onResume();
+  // Mètode separat per carregar/actualitzar
+  private void cargarEventos() {
     repo.getAll(
             eventosFirestore -> adapter.actualizarLista(eventosFirestore),
             e -> Log.e("MainActivity", "Error cargando eventos", e)
     );
+  }
+
+  @Override
+  protected void onResume() {
+    super.onResume();
+    // Quan tornem a la pantalla (ex: després de crear un event), refresquem la llista
+    cargarEventos();
   }
 }

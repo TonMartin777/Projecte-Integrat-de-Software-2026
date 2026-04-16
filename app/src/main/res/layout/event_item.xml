@@ -34,7 +34,6 @@
                 android:id="@+id/eventNombre"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Nombre del evento"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:layout_marginBottom="4dp"/>
@@ -43,11 +42,16 @@
                 android:id="@+id/eventFecha"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="01/01/2026"
                 android:textSize="13sp"/>
-
         </LinearLayout>
 
-    </LinearLayout>
+        <ImageButton
+            android:id="@+id/btnOpciones"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@android:drawable/ic_menu_more"
+            android:contentDescription="Opcions" />
 
+    </LinearLayout>
 </androidx.cardview.widget.CardView>

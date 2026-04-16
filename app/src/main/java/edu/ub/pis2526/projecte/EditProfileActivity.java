@@ -24,8 +24,6 @@ public class EditProfileActivity extends AppCompatActivity {
     private ImageView fotoPerfil;
     private Button guardarBtn;
     private Uri imageUri;
-
-    // VARIABLE GLOBAL PER GUARDAR EL NOM ORIGINAL
     private String nomOriginal;
 
     private final ActivityResultLauncher<PickVisualMediaRequest> pickMedia =
@@ -47,7 +45,7 @@ public class EditProfileActivity extends AppCompatActivity {
         fotoPerfil = findViewById(R.id.editFotoPerfil);
         guardarBtn = findViewById(R.id.guardarPerfilBtn);
 
-        // Recuperem les dades i les guardem a la VARIABLE GLOBAL
+        // Recuperem les dades i les guardem a la variable global
         nomOriginal = getIntent().getStringExtra("NOM_USUARI");
         String correuActual = getIntent().getStringExtra("CORREO_USUARI");
 
@@ -76,19 +74,38 @@ public class EditProfileActivity extends AppCompatActivity {
         });
     }
 
-    // --- NOU MÈTODE PER PUJAR LA FOTO AL STORAGE ---
     private void pujarFotoISalvar(String nomUsuari) {
-        // Creem una referència al Storage (es guardarà com a "perfils/nomDusuari.jpg")
+        // Comprovació de seguretat: que el nom no estigui buit
+        if (nomUsuari == null || nomUsuari.trim().isEmpty()) {
+            Toast.makeText(this, "Error: El nom d'usuari no pot estar buit", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        Toast.makeText(this, "Iniciant la pujada de la foto...", Toast.LENGTH_SHORT).show();
+
         StorageReference ref = FirebaseStorage.getInstance().getReference()
                 .child("perfils/" + nomUsuari + ".jpg");
 
-        ref.putFile(imageUri).addOnSuccessListener(taskSnapshot -> {
-            // Un cop pujada, demanem la URL pública
-            ref.getDownloadUrl().addOnSuccessListener(uri -> {
-                // Cridem a executarActualitzacio passant-li la URL de la foto nova
-                executarActualitzacio(uri.toString());
-            });
-        }).addOnFailureListener(e -> Toast.makeText(this, "Error pujant foto", Toast.LENGTH_SHORT).show());
+        // Intentem pujar l'arxiu físic
+        ref.putFile(imageUri)
+                .addOnSuccessListener(taskSnapshot -> {
+
+                    // Si arribem aquí, la foto JA ESTÀ al núvol. Ara en demanem l'enllaç públic.
+                    ref.getDownloadUrl()
+                            .addOnSuccessListener(uri -> {
+                                // Tot perfecte, guardem les dades a Firestore
+                                executarActualitzacio(uri.toString());
+                            })
+                            .addOnFailureListener(e -> {
+                                // Ha fallat al demanar l'enllaç
+                                Toast.makeText(this, "Error al generar URL: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                            });
+
+                })
+                .addOnFailureListener(e -> {
+                    // Ha fallat la pujada de l'arxiu a Firebase
+                    Toast.makeText(this, "Error al guardar l'arxiu al núvol: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                });
     }
 
     private void executarActualitzacio(String urlFoto) {

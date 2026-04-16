@@ -45,21 +45,19 @@ dependencies {
     implementation(libs.cardview)
 
     // CONFIGURACIÓ FIREBASE
-
     implementation("com.google.firebase:firebase-firestore:25.1.4")
     implementation("com.google.firebase:firebase-analytics:22.4.0")
+    implementation("com.google.firebase:firebase-storage:20.3.0")
 
     //  ALTRES
     implementation("com.github.bumptech.glide:glide:4.16.0")
     implementation(libs.firebase.firestore)
     implementation(libs.play.services.location)
+    implementation("com.google.android.gms:play-services-maps:19.0.0")
+
 
     // Tests
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
-
-    // Maps
-    implementation("com.google.android.gms:play-services-maps:18.1.0")
-    implementation("com.google.android.gms:play-services-location:21.0.1")
 }

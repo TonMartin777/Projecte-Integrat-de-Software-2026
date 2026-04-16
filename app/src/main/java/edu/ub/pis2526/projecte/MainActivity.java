@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
 
     cargarEventos();
 
-    //  Configuració del Cercador (SearchView
+    //  Configuració del Cercador (SearchView)
     SearchView searchView = findViewById(R.id.searchEvent);
     searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
       @Override

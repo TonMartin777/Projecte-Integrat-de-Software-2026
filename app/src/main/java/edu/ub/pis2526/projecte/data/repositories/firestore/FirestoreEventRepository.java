@@ -19,6 +19,7 @@ import edu.ub.pis2526.projecte.domain.repositories.EventRepository;
 public class FirestoreEventRepository implements EventRepository {
 
     private final FirebaseFirestore db;
+
     public FirestoreEventRepository() {
         this.db = FirebaseFirestore.getInstance();
     }

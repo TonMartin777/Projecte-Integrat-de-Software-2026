@@ -25,6 +25,7 @@ public class UserActivity extends AppCompatActivity {
     private List<Event> listaMisEventos;
     private FirestoreEventRepository eventRepository;
 
+
     // --- VARIABLES GLOBALS RECUPERADES ---
     private String nomUsuarioActual;
     private String correoUsuarioActual;

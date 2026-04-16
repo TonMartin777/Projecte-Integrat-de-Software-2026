@@ -27,6 +27,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
     public interface OnEventDeleteListener {
         void onDeleteClick(Event event, int position);
     }
+
     public EventAdapter(List<Event> eventList, String nomUsuari, OnEventDeleteListener listener) {
         this.eventList = new ArrayList<>(eventList);
         this.listaCompleta = new ArrayList<>(eventList);

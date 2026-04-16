@@ -77,7 +77,6 @@ public class UserActivity extends AppCompatActivity {
                 }
         );
 
-        // --- RECUPEREM EL BOTÓ D'EDITAR PERFIL ---
         Button editPerfilBtn = findViewById(R.id.editPerfilBtn);
         editPerfilBtn.setOnClickListener(v -> {
             Intent intent = new Intent(this, EditProfileActivity.class);
@@ -99,7 +98,6 @@ public class UserActivity extends AppCompatActivity {
 
         listaMisEventos = new ArrayList<>();
 
-        // --- LA TEVA LÒGICA D'ESBORRAR EVENTS MANTINGUDA INTACTA ---
         eventAdapter = new EventAdapter(listaMisEventos, (event, position) -> {
             new AlertDialog.Builder(this)
                     .setTitle("Eliminar esdeveniment")

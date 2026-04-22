@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ordenar por"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="12dp"/>
+
+    <RadioGroup
+        android:id="@+id/radioGroupOrden"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp">
+
+        <RadioButton
+            android:id="@+id/radioSinOrden"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sin orden"
+            android:checked="true"/>
+
+        <RadioButton
+            android:id="@+id/radioFechaAsc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Fecha (más próximos primero)"/>
+
+        <RadioButton
+            android:id="@+id/radioLejaniaAsc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Distancia (más cercanos primero)"/>
+
+    </RadioGroup>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Filtrar por fecha"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="12dp"/>
+
+    <Button
+        android:id="@+id/btnFechaDesde"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Desde: cualquier fecha"
+        android:layout_marginBottom="8dp"/>
+
+    <Button
+        android:id="@+id/btnFechaHasta"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Hasta: cualquier fecha"
+        android:layout_marginBottom="24dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Filtrar por ubicación"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="12dp"/>
+
+    <SeekBar
+        android:id="@+id/seekBarDistancia"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="100"
+        android:progress="100"
+        android:layout_marginBottom="4dp"/>
+
+    <TextView
+        android:id="@+id/txtDistancia"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Distancia máxima: sin límite"
+        android:layout_marginBottom="24dp"/>
+
+    <Button
+        android:id="@+id/btnAplicar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Aplicar filtros"
+        android:layout_marginBottom="8dp"/>
+
+    <Button
+        android:id="@+id/btnLimpiar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Limpiar filtros"/>
+
+</LinearLayout>

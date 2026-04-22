@@ -194,6 +194,20 @@ public class FirestoreEventRepository implements EventRepository {
                 .addOnFailureListener(onFailure::onFailure);
     }
 
+    public void eliminarEventosCaducados(OnSuccessListener onSuccess, OnFailureListener onFailure) {
+        Timestamp ahora = new Timestamp(new Date());
+        db.collection("events")
+                .whereLessThan("fechaHora", ahora)
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
+                        doc.getReference().delete();
+                    }
+                    onSuccess.onSuccess();
+                })
+                .addOnFailureListener(onFailure::onFailure);
+    }
+
     public interface OnParticipantesLoadedListener {
         void onParticipantesLoaded(List<String> participantes);
     }

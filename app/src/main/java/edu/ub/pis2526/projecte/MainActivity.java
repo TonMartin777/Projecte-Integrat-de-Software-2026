@@ -1,5 +1,5 @@
 package edu.ub.pis2526.projecte;
-
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
   private ActivityMainBinding binding;
   private EventAdapter adapter;
   private FirestoreEventRepository repo;
+  private List<Event> todosLosEventos = new ArrayList<>();
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +59,16 @@ public class MainActivity extends AppCompatActivity {
       }
     });
 
+    // Boton de filtrar
+    ImageButton btnFiltrar = findViewById(R.id.btnFiltrar);
+    btnFiltrar.setOnClickListener(v -> {
+      FiltroBottomSheet bottomSheet = new FiltroBottomSheet(
+              todosLosEventos,
+              eventosFiltrados -> adapter.actualizarLista(eventosFiltrados)
+      );
+      bottomSheet.show(getSupportFragmentManager(), "filtro");
+    });
+
     //  Botó d'usuari
     ImageButton userButton = findViewById(R.id.userButton);
     userButton.setOnClickListener(v -> {
@@ -77,9 +88,15 @@ public class MainActivity extends AppCompatActivity {
 
   // Mètode separat per carregar/actualitzar
   private void cargarEventos() {
-    repo.getAll(
-            eventosFirestore -> adapter.actualizarLista(eventosFirestore),
-            e -> Log.e("MainActivity", "Error cargando eventos", e)
+    repo.eliminarEventosCaducados(
+            () -> repo.getAll(
+                    eventosFirestore -> {
+                      todosLosEventos = new ArrayList<>(eventosFirestore);
+                      adapter.actualizarLista(eventosFirestore);
+                    },
+                    e -> Log.e("MainActivity", "Error cargando eventos", e)
+            ),
+            e -> Log.e("MainActivity", "Error eliminando eventos caducados", e)
     );
   }
 

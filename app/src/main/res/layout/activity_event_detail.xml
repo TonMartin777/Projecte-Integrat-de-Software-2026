@@ -73,6 +73,13 @@
             android:text="Creador"
             android:textSize="16sp" />
 
+        <TextView
+            android:id="@+id/detailParticipantes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Participante"
+            android:textSize="16sp" />
+
         <Button
             android:id="@+id/btnUnirse"
             android:layout_width="match_parent"

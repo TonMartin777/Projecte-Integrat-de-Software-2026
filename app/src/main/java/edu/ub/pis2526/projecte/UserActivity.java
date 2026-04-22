@@ -1,5 +1,4 @@
 package edu.ub.pis2526.projecte;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
@@ -25,6 +24,7 @@ public class UserActivity extends AppCompatActivity {
     private EventAdapter eventAdapter;
     private List<Event> listaMisEventos;
     private FirestoreEventRepository eventRepository;
+
 
     // --- VARIABLES GLOBALS RECUPERADES ---
     private String nomUsuarioActual;
@@ -98,12 +98,12 @@ public class UserActivity extends AppCompatActivity {
 
         listaMisEventos = new ArrayList<>();
 
-        eventAdapter = new EventAdapter(listaMisEventos, (event, position) -> {
+        eventAdapter = new EventAdapter(listaMisEventos, nomUsuarioActual, (selectedEvent, position) -> {
             new AlertDialog.Builder(this)
                     .setTitle("Eliminar esdeveniment")
-                    .setMessage("Segur que vols eliminar '" + event.getTitulo() + "'?")
+                    .setMessage("Segur que vols eliminar '" + selectedEvent.getTitulo() + "'?")
                     .setPositiveButton("Sí, eliminar", (dialog, which) -> {
-                        eventRepository.delete(event.getId(), new FirestoreEventRepository.OnDeleteListener() {
+                        eventRepository.delete(selectedEvent.getId(), new FirestoreEventRepository.OnDeleteListener() {
                             @Override
                             public void onSuccess() {
                                 listaMisEventos.remove(position);

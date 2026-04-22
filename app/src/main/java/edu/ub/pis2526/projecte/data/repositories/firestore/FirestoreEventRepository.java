@@ -173,4 +173,28 @@ public class FirestoreEventRepository implements EventRepository {
                 })
                 .addOnFailureListener(e -> listener.onFailure(e));
     }
+
+    public void unirse(String eventoId, String nomUsuari, OnSuccessListener onSuccess, OnFailureListener onFailure) {
+        db.collection("events")
+                .document(eventoId)
+                .update("participantes", com.google.firebase.firestore.FieldValue.arrayUnion(nomUsuari))
+                .addOnSuccessListener(unused -> onSuccess.onSuccess())
+                .addOnFailureListener(onFailure::onFailure);
+    }
+
+    public void getParticipantes(String eventoId, OnParticipantesLoadedListener onLoaded, OnFailureListener onFailure) {
+        db.collection("events")
+                .document(eventoId)
+                .get()
+                .addOnSuccessListener(doc -> {
+                    List<String> participantes = (List<String>) doc.get("participantes");
+                    if (participantes == null) participantes = new ArrayList<>();
+                    onLoaded.onParticipantesLoaded(participantes);
+                })
+                .addOnFailureListener(onFailure::onFailure);
+    }
+
+    public interface OnParticipantesLoadedListener {
+        void onParticipantesLoaded(List<String> participantes);
+    }
 }

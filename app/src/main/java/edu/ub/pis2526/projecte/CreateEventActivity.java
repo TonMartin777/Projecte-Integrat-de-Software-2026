@@ -6,24 +6,18 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
-import com.google.firebase.Timestamp;
-import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 import edu.ub.pis2526.projecte.data.repositories.firestore.FirestoreEventRepository;
 import edu.ub.pis2526.projecte.domain.repositories.EventRepository;
 
 public class CreateEventActivity extends AppCompatActivity {
 
-    private EditText editTitulo, editDescripcion, editDireccion, editFoto; // añade editFoto
-
+    private EditText editTitulo, editDescripcion, editLatitud, editLongitud, editFoto;
     private Button btnFecha, btnCrear;
     private LocalDateTime fechaHoraSeleccionada;
 
@@ -38,10 +32,11 @@ public class CreateEventActivity extends AppCompatActivity {
 
         editTitulo      = findViewById(R.id.editTitulo);
         editDescripcion = findViewById(R.id.editDescripcion);
-        editDireccion   = findViewById(R.id.editDireccion);
+        editLatitud     = findViewById(R.id.editLatitud);
+        editLongitud    = findViewById(R.id.editLongitud);
+        editFoto        = findViewById(R.id.editFoto);
         btnFecha        = findViewById(R.id.btnFecha);
         btnCrear        = findViewById(R.id.btnCrear);
-        editFoto        = findViewById(R.id.editFoto);
 
         btnFecha.setOnClickListener(v -> mostrarSelectorFechaHora());
         btnCrear.setOnClickListener(v -> crearEvento());
@@ -62,25 +57,41 @@ public class CreateEventActivity extends AppCompatActivity {
     private void crearEvento() {
         String titulo      = editTitulo.getText().toString().trim();
         String descripcion = editDescripcion.getText().toString().trim();
-        String direccion   = editDireccion.getText().toString().trim();
+        String latStr      = editLatitud.getText().toString().trim();
+        String lngStr      = editLongitud.getText().toString().trim();
 
+        // Validación: todos los campos obligatorios deben estar rellenos
         if (titulo.isEmpty() || descripcion.isEmpty() ||
-                direccion.isEmpty() || fechaHoraSeleccionada == null) {
+                latStr.isEmpty() || lngStr.isEmpty() || fechaHoraSeleccionada == null) {
             Toast.makeText(this, "Rellena todos los campos", Toast.LENGTH_SHORT).show();
             return;
         }
 
+        // Parsear las coordenadas — si el usuario escribe algo que no es un número, mostramos error
+        double latitud, longitud;
+        try {
+            latitud  = Double.parseDouble(latStr);
+            longitud = Double.parseDouble(lngStr);
+        } catch (NumberFormatException e) {
+            Toast.makeText(this, "Las coordenadas deben ser números (ej: 41.3851)", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        // Recuperar el usuario logueado desde el Intent
         String nomUsuari    = getIntent().getStringExtra("NOM_USUARI");
         String correoUsuari = getIntent().getStringExtra("CORREO_USUARI");
         User creador = new User(
                 nomUsuari    != null ? nomUsuari    : "usuari_desconegut",
                 correoUsuari != null ? correoUsuari : ""
         );
-        String foto = editFoto.getText().toString().trim();
 
-        Event evento = new Event(titulo, descripcion, fechaHoraSeleccionada, direccion, creador, this);
+        // Crear el evento — el link de Maps se genera automáticamente dentro del constructor
+        Event evento = new Event(titulo, descripcion, fechaHoraSeleccionada,
+                latitud, longitud, creador);
+
+        String foto = editFoto.getText().toString().trim();
         if (!foto.isEmpty()) {
-            evento.setFoto(foto); // solo si el usuario ha introducido algo
+            evento.setFoto(foto);
         }
 
         eventRepository.save(evento,

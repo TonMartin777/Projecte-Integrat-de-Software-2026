@@ -152,7 +152,7 @@ public class FirestoreEventRepository implements EventRepository {
                         }
 
                         // Crear evento (necesita un constructor que acepte estos parámetros)
-                        Event event = new Event(titulo, descripcion, fechaHora, "", creador, null);
+                        Event event = Event.fromFirestore(id, titulo, descripcion, foto, fechaHora, creador);
                         event.setId(id);
                         event.setFoto(foto);
 

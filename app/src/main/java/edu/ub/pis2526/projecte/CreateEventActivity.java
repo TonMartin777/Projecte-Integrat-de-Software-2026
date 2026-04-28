@@ -3,8 +3,10 @@ package edu.ub.pis2526.projecte;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,8 +21,8 @@ public class CreateEventActivity extends AppCompatActivity {
 
     private EditText editTitulo, editDescripcion, editLatitud, editLongitud, editFoto;
     private Button btnFecha, btnCrear;
+    private Spinner spinnerGenero;
     private LocalDateTime fechaHoraSeleccionada;
-
     private EventRepository eventRepository;
 
     @Override
@@ -37,6 +39,16 @@ public class CreateEventActivity extends AppCompatActivity {
         editFoto        = findViewById(R.id.editFoto);
         btnFecha        = findViewById(R.id.btnFecha);
         btnCrear        = findViewById(R.id.btnCrear);
+        spinnerGenero   = findViewById(R.id.spinnerGenero);
+
+        // Rellenar el Spinner con los valores del enum
+        ArrayAdapter<Generos> generoAdapter = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_spinner_item,
+                Generos.values()
+        );
+        generoAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerGenero.setAdapter(generoAdapter);
 
         btnFecha.setOnClickListener(v -> mostrarSelectorFechaHora());
         btnCrear.setOnClickListener(v -> crearEvento());
@@ -59,15 +71,14 @@ public class CreateEventActivity extends AppCompatActivity {
         String descripcion = editDescripcion.getText().toString().trim();
         String latStr      = editLatitud.getText().toString().trim();
         String lngStr      = editLongitud.getText().toString().trim();
+        Generos genero     = (Generos) spinnerGenero.getSelectedItem();
 
-        // Validación: todos los campos obligatorios deben estar rellenos
         if (titulo.isEmpty() || descripcion.isEmpty() ||
                 latStr.isEmpty() || lngStr.isEmpty() || fechaHoraSeleccionada == null) {
             Toast.makeText(this, "Rellena todos los campos", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Parsear las coordenadas — si el usuario escribe algo que no es un número, mostramos error
         double latitud, longitud;
         try {
             latitud  = Double.parseDouble(latStr);
@@ -77,7 +88,6 @@ public class CreateEventActivity extends AppCompatActivity {
             return;
         }
 
-        // Recuperar el usuario logueado desde el Intent
         String nomUsuari    = getIntent().getStringExtra("NOM_USUARI");
         String correoUsuari = getIntent().getStringExtra("CORREO_USUARI");
         User creador = new User(
@@ -85,9 +95,9 @@ public class CreateEventActivity extends AppCompatActivity {
                 correoUsuari != null ? correoUsuari : ""
         );
 
-        // Crear el evento — el link de Maps se genera automáticamente dentro del constructor
         Event evento = new Event(titulo, descripcion, fechaHoraSeleccionada,
-                latitud, longitud, creador);
+                latitud, longitud, creador, genero);
+        evento.setGenero(genero);
 
         String foto = editFoto.getText().toString().trim();
         if (!foto.isEmpty()) {

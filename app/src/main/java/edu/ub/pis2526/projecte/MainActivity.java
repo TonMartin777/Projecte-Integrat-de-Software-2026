@@ -1,11 +1,17 @@
 package edu.ub.pis2526.projecte;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageButton;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.SearchView;
@@ -22,6 +28,8 @@ public class MainActivity extends AppCompatActivity {
   private EventAdapter adapter;
   private FirestoreEventRepository repo;
   private List<Event> todosLosEventos = new ArrayList<>();
+  private double userLat = 0;
+  private double userLng = 0;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +72,8 @@ public class MainActivity extends AppCompatActivity {
     btnFiltrar.setOnClickListener(v -> {
       FiltroBottomSheet bottomSheet = new FiltroBottomSheet(
               todosLosEventos,
+              userLat,
+              userLng,
               eventosFiltrados -> adapter.actualizarLista(eventosFiltrados)
       );
       bottomSheet.show(getSupportFragmentManager(), "filtro");
@@ -84,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
     mapButton.setOnClickListener(v -> {
       startActivity(new Intent(this, MapActivity.class));
     });
+    obtenerUbicacionUsuario();
   }
 
   // Mètode separat per carregar/actualitzar
@@ -105,5 +116,19 @@ public class MainActivity extends AppCompatActivity {
     super.onResume();
     // Quan tornem a la pantalla (ex: després de crear un event), refresquem la llista
     cargarEventos();
+  }
+
+  private void obtenerUbicacionUsuario() {
+    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+            == PackageManager.PERMISSION_GRANTED) {
+      FusedLocationProviderClient fusedClient =
+              LocationServices.getFusedLocationProviderClient(this);
+      fusedClient.getLastLocation().addOnSuccessListener(location -> {
+        if (location != null) {
+          userLat = location.getLatitude();
+          userLng = location.getLongitude();
+        }
+      });
+    }
   }
 }

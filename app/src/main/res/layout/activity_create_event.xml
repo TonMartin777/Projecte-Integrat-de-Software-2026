@@ -39,6 +39,18 @@
         android:hint="URL de la imagen (opcional)"
         android:inputType="textUri"/>
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Género musical"
+        android:layout_marginTop="8dp"/>
+
+    <Spinner
+        android:id="@+id/spinnerGenero"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"/>
+
     <Button
         android:id="@+id/btnFecha"
         android:layout_width="match_parent"

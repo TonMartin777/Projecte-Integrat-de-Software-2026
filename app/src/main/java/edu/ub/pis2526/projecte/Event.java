@@ -14,7 +14,7 @@ public class Event {
     private double[] coordenadas;   // [0] = lat, [1] = lng
     private String linkGoogleMaps;  // URL generada a partir de las coordenadas
     private String foto;
-    private List<Categorias> categorias;
+    private Generos genero;
     private List<User> participantes;
     private User creador;
     private String id;
@@ -23,7 +23,6 @@ public class Event {
 
     // Constructor vacío requerido por Firestore
     public Event() {
-        this.categorias = new ArrayList<>();
         this.participantes = new ArrayList<>();
     }
 
@@ -33,13 +32,13 @@ public class Event {
      * El link de Google Maps se genera automáticamente a partir de ellas.
      */
     public Event(String titulo, String descripcion, LocalDateTime fechaHora,
-                 double latitud, double longitud, User creador) {
+                 double latitud, double longitud, User creador, Generos genero) {
         this.id = UUID.randomUUID().toString();
         this.titulo = titulo;
         this.descripcion = descripcion;
         this.fechaHora = fechaHora;
         this.creador = creador;
-        this.categorias = new ArrayList<>();
+        this.genero = genero;
         this.participantes = new ArrayList<>();
         this.foto = null;
         setCoordenadas(new double[]{latitud, longitud}); // genera el link automáticamente
@@ -95,17 +94,8 @@ public class Event {
 
     // ─── CATEGORIAS ─────────────────────────────────────────────────────────────
 
-    public void addCategoria(Categorias categoria) {
-        if (!categorias.contains(categoria)) categorias.add(categoria);
-    }
-
-    public void removeCategoria(Categorias categoria) {
-        categorias.remove(categoria);
-    }
-
-    public boolean tieneCategoria(Categorias categoria) {
-        return categorias.contains(categoria);
-    }
+    public Generos getGenero() { return genero; }
+    public void setGenero(Generos genero) { this.genero = genero; }
 
     // ─── GETTERS Y SETTERS ───────────────────────────────────────────────────────
 
@@ -135,7 +125,6 @@ public class Event {
     public String getFoto() { return foto; }
     public void setFoto(String foto) { this.foto = foto; }
 
-    public List<Categorias> getCategorias() { return categorias; }
     public List<User> getParticipantes() { return participantes; }
 
     public User getCreador() { return creador; }

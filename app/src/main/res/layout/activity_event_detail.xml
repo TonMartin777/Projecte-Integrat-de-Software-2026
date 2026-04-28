@@ -39,6 +39,13 @@
             android:textSize="16sp" />
 
         <TextView
+            android:id="@+id/detailGenero"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Genero"
+            android:textSize="16sp" />
+
+        <TextView
             android:id="@+id/detailFecha"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

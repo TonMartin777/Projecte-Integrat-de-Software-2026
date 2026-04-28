@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import edu.ub.pis2526.projecte.Event;
+import edu.ub.pis2526.projecte.Generos;
 import edu.ub.pis2526.projecte.User;
 import edu.ub.pis2526.projecte.domain.repositories.EventRepository;
 
@@ -41,6 +42,7 @@ public class FirestoreEventRepository implements EventRepository {
         eventoMap.put("descripcion",   evento.getDescripcion());
         eventoMap.put("fechaHora",     fechaTimestamp);
         eventoMap.put("foto",          evento.getFoto());
+        eventoMap.put("genero", evento.getGenero() != null ? evento.getGenero().name() : null);
         eventoMap.put("categorias",    new ArrayList<>());
         eventoMap.put("participantes", new ArrayList<>());
         eventoMap.put("creador",       creadorMap);
@@ -106,6 +108,13 @@ public class FirestoreEventRepository implements EventRepository {
                         String mapsUrl = doc.getString("mapsUrl");
                         if (mapsUrl != null) {
                             evento.setLinkGoogleMapsString(mapsUrl);
+                        }
+
+                        String generoStr = doc.getString("genero");
+                        if (generoStr != null) {
+                            try {
+                                evento.setGenero(Generos.valueOf(generoStr));
+                            } catch (IllegalArgumentException ignored) {}
                         }
 
                         eventos.add(evento);

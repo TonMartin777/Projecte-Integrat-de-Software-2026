@@ -48,8 +48,6 @@ public class MainActivity extends AppCompatActivity {
     String nomUsuari = getIntent().getStringExtra("NOM_USUARI");
     adapter = new EventAdapter(listaEventos, nomUsuari);
     recyclerView.setAdapter(adapter);
-
-
     cargarEventos();
 
     //  Configuració del Cercador (SearchView)
@@ -94,7 +92,25 @@ public class MainActivity extends AppCompatActivity {
     mapButton.setOnClickListener(v -> {
       startActivity(new Intent(this, MapActivity.class));
     });
+    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+            != PackageManager.PERMISSION_GRANTED) {
+      ActivityCompat.requestPermissions(this,
+              new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 100);
+    } else {
+      obtenerUbicacionUsuario();
+    }
     obtenerUbicacionUsuario();
+  }
+
+  @Override
+  public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    if (requestCode == 100 && grantResults.length > 0
+            && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+      obtenerUbicacionUsuario();
+    } else {
+      Log.e("MainActivity", "Permiso denegado por el usuario");
+    }
   }
 
   // Mètode separat per carregar/actualitzar
@@ -117,6 +133,32 @@ public class MainActivity extends AppCompatActivity {
     // Quan tornem a la pantalla (ex: després de crear un event), refresquem la llista
     cargarEventos();
   }
+  private void obtenerUbicacionForzada(FusedLocationProviderClient fusedClient) {
+    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+            != PackageManager.PERMISSION_GRANTED) return;
+
+    com.google.android.gms.location.LocationRequest locationRequest =
+            com.google.android.gms.location.LocationRequest.create()
+                    .setPriority(com.google.android.gms.location.LocationRequest.PRIORITY_HIGH_ACCURACY)
+                    .setNumUpdates(1)
+                    .setInterval(0);
+
+    fusedClient.requestLocationUpdates(
+            locationRequest,
+            new com.google.android.gms.location.LocationCallback() {
+              @Override
+              public void onLocationResult(com.google.android.gms.location.LocationResult result) {
+                if (result != null && result.getLastLocation() != null) {
+                  userLat = result.getLastLocation().getLatitude();
+                  userLng = result.getLastLocation().getLongitude();
+                  Log.d("MainActivity", "Ubicación forzada: " + userLat + ", " + userLng);
+                  fusedClient.removeLocationUpdates(this);
+                }
+              }
+            },
+            getMainLooper()
+    );
+  }
 
   private void obtenerUbicacionUsuario() {
     if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
@@ -127,8 +169,15 @@ public class MainActivity extends AppCompatActivity {
         if (location != null) {
           userLat = location.getLatitude();
           userLng = location.getLongitude();
+          Log.d("MainActivity", "Ubicación obtenida: " + userLat + ", " + userLng);
+        } else {
+          Log.e("MainActivity", "getLastLocation devolvió null");
+          // Forzar una petición de ubicación actual
+          obtenerUbicacionForzada(fusedClient);
         }
       });
+    } else {
+      Log.e("MainActivity", "Permiso de ubicación no concedido");
     }
   }
 }

@@ -6,9 +6,11 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,6 +38,8 @@ public class FiltroBottomSheet extends BottomSheetDialogFragment {
     private LocalDate fechaDesde = null;
     private LocalDate fechaHasta = null;
     private int distanciaMaxKm = 100; // valor por defecto
+    private Generos generoSeleccionado = null;
+
 
     public FiltroBottomSheet(List<Event> todosLosEventos, double userLat, double userLng, OnFiltroAplicadoListener listener) {
         this.todosLosEventos = todosLosEventos;
@@ -57,6 +61,21 @@ public class FiltroBottomSheet extends BottomSheetDialogFragment {
         SeekBar seekBarDistancia     = view.findViewById(R.id.seekBarDistancia);
         TextView txtDistancia        = view.findViewById(R.id.txtDistancia);
         RadioGroup radioLejaniaAsc   = view.findViewById(R.id.radioGroupOrden);
+        Spinner spinnerGeneroFiltro = view.findViewById(R.id.spinnerGeneroFiltro);
+
+        // Crear lista con opción "Todos" al principio
+        List<String> generosLista = new ArrayList<>();
+        generosLista.add("Todos los géneros");
+        for (Generos g : Generos.values()) {
+            generosLista.add(g.name());
+        }
+        ArrayAdapter<String> generoAdapter = new ArrayAdapter<>(
+                requireContext(),
+                android.R.layout.simple_spinner_item,
+                generosLista
+        );
+        generoAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerGeneroFiltro.setAdapter(generoAdapter);
 
         seekBarDistancia.setMax(100);
         seekBarDistancia.setProgress(100);
@@ -137,6 +156,13 @@ public class FiltroBottomSheet extends BottomSheetDialogFragment {
                 });
             }
 
+            // Filtrar por género
+            int generoPos = spinnerGeneroFiltro.getSelectedItemPosition();
+            if (generoPos > 0) { // 0 = "Todos los géneros"
+                Generos generoElegido = Generos.values()[generoPos - 1];
+                resultado.removeIf(e -> e.getGenero() == null || e.getGenero() != generoElegido);
+            }
+
             listener.onFiltroAplicado(resultado);
             dismiss();
         });
@@ -151,6 +177,7 @@ public class FiltroBottomSheet extends BottomSheetDialogFragment {
             seekBarDistancia.setProgress(100);
             txtDistancia.setText("Distancia máxima: sin límite");
             listener.onFiltroAplicado(new ArrayList<>(todosLosEventos));
+            spinnerGeneroFiltro.setSelection(0);
             dismiss();
         });
 

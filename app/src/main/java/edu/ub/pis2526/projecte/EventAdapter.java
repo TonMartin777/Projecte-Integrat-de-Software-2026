@@ -83,6 +83,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
             intent.putExtra("descripcion", event.getDescripcion());
             intent.putExtra("eventoId", event.getId());
             intent.putExtra("NOM_USUARI", nomUsuari);
+            intent.putExtra("genero", event.getGenero() != null ? event.getGenero().name() : "");
             if (event.getFechaHora() != null) {
                 intent.putExtra("fecha", event.getFechaHora().toLocalDate().toString());
                 intent.putExtra("hora", event.getFechaHora().toLocalTime().toString());

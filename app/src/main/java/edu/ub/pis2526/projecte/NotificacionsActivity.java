@@ -46,7 +46,11 @@ public class NotificacionsActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Exception e) {
-                Toast.makeText(NotificacionsActivity.this, "Error carregant avisos", Toast.LENGTH_SHORT).show();
+                // 1. Imprimim l'error al Logcat amb una etiqueta nostra
+                android.util.Log.e("PROVA_ERROR", "Motiu de la fallada:", e);
+
+                // 2. Mostrem l'error exacte per pantalla perquè el puguis llegir al mòbil
+                Toast.makeText(NotificacionsActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
     }

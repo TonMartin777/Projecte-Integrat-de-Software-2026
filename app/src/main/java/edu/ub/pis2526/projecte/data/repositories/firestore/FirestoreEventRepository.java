@@ -43,7 +43,6 @@ public class FirestoreEventRepository implements EventRepository {
         eventoMap.put("fechaHora",     fechaTimestamp);
         eventoMap.put("foto",          evento.getFoto());
         eventoMap.put("genero", evento.getGenero() != null ? evento.getGenero().name() : null);
-        eventoMap.put("categorias",    new ArrayList<>());
         eventoMap.put("participantes", new ArrayList<>());
         eventoMap.put("creador",       creadorMap);
         if (evento.getLinkGoogleMapsString() != null) {

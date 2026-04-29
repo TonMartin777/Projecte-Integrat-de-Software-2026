@@ -33,7 +33,7 @@ public class FirestoreEventRepository implements EventRepository {
         creadorMap.put("nom",    creador.getNom());
         creadorMap.put("correo", creador.getCorreo());
 
-        Date fechaDate = Date.from(evento.getFechaHora().toInstant(ZoneOffset.UTC));
+        Date fechaDate = Date.from(evento.getFechaHora().atZone(java.time.ZoneId.systemDefault()).toInstant());
         Timestamp fechaTimestamp = new Timestamp(fechaDate);
 
         Map<String, Object> eventoMap = new HashMap<>();
@@ -45,6 +45,7 @@ public class FirestoreEventRepository implements EventRepository {
         eventoMap.put("genero", evento.getGenero() != null ? evento.getGenero().name() : null);
         eventoMap.put("categorias",    new ArrayList<>());
         eventoMap.put("participantes", new ArrayList<>());
+        eventoMap.put("aforoMaximo", evento.getAforoMaxim());
         eventoMap.put("creador",       creadorMap);
         if (evento.getLinkGoogleMapsString() != null) {
             eventoMap.put("mapsUrl", evento.getLinkGoogleMapsString());
@@ -83,7 +84,7 @@ public class FirestoreEventRepository implements EventRepository {
                         String titulo      = doc.getString("titulo");
                         String descripcion = doc.getString("descripcion");
                         String foto        = doc.getString("foto");
-
+                        int aforo = doc.contains("aforoMaximo") ? doc.getLong("aforoMaximo").intValue() : 0;
                         Timestamp ts = doc.getTimestamp("fechaHora");
                         LocalDateTime fechaHora = null;
                         if (ts != null) {
@@ -98,7 +99,7 @@ public class FirestoreEventRepository implements EventRepository {
                                 creadorMap != null ? (String) creadorMap.get("nom") : ""
                         );
 
-                        Event evento = Event.fromFirestore(id, titulo, descripcion, foto, fechaHora, creador);
+                        Event evento = Event.fromFirestore(id, titulo, descripcion, foto, fechaHora, creador, aforo);
 
                         Double lat = doc.getDouble("lat");
                         Double lng = doc.getDouble("lng");
@@ -141,7 +142,7 @@ public class FirestoreEventRepository implements EventRepository {
                         String titulo      = doc.getString("titulo");
                         String descripcion = doc.getString("descripcion");
                         String foto        = doc.getString("foto");
-
+                        int aforo = doc.contains("aforoMaximo") ? doc.getLong("aforoMaximo").intValue() : 0;
                         Timestamp timestamp = doc.getTimestamp("fechaHora");
                         LocalDateTime fechaHora = null;
                         if (timestamp != null) {
@@ -161,7 +162,7 @@ public class FirestoreEventRepository implements EventRepository {
                         }
 
                         // Crear evento (necesita un constructor que acepte estos parámetros)
-                        Event event = Event.fromFirestore(id, titulo, descripcion, foto, fechaHora, creador);
+                        Event event = Event.fromFirestore(id, titulo, descripcion, foto, fechaHora, creador, aforo);
                         event.setId(id);
                         event.setFoto(foto);
 

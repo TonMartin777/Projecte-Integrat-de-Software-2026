@@ -26,6 +26,7 @@ public class EventDetailActivity extends AppCompatActivity {
         String fecha = getIntent().getStringExtra("fecha");
         String hora = getIntent().getStringExtra("hora");
         String foto = getIntent().getStringExtra("foto");
+        int aforoMaximo = getIntent().getIntExtra("aforoMaximo", 0);
         double lat = getIntent().getDoubleExtra("lat", 0);
         double lng = getIntent().getDoubleExtra("lng", 0);
         String creador = getIntent().getStringExtra("creador");
@@ -40,6 +41,7 @@ public class EventDetailActivity extends AppCompatActivity {
         TextView tvUbicacion = findViewById(R.id.detailUbicacion);
         ImageView imgEvento = findViewById(R.id.detailImagen);
         TextView tvGenero = findViewById(R.id.detailGenero);
+        TextView tvAforo = findViewById(R.id.detailAforo);
 
         tvNombre.setText(titulo);
         tvFecha.setText(fecha);
@@ -86,9 +88,14 @@ public class EventDetailActivity extends AppCompatActivity {
 
         repo.getParticipantes(eventoId,
                 participantes -> {
-                    tvParticipantes.setText("Participantes: " + participantes.size());
+                    int numActual = participantes.size();
+                    tvAforo.setText("Aforo: " + numActual + " / " + aforoMaximo);
+
                     if (participantes.contains(nomUsuari)) {
                         btnUnirse.setText("Ya te has unido");
+                        btnUnirse.setEnabled(false);
+                    } else if (numActual >= aforoMaximo) { // Validació de concert ple
+                        btnUnirse.setText("Concierto lleno");
                         btnUnirse.setEnabled(false);
                     }
                 },

@@ -19,7 +19,7 @@ import edu.ub.pis2526.projecte.domain.repositories.EventRepository;
 
 public class CreateEventActivity extends AppCompatActivity {
 
-    private EditText editTitulo, editDescripcion, editLatitud, editLongitud, editFoto;
+    private EditText editTitulo, editDescripcion, editLatitud, editLongitud, editFoto, editAforo;
     private Button btnFecha, btnCrear;
     private Spinner spinnerGenero;
     private LocalDateTime fechaHoraSeleccionada;
@@ -37,6 +37,7 @@ public class CreateEventActivity extends AppCompatActivity {
         editLatitud     = findViewById(R.id.editLatitud);
         editLongitud    = findViewById(R.id.editLongitud);
         editFoto        = findViewById(R.id.editFoto);
+        editAforo       = findViewById(R.id.editAforo);
         btnFecha        = findViewById(R.id.btnFecha);
         btnCrear        = findViewById(R.id.btnCrear);
         spinnerGenero   = findViewById(R.id.spinnerGenero);
@@ -67,36 +68,43 @@ public class CreateEventActivity extends AppCompatActivity {
     }
 
     private void crearEvento() {
-        String titulo      = editTitulo.getText().toString().trim();
+        String titulo = editTitulo.getText().toString().trim();
         String descripcion = editDescripcion.getText().toString().trim();
-        String latStr      = editLatitud.getText().toString().trim();
-        String lngStr      = editLongitud.getText().toString().trim();
-        Generos genero     = (Generos) spinnerGenero.getSelectedItem();
+        String latStr = editLatitud.getText().toString().trim();
+        String lngStr = editLongitud.getText().toString().trim();
+        Generos genero = (Generos) spinnerGenero.getSelectedItem();
+        String aforoStr = editAforo.getText().toString().trim();
 
         if (titulo.isEmpty() || descripcion.isEmpty() ||
-                latStr.isEmpty() || lngStr.isEmpty() || fechaHoraSeleccionada == null) {
+                latStr.isEmpty() || lngStr.isEmpty() || aforoStr.isEmpty() || fechaHoraSeleccionada == null) {
             Toast.makeText(this, "Rellena todos los campos", Toast.LENGTH_SHORT).show();
             return;
         }
-
+        int aforoMaximo;
+        try {
+            aforoMaximo = Integer.parseInt(aforoStr);
+        } catch (NumberFormatException e) {
+            Toast.makeText(this, "El aforo debe ser un número entero", Toast.LENGTH_SHORT).show();
+            return;
+        }
         double latitud, longitud;
         try {
-            latitud  = Double.parseDouble(latStr);
+            latitud = Double.parseDouble(latStr);
             longitud = Double.parseDouble(lngStr);
         } catch (NumberFormatException e) {
             Toast.makeText(this, "Las coordenadas deben ser números (ej: 41.3851)", Toast.LENGTH_LONG).show();
             return;
         }
 
-        String nomUsuari    = getIntent().getStringExtra("NOM_USUARI");
+        String nomUsuari = getIntent().getStringExtra("NOM_USUARI");
         String correoUsuari = getIntent().getStringExtra("CORREO_USUARI");
         User creador = new User(
-                nomUsuari    != null ? nomUsuari    : "usuari_desconegut",
+                nomUsuari != null ? nomUsuari : "usuari_desconegut",
                 correoUsuari != null ? correoUsuari : ""
         );
 
         Event evento = new Event(titulo, descripcion, fechaHoraSeleccionada,
-                latitud, longitud, creador, genero);
+                latitud, longitud, creador, genero, aforoMaximo);
         evento.setGenero(genero);
 
         String foto = editFoto.getText().toString().trim();
@@ -104,14 +112,17 @@ public class CreateEventActivity extends AppCompatActivity {
             evento.setFoto(foto);
         }
 
+        android.util.Log.d("CREATE_EVENT", "Dades validades. Cridant a save...");
+
         eventRepository.save(evento,
                 () -> {
-                    Toast.makeText(this, "Evento creado!", Toast.LENGTH_SHORT).show();
+                    android.util.Log.d("CREATE_EVENT", "Callback exitós. Tancant pantalla.");
+                    Toast.makeText(this, "¡Evento creado!", Toast.LENGTH_SHORT).show();
                     finish();
                 },
-                e -> Toast.makeText(this,
-                        "Error al guardar: " + e.getMessage(),
-                        Toast.LENGTH_LONG).show()
+                e -> {
+                    android.util.Log.e("CREATE_EVENT", "Callback fallit: " + e.getMessage());
+                    Toast.makeText(this, "Error al guardar: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                }
         );
-    }
-}
+    }}

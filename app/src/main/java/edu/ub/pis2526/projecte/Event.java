@@ -18,6 +18,7 @@ public class Event {
     private List<User> participantes;
     private User creador;
     private String id;
+    private int aforoMaxim;
 
     // ─── CONSTRUCTORES ───────────────────────────────────────────────────────────
 
@@ -32,13 +33,14 @@ public class Event {
      * El link de Google Maps se genera automáticamente a partir de ellas.
      */
     public Event(String titulo, String descripcion, LocalDateTime fechaHora,
-                 double latitud, double longitud, User creador, Generos genero) {
+                 double latitud, double longitud, User creador, Generos genero, int aforoMaxim) {
         this.id = UUID.randomUUID().toString();
         this.titulo = titulo;
         this.descripcion = descripcion;
         this.fechaHora = fechaHora;
         this.creador = creador;
         this.genero = genero;
+        this.aforoMaxim = aforoMaxim;
         this.participantes = new ArrayList<>();
         this.foto = null;
         setCoordenadas(new double[]{latitud, longitud}); // genera el link automáticamente
@@ -46,7 +48,7 @@ public class Event {
 
     // Factory method para reconstruir desde Firestore
     public static Event fromFirestore(String id, String titulo, String descripcion,
-                                      String foto, LocalDateTime fechaHora, User creador) {
+                                      String foto, LocalDateTime fechaHora, User creador, int aforoMaxim) {
         Event e = new Event();
         e.id = id;
         e.titulo = titulo;
@@ -54,6 +56,7 @@ public class Event {
         e.fechaHora = fechaHora;
         e.foto = foto;
         e.creador = creador;
+        e.aforoMaxim = aforoMaxim;
         return e;
     }
 
@@ -129,4 +132,6 @@ public class Event {
 
     public User getCreador() { return creador; }
     public void setCreador(User creador) { this.creador = creador; }
+    public void setAforoMaxim(int aforoMaxim) {this.aforoMaxim = aforoMaxim;}
+    public int getAforoMaxim() {return this.aforoMaxim;}
 }

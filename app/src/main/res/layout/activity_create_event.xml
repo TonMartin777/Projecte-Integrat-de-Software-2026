@@ -9,58 +9,65 @@
         android:id="@+id/editTitulo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Título del evento"/>
+        android:hint="Título del evento" />
 
     <EditText
         android:id="@+id/editDescripcion"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Descripción"/>
+        android:hint="Descripción" />
 
-    <!-- Coordenadas: se introducen manualmente (ej: buscar en Google Maps y copiar) -->
     <EditText
         android:id="@+id/editLatitud"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Latitud (ej: 41.3851)"
-        android:inputType="numberDecimal|numberSigned"/>
+        android:inputType="numberDecimal|numberSigned" />
 
     <EditText
         android:id="@+id/editLongitud"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Longitud (ej: 2.1734)"
-        android:inputType="numberDecimal|numberSigned"/>
+        android:inputType="numberDecimal|numberSigned" />
+
+    <EditText
+        android:id="@+id/editAforo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Aforo máximo del bar"
+        android:inputType="number" />
 
     <EditText
         android:id="@+id/editFoto"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="URL de la imagen (opcional)"
-        android:inputType="textUri"/>
+        android:inputType="textUri" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Género musical"
-        android:layout_marginTop="8dp"/>
+        android:layout_marginTop="8dp"
+        android:text="Género musical" />
 
     <Spinner
         android:id="@+id/spinnerGenero"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"/>
+        android:layout_marginBottom="8dp" />
 
     <Button
         android:id="@+id/btnFecha"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Seleccionar fecha"/>
+        android:text="Seleccionar fecha" />
 
     <Button
         android:id="@+id/btnCrear"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Crear evento"/>
+        android:layout_marginTop="16dp"
+        android:text="Crear evento" />
 
 </LinearLayout>

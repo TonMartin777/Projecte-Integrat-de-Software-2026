@@ -13,6 +13,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import edu.ub.pis2526.projecte.data.repositories.firestore.FirestoreEventRepository;
+import edu.ub.pis2526.projecte.data.repositories.firestore.FirestoreNotificacioRepository;
 
 public class EventDetailActivity extends AppCompatActivity {
 
@@ -105,12 +106,21 @@ public class EventDetailActivity extends AppCompatActivity {
         btnUnirse.setOnClickListener(v -> {
             repo.unirse(eventoId, nomUsuari,
                     () -> {
+                        // Aquest codi s'executa si s'ha unit amb ÈXIT a Firestore
                         int actual = Integer.parseInt(
                                 tvParticipantes.getText().toString().replaceAll("[^0-9]", "")
                         );
                         tvParticipantes.setText("Participantes: " + (actual + 1));
                         btnUnirse.setText("Ya te has unido");
                         btnUnirse.setEnabled(false);
+
+                        // ENVIEM LA NOTIFICACIÓ
+                        FirestoreNotificacioRepository notiRepo = new FirestoreNotificacioRepository();
+                        notiRepo.enviarNotificacio(
+                                creador, // Variable extreta de l'Intent (el destinatari)
+                                "Nou assistent!", // El títol
+                                nomUsuari + " s'ha unit al teu esdeveniment: " + titulo // El missatge
+                        );
                     },
                     e -> Toast.makeText(this, "Error al unirse", Toast.LENGTH_SHORT).show()
             );

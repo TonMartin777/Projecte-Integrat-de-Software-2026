@@ -77,6 +77,14 @@ public class MainActivity extends AppCompatActivity {
       bottomSheet.show(getSupportFragmentManager(), "filtro");
     });
 
+    ImageButton btnCampaneta = findViewById(R.id.campaneta);
+    btnCampaneta.setOnClickListener(v -> {
+      Intent intent = new Intent(this, NotificacionsActivity.class);
+      // Passem el nom de l'usuari perquè NotificacionsActivity sàpiga quins avisos buscar a Firestore
+      intent.putExtra("NOM_USUARI", getIntent().getStringExtra("NOM_USUARI"));
+      startActivity(intent);
+    });
+
     //  Botó d'usuari
     ImageButton userButton = findViewById(R.id.userButton);
     userButton.setOnClickListener(v -> {

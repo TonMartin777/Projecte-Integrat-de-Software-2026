@@ -57,6 +57,8 @@
 
         <activity android:name=".EventDetailActivity" />
 
+        <activity android:name=".NotificacionsActivity" android:exported="false" />
+
         <activity android:name=".MapActivity" />
 
     </application>

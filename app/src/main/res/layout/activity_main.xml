@@ -55,7 +55,7 @@
                 app:srcCompat="@drawable/mitapp_icon" />
 
             <ImageButton
-                android:id="@+id/imageButton4"
+                android:id="@+id/campaneta"
                 android:layout_width="63dp"
                 android:layout_height="33dp"
                 android:layout_weight="2"

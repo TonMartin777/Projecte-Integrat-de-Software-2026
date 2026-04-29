@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -125,5 +126,35 @@ public class EventDetailActivity extends AppCompatActivity {
                     e -> Toast.makeText(this, "Error al unirse", Toast.LENGTH_SHORT).show()
             );
         });
+
+        repo.unirse(eventoId, nomUsuari,
+                () -> {
+                    // Recargar participantes para actualizar UI correctamente
+                    repo.getParticipantes(eventoId, participantes -> {
+                        int numActual = participantes.size();
+                        tvAforo.setText("Aforo: " + numActual + " / " + aforoMaximo);
+                        btnUnirse.setText("Ya te has unido");
+                        btnUnirse.setEnabled(false);
+                    }, e -> Log.e("EventDetail", "Error recargando participantes", e));
+
+                    // Enviar notificación
+                    FirestoreNotificacioRepository notiRepo = new FirestoreNotificacioRepository();
+                    notiRepo.enviarNotificacio(creador, "Nou assistent!", nomUsuari + " s'ha unit a: " + titulo);
+                },
+                e -> Toast.makeText(this, "Error al unirse: " + e.getMessage(), Toast.LENGTH_SHORT).show()
+        );
+
+        // Mostrar botón de participantes solo si el usuario actual es el creador
+        Button btnParticipantes = findViewById(R.id.btnParticipantes);
+        if (creador != null && creador.equals(nomUsuari)) {
+            btnParticipantes.setVisibility(View.VISIBLE);
+            btnParticipantes.setOnClickListener(v -> {
+                Intent intent = new Intent(EventDetailActivity.this, EventParticipantsActivity.class);
+                intent.putExtra("EVENT_ID", eventoId);
+                startActivity(intent);
+            });
+        } else {
+            btnParticipantes.setVisibility(View.GONE);
+        }
     }
 }

@@ -1,5 +1,7 @@
 package edu.ub.pis2526.projecte.data.repositories.firestore;
 
+import android.util.Log;
+
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -130,17 +132,19 @@ public class FirestoreEventRepository implements EventRepository {
     }
 
     public void getEventsByCreador(String nomCreador, OnUserEventsListener listener) {
+        Log.d("FIRESTORE", "getEventsByCreador - buscando creador: '" + nomCreador + "'");
         db.collection("events")
                 .whereEqualTo("creador.nom", nomCreador)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
+                    Log.d("FIRESTORE", "Documentos encontrados: " + queryDocumentSnapshots.size());
                     List<Event> userEvents = new ArrayList<>();
-
                     for (DocumentSnapshot doc : queryDocumentSnapshots) {
-                        String id          = doc.getString("id");
-                        String titulo      = doc.getString("titulo");
+                        Log.d("FIRESTORE", "Evento: " + doc.getString("titulo") + " - creador.nom = " + doc.get("creador.nom"));
+                        String id = doc.getString("id");
+                        String titulo = doc.getString("titulo");
                         String descripcion = doc.getString("descripcion");
-                        String foto        = doc.getString("foto");
+                        String foto = doc.getString("foto");
                         int aforo = doc.contains("aforoMaximo") ? doc.getLong("aforoMaximo").intValue() : 0;
                         Timestamp timestamp = doc.getTimestamp("fechaHora");
                         LocalDateTime fechaHora = null;
@@ -150,7 +154,6 @@ public class FirestoreEventRepository implements EventRepository {
                                     java.time.ZoneId.systemDefault()
                             );
                         }
-
                         Map<String, Object> creadorMap = (Map<String, Object>) doc.get("creador");
                         User creador = new User("");
                         if (creadorMap != null) {
@@ -159,13 +162,9 @@ public class FirestoreEventRepository implements EventRepository {
                                     (String) creadorMap.get("correo")
                             );
                         }
-
-                        // Crear evento (necesita un constructor que acepte estos parámetros)
                         Event event = Event.fromFirestore(id, titulo, descripcion, foto, fechaHora, creador, aforo);
                         event.setId(id);
                         event.setFoto(foto);
-
-                        // Recuperar coordenadas
                         Double lat = doc.getDouble("lat");
                         Double lng = doc.getDouble("lng");
                         if (lat != null && lng != null) {
@@ -175,12 +174,14 @@ public class FirestoreEventRepository implements EventRepository {
                         if (mapsUrl != null) {
                             event.setLinkGoogleMapsString(mapsUrl);
                         }
-
                         userEvents.add(event);
                     }
                     listener.onSuccess(userEvents);
                 })
-                .addOnFailureListener(e -> listener.onFailure(e));
+                .addOnFailureListener(e -> {
+                    Log.e("FIRESTORE", "Error en getEventsByCreador", e);
+                    listener.onFailure(e);
+                });
     }
 
     public void unirse(String eventoId, String nomUsuari, OnSuccessListener onSuccess, OnFailureListener onFailure) {
@@ -219,5 +220,42 @@ public class FirestoreEventRepository implements EventRepository {
 
     public interface OnParticipantesLoadedListener {
         void onParticipantesLoaded(List<String> participantes);
+    }
+
+    public void getParticipantesConCorreos(String eventoId, OnParticipantesConCorreosListener listener) {
+        db.collection("events").document(eventoId).get()
+                .addOnSuccessListener(doc -> {
+                    List<String> nombres = (List<String>) doc.get("participantes");
+                    if (nombres == null) nombres = new ArrayList<>();
+                    if (nombres.isEmpty()) {
+                        listener.onSuccess(new ArrayList<>());
+                        return;
+                    }
+                    // Obtener los correos de la colección users
+                    db.collection("users")
+                            .whereIn("nom", nombres)
+                            .get()
+                            .addOnSuccessListener(querySnapshot -> {
+                                List<Map<String, String>> participantes = new ArrayList<>();
+                                for (DocumentSnapshot userDoc : querySnapshot.getDocuments()) {
+                                    String nom = userDoc.getString("nom");
+                                    String correo = userDoc.getString("correo");
+                                    if (nom != null && correo != null) {
+                                        Map<String, String> map = new HashMap<>();
+                                        map.put("nom", nom);
+                                        map.put("correo", correo);
+                                        participantes.add(map);
+                                    }
+                                }
+                                listener.onSuccess(participantes);
+                            })
+                            .addOnFailureListener(listener::onFailure);
+                })
+                .addOnFailureListener(listener::onFailure);
+    }
+
+    public interface OnParticipantesConCorreosListener {
+        void onSuccess(List<Map<String, String>> participantes);
+        void onFailure(Exception e);
     }
 }

@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageButton;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -48,6 +49,14 @@ public class MainActivity extends AppCompatActivity {
     String nomUsuari = getIntent().getStringExtra("NOM_USUARI");
     adapter = new EventAdapter(listaEventos, nomUsuari);
     recyclerView.setAdapter(adapter);
+
+    recyclerView.getLayoutManager().setMeasurementCacheEnabled(false); // opcional
+    recyclerView.setVisibility(View.VISIBLE);
+    recyclerView.post(() -> {
+      Log.d("UserActivity", "RecyclerView height: " + recyclerView.getHeight());
+      Log.d("UserActivity", "RecyclerView visibility: " + recyclerView.getVisibility());
+    });
+
     cargarEventos();
 
     //  Configuració del Cercador (SearchView)

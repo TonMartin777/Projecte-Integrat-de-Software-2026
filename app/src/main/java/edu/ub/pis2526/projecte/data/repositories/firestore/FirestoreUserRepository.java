@@ -1,5 +1,7 @@
 package edu.ub.pis2526.projecte.data.repositories.firestore;
 
+import android.util.Log;
+
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.WriteBatch;
 

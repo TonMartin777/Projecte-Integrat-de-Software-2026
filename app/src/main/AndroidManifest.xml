@@ -61,6 +61,8 @@
 
         <activity android:name=".MapActivity" />
 
+        <activity android:name=".EventParticipantsActivity" />
+
     </application>
 
 </manifest>

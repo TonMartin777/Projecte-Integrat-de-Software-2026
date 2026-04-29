@@ -1,6 +1,7 @@
 package edu.ub.pis2526.projecte;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -107,11 +108,9 @@ public class UserActivity extends AppCompatActivity {
                         eventRepository.delete(selectedEvent.getId(), new FirestoreEventRepository.OnDeleteListener() {
                             @Override
                             public void onSuccess() {
-                                listaMisEventos.remove(position);
-                                eventAdapter.notifyItemRemoved(position);
                                 Toast.makeText(UserActivity.this, "Esdeveniment eliminat", Toast.LENGTH_SHORT).show();
+                                cargarEventosDelUsuario(nomUsuarioActual); // recargar
                             }
-
                             @Override
                             public void onFailure(Exception e) {
                                 Toast.makeText(UserActivity.this, "Error al eliminar", Toast.LENGTH_SHORT).show();
@@ -143,9 +142,8 @@ public class UserActivity extends AppCompatActivity {
         eventRepository.getEventsByCreador(nomUsuario, new FirestoreEventRepository.OnUserEventsListener() {
             @Override
             public void onSuccess(List<Event> events) {
-                listaMisEventos.clear();
-                listaMisEventos.addAll(events);
-                eventAdapter.notifyDataSetChanged();
+                // No uses listaMisEventos, actualiza directamente el adaptador
+                eventAdapter.actualizarLista(events);
             }
 
             @Override

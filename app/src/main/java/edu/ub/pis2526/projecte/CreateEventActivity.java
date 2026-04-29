@@ -52,7 +52,10 @@ public class CreateEventActivity extends AppCompatActivity {
         spinnerGenero.setAdapter(generoAdapter);
 
         btnFecha.setOnClickListener(v -> mostrarSelectorFechaHora());
-        btnCrear.setOnClickListener(v -> crearEvento());
+        btnCrear.setOnClickListener(v -> {
+            btnCrear.setEnabled(false);  // deshabilitar
+            crearEvento();
+        });
     }
 
     private void mostrarSelectorFechaHora() {

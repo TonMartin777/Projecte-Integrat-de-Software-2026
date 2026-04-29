@@ -95,6 +95,13 @@
             android:textSize="16sp" />
 
         <Button
+            android:id="@+id/btnParticipantes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Ver participantes"
+            android:visibility="gone"/>
+
+        <Button
             android:id="@+id/btnUnirse"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

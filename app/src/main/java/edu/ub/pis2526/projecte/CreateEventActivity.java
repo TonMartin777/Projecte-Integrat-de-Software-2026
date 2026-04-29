@@ -2,6 +2,7 @@ package edu.ub.pis2526.projecte;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -121,11 +122,19 @@ public class CreateEventActivity extends AppCompatActivity {
                 () -> {
                     android.util.Log.d("CREATE_EVENT", "Callback exitós. Tancant pantalla.");
                     Toast.makeText(this, "¡Evento creado!", Toast.LENGTH_SHORT).show();
-                    finish();
+
+                    // Ir directamente a la pantalla del usuario
+                    Intent intent = new Intent(CreateEventActivity.this, UserActivity.class);
+                    intent.putExtra("NOM_USUARI", getIntent().getStringExtra("NOM_USUARI"));
+                    intent.putExtra("CORREO_USUARI", getIntent().getStringExtra("CORREO_USUARI"));
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                    finish(); // Esto cierra la actividad actual
                 },
                 e -> {
                     android.util.Log.e("CREATE_EVENT", "Callback fallit: " + e.getMessage());
                     Toast.makeText(this, "Error al guardar: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    btnCrear.setEnabled(true); // Solo si quieres reactivar el botón, pero ya no haría falta porque sales de la actividad
                 }
         );
     }}

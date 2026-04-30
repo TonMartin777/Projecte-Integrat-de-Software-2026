@@ -184,6 +184,67 @@ public class FirestoreEventRepository implements EventRepository {
                 });
     }
 
+    public void getEventsByParticipante(String nomParticipante, OnUserEventsListener listener) {
+        db.collection("events")
+                // LA MÀGIA ÉS AQUÍ: Busca dins de l'array "participantes"
+                .whereArrayContains("participantes", nomParticipante)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<Event> userEvents = new ArrayList<>();
+
+                    for (DocumentSnapshot doc : queryDocumentSnapshots) {
+                        try {
+                            String id          = doc.getString("id");
+                            String titulo      = doc.getString("titulo");
+                            String descripcion = doc.getString("descripcion");
+                            String foto        = doc.getString("foto");
+
+                            int aforo = doc.contains("aforoMaximo") && doc.get("aforoMaximo") instanceof Number
+                                    ? doc.getLong("aforoMaximo").intValue() : 0;
+
+                            Timestamp timestamp = doc.getTimestamp("fechaHora");
+                            LocalDateTime fechaHora = null;
+                            if (timestamp != null) {
+                                fechaHora = LocalDateTime.ofInstant(
+                                        timestamp.toDate().toInstant(),
+                                        java.time.ZoneId.systemDefault()
+                                );
+                            }
+
+                            Map<String, Object> creadorMap = (Map<String, Object>) doc.get("creador");
+                            User creador = new User("");
+                            if (creadorMap != null) {
+                                creador = new User(
+                                        (String) creadorMap.get("nom"),
+                                        (String) creadorMap.get("correo")
+                                );
+                            }
+
+                            Event event = Event.fromFirestore(id, titulo, descripcion, foto, fechaHora, creador, aforo);
+                            event.setId(id);
+                            event.setFoto(foto);
+
+                            Double lat = doc.getDouble("lat");
+                            Double lng = doc.getDouble("lng");
+                            if (lat != null && lng != null) {
+                                event.setCoordenadas(new double[]{lat, lng});
+                            }
+                            String mapsUrl = doc.getString("mapsUrl");
+                            if (mapsUrl != null) {
+                                event.setLinkGoogleMapsString(mapsUrl);
+                            }
+
+                            userEvents.add(event);
+
+                        } catch (Exception e) {
+                            android.util.Log.e("PROVA_PERFIL", "ERROR LLEGINT EVENT APUNTAT: " + doc.getId(), e);
+                        }
+                    }
+                    listener.onSuccess(userEvents);
+                })
+                .addOnFailureListener(e -> listener.onFailure(e));
+    }
+
     public void unirse(String eventoId, String nomUsuari, OnSuccessListener onSuccess, OnFailureListener onFailure) {
         db.collection("events")
                 .document(eventoId)

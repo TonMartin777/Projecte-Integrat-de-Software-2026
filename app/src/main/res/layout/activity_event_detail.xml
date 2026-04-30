@@ -39,6 +39,20 @@
             android:textSize="16sp" />
 
         <TextView
+            android:id="@+id/detailGenero"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Genero"
+            android:textSize="16sp" />
+        <TextView
+            android:id="@+id/detailAforo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Aforo: 0 / 0"
+            android:textSize="16sp"
+            android:layout_marginTop="8dp" />
+
+        <TextView
             android:id="@+id/detailFecha"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -79,6 +93,13 @@
             android:layout_height="wrap_content"
             android:text="Participante"
             android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/btnParticipantes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Ver participantes"
+            android:visibility="gone"/>
 
         <Button
             android:id="@+id/btnUnirse"

@@ -1,7 +1,9 @@
 package edu.ub.pis2526.projecte;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -106,11 +108,9 @@ public class UserActivity extends AppCompatActivity {
                         eventRepository.delete(selectedEvent.getId(), new FirestoreEventRepository.OnDeleteListener() {
                             @Override
                             public void onSuccess() {
-                                listaMisEventos.remove(position);
-                                eventAdapter.notifyItemRemoved(position);
                                 Toast.makeText(UserActivity.this, "Esdeveniment eliminat", Toast.LENGTH_SHORT).show();
+                                cargarEventosDelUsuario(nomUsuarioActual); // recargar
                             }
-
                             @Override
                             public void onFailure(Exception e) {
                                 Toast.makeText(UserActivity.this, "Error al eliminar", Toast.LENGTH_SHORT).show();
@@ -139,17 +139,50 @@ public class UserActivity extends AppCompatActivity {
     }
 
     private void cargarEventosDelUsuario(String nomUsuario) {
+
+        // 1. Primer busquem els esdeveniments que ha creat ell
         eventRepository.getEventsByCreador(nomUsuario, new FirestoreEventRepository.OnUserEventsListener() {
             @Override
-            public void onSuccess(List<Event> events) {
-                listaMisEventos.clear();
-                listaMisEventos.addAll(events);
-                eventAdapter.notifyDataSetChanged();
+            public void onSuccess(List<Event> eventsCreados) {
+
+                // 2. Un cop tenim els que ha creat, busquem als que s'ha unit
+                eventRepository.getEventsByParticipante(nomUsuario, new FirestoreEventRepository.OnUserEventsListener() {
+                    @Override
+                    public void onSuccess(List<Event> eventsApuntados) {
+
+                        // 3. Juntem les dues llistes
+                        List<Event> totsElsEvents = new ArrayList<>();
+                        totsElsEvents.addAll(eventsCreados);
+
+                        // Afegim els apuntats amb un petit filtre per evitar duplicats
+                        // (per si l'usuari s'hagués unit al seu propi esdeveniment)
+                        for (Event eventApuntat : eventsApuntados) {
+                            boolean existeix = false;
+                            for (Event eventGuardat : totsElsEvents) {
+                                if (eventGuardat.getId().equals(eventApuntat.getId())) {
+                                    existeix = true;
+                                    break;
+                                }
+                            }
+                            if (!existeix) {
+                                totsElsEvents.add(eventApuntat);
+                            }
+                        }
+
+                        // 4. Actualitzem l'Adapter amb la llista fusionada!
+                        eventAdapter.actualizarLista(totsElsEvents);
+                    }
+
+                    @Override
+                    public void onFailure(Exception e) {
+                        Toast.makeText(UserActivity.this, "Error carregant events apuntats", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
 
             @Override
             public void onFailure(Exception e) {
-                Toast.makeText(UserActivity.this, "Error carregant esdeveniments", Toast.LENGTH_SHORT).show();
+                Toast.makeText(UserActivity.this, "Error carregant esdeveniments creats", Toast.LENGTH_SHORT).show();
             }
         });
     }

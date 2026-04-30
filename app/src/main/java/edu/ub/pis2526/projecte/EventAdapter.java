@@ -61,20 +61,27 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
 
         Glide.with(holder.itemView.getContext())
                 .load(event.getFoto())
-                .placeholder(R.drawable.ic_launcher_background) // Imatge per defecte mentre carrega
+                .placeholder(R.drawable.ic_launcher_background)
                 .into(holder.imagen);
 
-        holder.btnOpciones.setOnClickListener(v -> {
-            PopupMenu popup = new PopupMenu(v.getContext(), v);
-            popup.getMenu().add("Eliminar");
-            popup.setOnMenuItemClickListener(item -> {
-                if (item.getTitle().equals("Eliminar") && deleteListener != null) {
-                    deleteListener.onDeleteClick(event, position);
-                }
-                return true;
+        // Solo mostrar botón si hay listener (solo en UserActivity)
+        if (deleteListener != null) {
+            holder.btnOpciones.setVisibility(View.VISIBLE);
+            holder.btnOpciones.setOnClickListener(v -> {
+                PopupMenu popup = new PopupMenu(v.getContext(), v);
+                popup.getMenu().add("Eliminar");
+                popup.setOnMenuItemClickListener(item -> {
+                    if (item.getTitle().equals("Eliminar")) {
+                        deleteListener.onDeleteClick(event, position);
+                    }
+                    return true;
+                });
+                popup.show();
             });
-            popup.show();
-        });
+        } else {
+            holder.btnOpciones.setVisibility(View.GONE);
+            holder.btnOpciones.setOnClickListener(null);
+        }
 
         holder.itemView.setOnClickListener(v -> {
             Context context = v.getContext();
@@ -83,6 +90,8 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
             intent.putExtra("descripcion", event.getDescripcion());
             intent.putExtra("eventoId", event.getId());
             intent.putExtra("NOM_USUARI", nomUsuari);
+            intent.putExtra("genero", event.getGenero() != null ? event.getGenero().name() : "");
+            intent.putExtra("aforoMaximo", event.getAforoMaxim());
             if (event.getFechaHora() != null) {
                 intent.putExtra("fecha", event.getFechaHora().toLocalDate().toString());
                 intent.putExtra("hora", event.getFechaHora().toLocalTime().toString());

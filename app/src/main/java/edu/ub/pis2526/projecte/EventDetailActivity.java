@@ -99,7 +99,7 @@ public class EventDetailActivity extends AppCompatActivity {
                 e -> Log.e("EventDetail", "Error cargando participantes", e)
         );
 
-        // BOTÓN UNIRSE - ÚNICA llamada a unirse
+        // BOTÓN UNIRSE - UNICA llamada a unirse
         btnUnirse.setOnClickListener(v -> {
             repo.unirse(eventoId, nomUsuari,
                     () -> {

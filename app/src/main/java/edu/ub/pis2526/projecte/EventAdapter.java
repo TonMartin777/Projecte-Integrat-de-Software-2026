@@ -23,6 +23,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
     private List<Event> listaCompleta;
     private OnEventDeleteListener deleteListener;
     private String nomUsuari;
+    private String rol;  // en los constructores, guárdalo
 
     public interface OnEventDeleteListener {
         void onDeleteClick(Event event, int position);
@@ -53,6 +54,13 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
     @Override
     public void onBindViewHolder(@NonNull EventViewHolder holder, int position) {
         Event event = eventList.get(position);
+        // En onBindViewHolder, para mostrar el botón "Unirse" solo si es asistente:
+        if (rol != null && rol.equals("asistente")) {
+            // muestra botón de unirse (ya lo haces con deleteListener? No, el botón de unirse no está en el adapter, está en el detalle del evento)
+            // En el adapter solo tienes el botón de eliminar (para bandas).
+            // El botón unirse está en EventDetailActivity. Allí también debemos comprobar el rol.
+        }
+
 
         holder.nombre.setText(event.getTitulo());
         if (event.getFechaHora() != null) {

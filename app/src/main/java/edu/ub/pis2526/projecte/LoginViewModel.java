@@ -26,24 +26,23 @@ public class LoginViewModel extends ViewModel {
             return;
         }
 
-        userRepository.login(nom, contrasenya,
-                new FirestoreUserRepository.OnLoginListener() {
-                    @Override
-                    public void onLoginSuccess(String nom, String correo) {
-                        loginState.postValue(new LoginState(true, nom, correo, null));
-                    }
-                    @Override
-                    public void onLoginError(Exception e) {
-                        loginState.postValue(new LoginState(false, null, null, e.getMessage()));
-                    }
-                }
-        );
+        userRepository.login(nom, contrasenya, new OnLoginListener() {
+            @Override
+            public void onLoginSuccess(String nom, String correo, String rol) {
+                loginState.postValue(new LoginState(true, nom, correo, rol, null));
+            }
+            @Override
+            public void onLoginError(Exception e) {
+                loginState.postValue(new LoginState(false, null, null, null, e.getMessage()));
+            }
+        });
     }
 
     public static final class LoginState {
         public final boolean success;
         public final String  nom;
         public final String  correo;
+        public final String rol;
         public final String  errorMessage;
 
         public LoginState(boolean success, String nom, String correo, String errorMessage) {

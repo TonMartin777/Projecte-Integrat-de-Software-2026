@@ -32,6 +32,11 @@ public class MainActivity extends AppCompatActivity {
   private double userLat = 0;
   private double userLng = 0;
 
+  // Para los filtros
+  private String lastSearchText = "";
+  private boolean filtrosAplicados = false;
+  private List<Event> lastFilteredList = null;
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -47,7 +52,8 @@ public class MainActivity extends AppCompatActivity {
 
     List<Event> listaEventos = new ArrayList<>();
     String nomUsuari = getIntent().getStringExtra("NOM_USUARI");
-    adapter = new EventAdapter(listaEventos, nomUsuari);
+    String rol = getIntent().getStringExtra("ROL");
+    adapter = new EventAdapter(listaEventos, nomUsuari, rol);
     recyclerView.setAdapter(adapter);
 
     recyclerView.getLayoutManager().setMeasurementCacheEnabled(false); // opcional
@@ -105,10 +111,7 @@ public class MainActivity extends AppCompatActivity {
     });
 
     // Button map
-    ImageButton mapButton = findViewById(R.id.mapButton);
-    mapButton.setOnClickListener(v -> {
-      startActivity(new Intent(this, MapActivity.class));
-    });
+
     if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
             != PackageManager.PERMISSION_GRANTED) {
       ActivityCompat.requestPermissions(this,
@@ -149,6 +152,10 @@ public class MainActivity extends AppCompatActivity {
     super.onResume();
     // Quan tornem a la pantalla (ex: després de crear un event), refresquem la llista
     cargarEventos();
+
+    if (lastFilteredList != null) {
+      adapter.actualizarLista(lastFilteredList);
+    }
   }
   private void obtenerUbicacionForzada(FusedLocationProviderClient fusedClient) {
     if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)

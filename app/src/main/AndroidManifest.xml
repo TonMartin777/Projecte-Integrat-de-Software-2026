@@ -59,8 +59,6 @@
 
         <activity android:name=".NotificacionsActivity" android:exported="false" />
 
-        <activity android:name=".MapActivity" />
-
         <activity android:name=".EventParticipantsActivity" />
 
     </application>

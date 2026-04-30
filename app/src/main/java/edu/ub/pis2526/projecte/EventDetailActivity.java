@@ -34,6 +34,8 @@ public class EventDetailActivity extends AppCompatActivity {
         String creador = getIntent().getStringExtra("creador");
         String genero = getIntent().getStringExtra("genero");
 
+        String rol = getIntent().getStringExtra("ROL");
+
 
         TextView tvCreador = findViewById(R.id.detailCreador);
         TextView tvNombre = findViewById(R.id.detailNombre);
@@ -130,6 +132,11 @@ public class EventDetailActivity extends AppCompatActivity {
             });
         } else {
             btnParticipantes.setVisibility(View.GONE);
+        }
+
+        if ("banda".equals(rol) || (creador != null && creador.equals(nomUsuari))) {
+            btnUnirse.setVisibility(View.GONE);
+            // y también ocultar btnParticipantes? Eso es para el creador, se maneja aparte.
         }
     }
 }

@@ -1,9 +1,7 @@
 package edu.ub.pis2526.projecte;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,7 +18,7 @@ import java.util.List;
 
 import edu.ub.pis2526.projecte.data.repositories.firestore.FirestoreEventRepository;
 
-public class UserActivity extends AppCompatActivity {
+public class FanProfileActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private EventAdapter eventAdapter;
@@ -108,12 +106,12 @@ public class UserActivity extends AppCompatActivity {
                         eventRepository.delete(selectedEvent.getId(), new FirestoreEventRepository.OnDeleteListener() {
                             @Override
                             public void onSuccess() {
-                                Toast.makeText(UserActivity.this, "Esdeveniment eliminat", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(FanProfileActivity.this, "Esdeveniment eliminat", Toast.LENGTH_SHORT).show();
                                 cargarEventosDelUsuario(nomUsuarioActual); // recargar
                             }
                             @Override
                             public void onFailure(Exception e) {
-                                Toast.makeText(UserActivity.this, "Error al eliminar", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(FanProfileActivity.this, "Error al eliminar", Toast.LENGTH_SHORT).show();
                             }
                         });
                     })
@@ -139,14 +137,14 @@ public class UserActivity extends AppCompatActivity {
     }
 
     private void cargarEventosDelUsuario(String nomUsuario) {
-        eventRepository.getEventsByCreador(nomUsuario, new FirestoreEventRepository.OnUserEventsListener() {
+        eventRepository.getEventsByParticipante(nomUsuario, new FirestoreEventRepository.OnUserEventsListener() {
             @Override
             public void onSuccess(List<Event> events) {
                 eventAdapter.actualizarLista(events);
             }
             @Override
             public void onFailure(Exception e) {
-                Toast.makeText(UserActivity.this, "Error carregant esdeveniments", Toast.LENGTH_SHORT).show();
+                Toast.makeText(FanProfileActivity.this, "Error carregant esdeveniments", Toast.LENGTH_SHORT).show();
             }
         });
     }

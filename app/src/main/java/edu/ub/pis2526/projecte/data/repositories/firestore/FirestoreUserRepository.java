@@ -29,48 +29,36 @@ public class FirestoreUserRepository {
     /**
      * Comprova si el nom d'usuari ja existeix i, si no, registra l'usuari.
      */
-    public void signUp(String nom, String correo, String contrasenya,
-                       OnSignUpListener listener) {
-
-        // Primer comprovem que el nom no estigui ja agafat
+    public void signUp(String nom, String correo, String contrasenya, String rol, OnSignUpListener listener) {
+        // Comprobar si el nom existe (igual)
         db.collection(COLLECTION)
                 .whereEqualTo("nom", nom)
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
                     if (!querySnapshot.isEmpty()) {
-                        listener.onSignUpError(
-                                new Exception("El nom d'usuari ja existeix")
-                        );
+                        listener.onSignUpError(new Exception("El nom d'usuari ja existeix"));
                         return;
                     }
-
-                    //  si el nom esta lliure, guardem l'usuari
                     Map<String, Object> userMap = new HashMap<>();
                     userMap.put("nom", nom);
                     userMap.put("correo", correo);
                     userMap.put("contrasenya", contrasenya);
-
-                    db.collection(COLLECTION)
-                            .document(nom) // usem el nom com a ID del document
-                            .set(userMap)
-                            .addOnSuccessListener(unused ->
-                                    listener.onSignUpSuccess()
-                            )
+                    userMap.put("rol", rol);
+                    // Si es banda, podrías inicializar campos extra, pero no es necesario ahora
+                    db.collection(COLLECTION).document(nom).set(userMap)
+                            .addOnSuccessListener(unused -> listener.onSignUpSuccess())
                             .addOnFailureListener(listener::onSignUpError);
                 })
                 .addOnFailureListener(listener::onSignUpError);
     }
 
-    public interface OnLoginListener {
-        void onLoginSuccess(String nom, String correo);
-
+    interface OnLoginListener {
+        void onLoginSuccess(String nom, String correo, String rol);
         void onLoginError(Exception e);
     }
 
     public void login(String nom, String contrasenya, OnLoginListener listener) {
-        db.collection(COLLECTION)
-                .document(nom)
-                .get()
+        db.collection(COLLECTION).document(nom).get()
                 .addOnSuccessListener(document -> {
                     if (!document.exists()) {
                         listener.onLoginError(new Exception("Usuari no trobat"));
@@ -82,7 +70,8 @@ public class FirestoreUserRepository {
                         return;
                     }
                     String correo = document.getString("correo");
-                    listener.onLoginSuccess(nom, correo);
+                    String rol = document.getString("rol");
+                    listener.onLoginSuccess(nom, correo, rol);
                 })
                 .addOnFailureListener(listener::onLoginError);
     }

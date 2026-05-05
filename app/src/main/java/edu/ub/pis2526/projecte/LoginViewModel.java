@@ -22,7 +22,7 @@ public class LoginViewModel extends ViewModel {
 
     public void login(String nom, String contrasenya) {
         if (nom.isEmpty() || contrasenya.isEmpty()) {
-            loginState.postValue(new LoginState(false, null, null, "Omple tots els camps"));
+            loginState.postValue(new LoginState(false, null, null, null, "Omple tots els camps"));
             return;
         }
 
@@ -40,15 +40,16 @@ public class LoginViewModel extends ViewModel {
 
     public static final class LoginState {
         public final boolean success;
-        public final String  nom;
-        public final String  correo;
+        public final String nom;
+        public final String correo;
         public final String rol;
-        public final String  errorMessage;
+        public final String errorMessage;
 
-        public LoginState(boolean success, String nom, String correo, String errorMessage) {
-            this.success      = success;
-            this.nom          = nom;
-            this.correo       = correo;
+        public LoginState(boolean success, String nom, String correo, String rol, String errorMessage) {
+            this.success = success;
+            this.nom = nom;
+            this.correo = correo;
+            this.rol = rol;
             this.errorMessage = errorMessage;
         }
     }

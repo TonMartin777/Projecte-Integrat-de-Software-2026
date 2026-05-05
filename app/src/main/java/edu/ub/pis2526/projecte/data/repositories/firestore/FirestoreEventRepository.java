@@ -96,9 +96,11 @@ public class FirestoreEventRepository implements EventRepository {
                         }
 
                         Map<String, Object> creadorMap = (Map<String, Object>) doc.get("creador");
-                        User creador = new User(
-                                creadorMap != null ? (String) creadorMap.get("nom") : ""
-                        );
+                        User creador = new User();
+                        if (creadorMap != null) {
+                            creador.setNom((String) creadorMap.get("nom"));
+                            creador.setCorreo((String) creadorMap.get("correo"));
+                        }
 
                         Event evento = Event.fromFirestore(id, titulo, descripcion, foto, fechaHora, creador, aforo);
 
@@ -155,7 +157,7 @@ public class FirestoreEventRepository implements EventRepository {
                             );
                         }
                         Map<String, Object> creadorMap = (Map<String, Object>) doc.get("creador");
-                        User creador = new User("");
+                        User creador = new User();
                         if (creadorMap != null) {
                             creador = new User(
                                     (String) creadorMap.get("nom"),
@@ -212,7 +214,7 @@ public class FirestoreEventRepository implements EventRepository {
                             }
 
                             Map<String, Object> creadorMap = (Map<String, Object>) doc.get("creador");
-                            User creador = new User("");
+                            User creador = new User();
                             if (creadorMap != null) {
                                 creador = new User(
                                         (String) creadorMap.get("nom"),

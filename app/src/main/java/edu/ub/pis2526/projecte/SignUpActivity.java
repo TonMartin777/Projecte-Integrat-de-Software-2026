@@ -18,23 +18,8 @@ public class SignUpActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         binding = ActivitySignUpBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
-        // En onCreate, después de inicializar el binding
-        Spinner spinnerRol = findViewById(R.id.spinnerRol);
-
-// En el listener del botón registrar:
-        String rol = spinnerRol.getSelectedItemPosition() == 0 ? "asistente" : "banda";
-        signUpViewModel.signUp(
-                binding.etNom.getText().toString().trim(),
-                binding.etCorreo.getText().toString().trim(),
-                binding.etContrasenya.getText().toString(),
-                binding.etConfirmaContrasenya.getText().toString(),
-                rol
-        );
-
         initViewModel();
         initWidgetListeners();
     }
@@ -61,12 +46,14 @@ public class SignUpActivity extends AppCompatActivity {
     private void initWidgetListeners() {
         binding.btnRegistrar.setOnClickListener(v -> {
             binding.tvError.setVisibility(View.GONE);
-
+            Spinner spinnerRol = findViewById(R.id.spinnerRol);
+            String rol = spinnerRol.getSelectedItemPosition() == 0 ? "asistente" : "banda";
             signUpViewModel.signUp(
                     binding.etNom.getText().toString().trim(),
                     binding.etCorreo.getText().toString().trim(),
                     binding.etContrasenya.getText().toString(),
-                    binding.etConfirmaContrasenya.getText().toString()
+                    binding.etConfirmaContrasenya.getText().toString(),
+                    rol
             );
         });
     }

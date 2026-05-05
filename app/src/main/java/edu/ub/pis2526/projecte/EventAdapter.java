@@ -29,17 +29,19 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
         void onDeleteClick(Event event, int position);
     }
 
-    public EventAdapter(List<Event> eventList, String nomUsuari, OnEventDeleteListener listener) {
+    public EventAdapter(List<Event> eventList, String nomUsuari, String rol, OnEventDeleteListener listener) {
         this.eventList = new ArrayList<>(eventList);
         this.listaCompleta = new ArrayList<>(eventList);
         this.nomUsuari = nomUsuari;
+        this.rol = rol;
         this.deleteListener = listener;
     }
 
-    public EventAdapter(List<Event> eventList, String nomUsuari) {
+    public EventAdapter(List<Event> eventList, String nomUsuari, String rol) {
         this.eventList = new ArrayList<>(eventList);
         this.listaCompleta = new ArrayList<>(eventList);
         this.nomUsuari = nomUsuari;
+        this.rol = rol;
         this.deleteListener = null;
     }
 

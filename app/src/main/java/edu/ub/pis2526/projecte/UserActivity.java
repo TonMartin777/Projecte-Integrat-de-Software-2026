@@ -44,6 +44,8 @@ public class UserActivity extends AppCompatActivity {
         nomUsuarioActual = getIntent().getStringExtra("NOM_USUARI");
         correoUsuarioActual = getIntent().getStringExtra("CORREO_USUARI");
 
+        String rol = getIntent().getStringExtra("ROL");
+
         // Mostra les dades als TextViews
         TextView nomTxt = findViewById(R.id.nomTxt);
         TextView correuTxt = findViewById(R.id.correuTxt);
@@ -100,7 +102,7 @@ public class UserActivity extends AppCompatActivity {
 
         listaMisEventos = new ArrayList<>();
 
-        eventAdapter = new EventAdapter(listaMisEventos, nomUsuarioActual, (selectedEvent, position) -> {
+        eventAdapter = new EventAdapter(listaMisEventos, nomUsuarioActual, rol, (selectedEvent, position) -> {
             new AlertDialog.Builder(this)
                     .setTitle("Eliminar esdeveniment")
                     .setMessage("Segur que vols eliminar '" + selectedEvent.getTitulo() + "'?")

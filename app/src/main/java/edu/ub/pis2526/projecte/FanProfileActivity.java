@@ -98,7 +98,9 @@ public class FanProfileActivity extends AppCompatActivity {
 
         listaMisEventos = new ArrayList<>();
 
-        eventAdapter = new EventAdapter(listaMisEventos, nomUsuarioActual, (selectedEvent, position) -> {
+        String rol = getIntent().getStringExtra("ROL");
+
+        eventAdapter = new EventAdapter(listaMisEventos, nomUsuarioActual, rol, (selectedEvent, position) -> {
             new AlertDialog.Builder(this)
                     .setTitle("Eliminar esdeveniment")
                     .setMessage("Segur que vols eliminar '" + selectedEvent.getTitulo() + "'?")

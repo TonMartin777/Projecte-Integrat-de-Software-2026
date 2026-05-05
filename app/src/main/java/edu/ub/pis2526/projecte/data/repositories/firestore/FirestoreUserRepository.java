@@ -52,7 +52,7 @@ public class FirestoreUserRepository {
                 .addOnFailureListener(listener::onSignUpError);
     }
 
-    interface OnLoginListener {
+    public interface OnLoginListener {
         void onLoginSuccess(String nom, String correo, String rol);
         void onLoginError(Exception e);
     }

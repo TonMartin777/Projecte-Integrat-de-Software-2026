@@ -26,7 +26,7 @@ public class LoginViewModel extends ViewModel {
             return;
         }
 
-        userRepository.login(nom, contrasenya, new OnLoginListener() {
+        userRepository.login(nom, contrasenya, new FirestoreUserRepository.OnLoginListener() {
             @Override
             public void onLoginSuccess(String nom, String correo, String rol) {
                 loginState.postValue(new LoginState(true, nom, correo, rol, null));

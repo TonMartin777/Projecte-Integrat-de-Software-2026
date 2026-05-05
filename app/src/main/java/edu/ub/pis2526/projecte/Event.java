@@ -19,6 +19,7 @@ public class Event {
     private User creador;
     private String id;
     private int aforoMaxim;
+    private boolean activo;
 
     // ─── CONSTRUCTORES ───────────────────────────────────────────────────────────
 
@@ -44,6 +45,8 @@ public class Event {
         this.participantes = new ArrayList<>();
         this.foto = null;
         setCoordenadas(new double[]{latitud, longitud}); // genera el link automáticamente
+
+        this.activo = true;
     }
 
     // Factory method para reconstruir desde Firestore
@@ -134,4 +137,6 @@ public class Event {
     public void setCreador(User creador) { this.creador = creador; }
     public void setAforoMaxim(int aforoMaxim) {this.aforoMaxim = aforoMaxim;}
     public int getAforoMaxim() {return this.aforoMaxim;}
+    public boolean isActivo() { return activo; }
+    public void setActivo(boolean activo) { this.activo = activo; }
 }

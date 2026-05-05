@@ -76,6 +76,7 @@ public class FirestoreEventRepository implements EventRepository {
     @Override
     public void getAll(OnEventsLoadedListener onLoaded, OnFailureListener onFailure) {
         db.collection("events")
+                .whereEqualTo("activo", true)
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
                     List<Event> eventos = new ArrayList<>();
@@ -125,7 +126,7 @@ public class FirestoreEventRepository implements EventRepository {
                     }
                     onLoaded.onEventsLoaded(eventos);
                 })
-                .addOnFailureListener(onFailure::onFailure);
+                .addOnFailureListener(onFailure::onFailure); // Solo eventos activos
     }
 
     public interface OnUserEventsListener {
@@ -274,7 +275,7 @@ public class FirestoreEventRepository implements EventRepository {
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
                     for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
-                        doc.getReference().delete();
+                        doc.getReference().update("activo", false);
                     }
                     onSuccess.onSuccess();
                 })
@@ -320,5 +321,13 @@ public class FirestoreEventRepository implements EventRepository {
     public interface OnParticipantesConCorreosListener {
         void onSuccess(List<Map<String, String>> participantes);
         void onFailure(Exception e);
+    }
+
+    public void desunirse(String eventoId, String nomUsuari, OnSuccessListener onSuccess, OnFailureListener onFailure) {
+        db.collection("events")
+                .document(eventoId)
+                .update("participantes", com.google.firebase.firestore.FieldValue.arrayRemove(nomUsuari))
+                .addOnSuccessListener(unused -> onSuccess.onSuccess())
+                .addOnFailureListener(onFailure::onFailure);
     }
 }

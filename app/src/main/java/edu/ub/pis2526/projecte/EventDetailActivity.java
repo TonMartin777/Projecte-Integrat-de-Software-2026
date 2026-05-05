@@ -84,41 +84,68 @@ public class EventDetailActivity extends AppCompatActivity {
         Button btnUnirse = findViewById(R.id.btnUnirse);
         FirestoreEventRepository repo = new FirestoreEventRepository();
 
-        // Cargar participantes para mostrar estado inicial
-        repo.getParticipantes(eventoId,
-                participantes -> {
-                    int numActual = participantes.size();
-                    tvAforo.setText("Aforo: " + numActual + " / " + aforoMaximo);
+// Variable para saber si el usuario está actualmente apuntado
+        final boolean[] estaApuntado = {false};
 
-                    if (participantes.contains(nomUsuari)) {
-                        btnUnirse.setText("Ya te has unido");
-                        btnUnirse.setEnabled(false);
-                    } else if (numActual >= aforoMaximo) {
-                        btnUnirse.setText("Concierto lleno");
-                        btnUnirse.setEnabled(false);
-                    }
-                },
-                e -> Log.e("EventDetail", "Error cargando participantes", e)
-        );
+// Cargar participantes para mostrar estado inicial
+        repo.getParticipantes(eventoId, participantes -> {
+            int numActual = participantes.size();
+            tvAforo.setText("Aforo: " + numActual + " / " + aforoMaximo);
 
-        // BOTÓN UNIRSE - UNICA llamada a unirse
+            if (creador != null && creador.equals(nomUsuari)) {
+                btnUnirse.setVisibility(View.GONE);  // El creador no puede unirse
+                return;
+            }
+
+            if (participantes.contains(nomUsuari)) {
+                estaApuntado[0] = true;
+                btnUnirse.setText("Desapuntarse");
+                btnUnirse.setEnabled(true);
+            } else if (numActual >= aforoMaximo) {
+                btnUnirse.setText("Concierto lleno");
+                btnUnirse.setEnabled(false);
+            } else {
+                estaApuntado[0] = false;
+                btnUnirse.setText("Unirse al evento");
+                btnUnirse.setEnabled(true);
+            }
+        }, e -> Log.e("EventDetail", "Error cargando participantes", e));
+
+        // Listener del botón (se ejecuta al hacer clic)
         btnUnirse.setOnClickListener(v -> {
-            repo.unirse(eventoId, nomUsuari,
-                    () -> {
-                        // Recargar participantes para actualizar UI
-                        repo.getParticipantes(eventoId, participantes -> {
-                            int numActual = participantes.size();
-                            tvAforo.setText("Aforo: " + numActual + " / " + aforoMaximo);
-                            btnUnirse.setText("Ya te has unido");
-                            btnUnirse.setEnabled(false);
-                        }, e -> Log.e("EventDetail", "Error recargando participantes", e));
-
-                        // Enviar notificación
-                        FirestoreNotificacioRepository notiRepo = new FirestoreNotificacioRepository();
-                        notiRepo.enviarNotificacio(creador, "Nou assistent!", nomUsuari + " s'ha unit a: " + titulo);
-                    },
-                    e -> Toast.makeText(this, "Error al unirse: " + e.getMessage(), Toast.LENGTH_SHORT).show()
-            );
+            if (estaApuntado[0]) {
+                // Desapuntarse
+                repo.desunirse(eventoId, nomUsuari,
+                        () -> {
+                            // Recargar participantes para actualizar UI
+                            repo.getParticipantes(eventoId, nuevosParticipantes -> {
+                                int numActual = nuevosParticipantes.size();
+                                tvAforo.setText("Aforo: " + numActual + " / " + aforoMaximo);
+                                estaApuntado[0] = false;
+                                btnUnirse.setText("Unirse al evento");
+                                btnUnirse.setEnabled(true);
+                                Toast.makeText(EventDetailActivity.this, "Te has desapuntado", Toast.LENGTH_SHORT).show();
+                            }, e2 -> Log.e("EventDetail", "Error recargando participantes", e2));
+                        },
+                        e -> Toast.makeText(EventDetailActivity.this, "Error al desapuntarte: " + e.getMessage(), Toast.LENGTH_SHORT).show()
+                );
+            } else {
+                // Unirse
+                repo.unirse(eventoId, nomUsuari,
+                        () -> {
+                            repo.getParticipantes(eventoId, nuevosParticipantes -> {
+                                int numActual = nuevosParticipantes.size();
+                                tvAforo.setText("Aforo: " + numActual + " / " + aforoMaximo);
+                                estaApuntado[0] = true;
+                                btnUnirse.setText("Desapuntarse");
+                                // Enviar notificación al creador
+                                FirestoreNotificacioRepository notiRepo = new FirestoreNotificacioRepository();
+                                notiRepo.enviarNotificacio(creador, "Nou assistent!", nomUsuari + " s'ha unit a: " + titulo);
+                            }, e2 -> Log.e("EventDetail", "Error recargando participantes", e2));
+                        },
+                        e -> Toast.makeText(EventDetailActivity.this, "Error al unirte: " + e.getMessage(), Toast.LENGTH_SHORT).show()
+                );
+            }
         });
 
         // Mostrar botón de participantes solo si el usuario actual es el creador

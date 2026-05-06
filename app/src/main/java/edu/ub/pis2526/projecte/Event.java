@@ -34,7 +34,7 @@ public class Event {
      * El link de Google Maps se genera automáticamente a partir de ellas.
      */
     public Event(String titulo, String descripcion, LocalDateTime fechaHora,
-                 double latitud, double longitud, User creador, Generos genero, int aforoMaxim) {
+                 double latitud, double longitud, User creador, Generos genero, int aforoMaxim, boolean activo) {
         this.id = UUID.randomUUID().toString();
         this.titulo = titulo;
         this.descripcion = descripcion;
@@ -44,6 +44,7 @@ public class Event {
         this.aforoMaxim = aforoMaxim;
         this.participantes = new ArrayList<>();
         this.foto = null;
+        this.activo = activo;
         setCoordenadas(new double[]{latitud, longitud}); // genera el link automáticamente
 
         this.activo = true;

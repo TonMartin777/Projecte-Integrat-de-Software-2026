@@ -13,6 +13,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import com.google.firebase.firestore.Query;
+
 
 import edu.ub.pis2526.projecte.Event;
 import edu.ub.pis2526.projecte.Generos;
@@ -25,6 +27,84 @@ public class FirestoreEventRepository implements EventRepository {
 
     public FirestoreEventRepository() {
         this.db = FirebaseFirestore.getInstance();
+    }
+    private static final int PAGE_SIZE = 20;
+
+    public void getPage(DocumentSnapshot ultimoDoc, OnPageLoadedListener onLoaded, OnFailureListener onFailure) {
+        com.google.firebase.firestore.Query query = db.collection("events")
+                .whereEqualTo("activo", true)
+                .orderBy("fechaHora")
+                .limit(PAGE_SIZE);
+
+        if (ultimoDoc != null) {
+            query = query.startAfter(ultimoDoc);
+        }
+
+        query.get().addOnSuccessListener(querySnapshot -> {
+            List<Event> eventos = new ArrayList<>();
+            DocumentSnapshot nuevoUltimoDoc = null;
+
+            if (!querySnapshot.isEmpty()) {
+                nuevoUltimoDoc = querySnapshot.getDocuments()
+                        .get(querySnapshot.size() - 1);
+            }
+
+            for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
+                Event evento = parsearEvento(doc);
+                if (evento != null) eventos.add(evento);
+            }
+
+            boolean hayMas = querySnapshot.size() == PAGE_SIZE;
+            onLoaded.onPageLoaded(eventos, nuevoUltimoDoc, hayMas);
+        }).addOnFailureListener(onFailure::onFailure);
+    }
+
+    public interface OnPageLoadedListener {
+        void onPageLoaded(List<Event> eventos, DocumentSnapshot ultimoDoc, boolean hayMas);
+    }
+
+    private Event parsearEvento(DocumentSnapshot doc) {
+        try {
+            String id          = doc.getString("id");
+            String titulo      = doc.getString("titulo");
+            String descripcion = doc.getString("descripcion");
+            String foto        = doc.getString("foto");
+            int aforo = doc.contains("aforoMaximo") ? doc.getLong("aforoMaximo").intValue() : 0;
+
+            Timestamp ts = doc.getTimestamp("fechaHora");
+            LocalDateTime fechaHora = null;
+            if (ts != null) {
+                fechaHora = ts.toDate().toInstant()
+                        .atZone(ZoneOffset.UTC).toLocalDateTime();
+            }
+
+            Map<String, Object> creadorMap = (Map<String, Object>) doc.get("creador");
+            User creador = new User();
+            if (creadorMap != null) {
+                creador.setNom((String) creadorMap.get("nom"));
+                creador.setCorreo((String) creadorMap.get("correo"));
+            }
+
+            Event evento = Event.fromFirestore(id, titulo, descripcion, foto, fechaHora, creador, aforo);
+
+            Double lat = doc.getDouble("lat");
+            Double lng = doc.getDouble("lng");
+            if (lat != null && lng != null) evento.setCoordenadas(new double[]{lat, lng});
+
+            String mapsUrl = doc.getString("mapsUrl");
+            if (mapsUrl != null) evento.setLinkGoogleMapsString(mapsUrl);
+
+            String generoStr = doc.getString("genero");
+            if (generoStr != null) {
+                try { evento.setGenero(Generos.valueOf(generoStr)); }
+                catch (IllegalArgumentException ignored) {}
+            }
+
+            return evento;
+        } catch (Exception e) {
+            Log.e("FIRESTORE", "Error parseando evento: " + doc.getId(), e);
+            return null;
+        }
     }
 
     @Override
@@ -48,6 +128,7 @@ public class FirestoreEventRepository implements EventRepository {
         eventoMap.put("participantes", new ArrayList<>());
         eventoMap.put("aforoMaximo", evento.getAforoMaxim());
         eventoMap.put("creador",       creadorMap);
+        eventoMap.put("activo",            evento.isActivo());
         if (evento.getLinkGoogleMapsString() != null) {
             eventoMap.put("mapsUrl", evento.getLinkGoogleMapsString());
         }

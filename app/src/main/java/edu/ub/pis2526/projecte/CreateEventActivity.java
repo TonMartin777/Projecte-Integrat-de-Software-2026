@@ -108,7 +108,7 @@ public class CreateEventActivity extends AppCompatActivity {
         );
 
         Event evento = new Event(titulo, descripcion, fechaHoraSeleccionada,
-                latitud, longitud, creador, genero, aforoMaximo);
+                latitud, longitud, creador, genero, aforoMaximo, true);
         evento.setGenero(genero);
 
         String foto = editFoto.getText().toString().trim();

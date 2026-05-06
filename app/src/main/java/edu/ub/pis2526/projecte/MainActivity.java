@@ -2,6 +2,7 @@ package edu.ub.pis2526.projecte;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+import com.google.firebase.firestore.DocumentSnapshot;
 
 import android.Manifest;
 import android.content.Intent;
@@ -31,6 +32,9 @@ public class MainActivity extends AppCompatActivity {
   private List<Event> todosLosEventos = new ArrayList<>();
   private double userLat = 0;
   private double userLng = 0;
+  private DocumentSnapshot ultimoDocumento = null;
+  private boolean cargando = false;
+  private boolean hayMasPaginas = true;
 
   // Para los filtros
   private String lastSearchText = "";
@@ -55,6 +59,18 @@ public class MainActivity extends AppCompatActivity {
     String rol = getIntent().getStringExtra("ROL");
     adapter = new EventAdapter(listaEventos, nomUsuari, rol);
     recyclerView.setAdapter(adapter);
+    recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+      @Override
+      public void onScrolled(RecyclerView rv, int dx, int dy) {
+        LinearLayoutManager lm = (LinearLayoutManager) rv.getLayoutManager();
+        int totalItems = lm.getItemCount();
+        int ultimoVisible = lm.findLastVisibleItemPosition();
+        // Si quedan 5 o menos items para el final, carga la siguiente página
+        if (!cargando && hayMasPaginas && ultimoVisible >= totalItems - 5) {
+          cargarSiguientePagina();
+        }
+      }
+    });
 
     recyclerView.getLayoutManager().setMeasurementCacheEnabled(false); // opcional
     recyclerView.setVisibility(View.VISIBLE);
@@ -87,7 +103,16 @@ public class MainActivity extends AppCompatActivity {
               todosLosEventos,
               userLat,
               userLng,
-              eventosFiltrados -> adapter.actualizarLista(eventosFiltrados)
+              eventosFiltrados -> {
+                if (eventosFiltrados.size() == todosLosEventos.size()) {
+                  filtrosAplicados = false;
+                  lastFilteredList = null;
+                } else {
+                  lastFilteredList = new ArrayList<>(eventosFiltrados);
+                  filtrosAplicados = true;
+                }
+                adapter.actualizarLista(eventosFiltrados);
+              }
       );
       bottomSheet.show(getSupportFragmentManager(), "filtro");
     });
@@ -142,13 +167,15 @@ public class MainActivity extends AppCompatActivity {
   // Mètode separat per carregar/actualitzar
   private void cargarEventos() {
     repo.eliminarEventosCaducados(
-            () -> repo.getAll(
-                    eventosFirestore -> {
-                      todosLosEventos = new ArrayList<>(eventosFirestore);
-                      adapter.actualizarLista(eventosFirestore);
-                    },
-                    e -> Log.e("MainActivity", "Error cargando eventos", e)
-            ),
+            () -> {
+              // Resetear paginación
+              ultimoDocumento = null;
+              hayMasPaginas = true;
+              todosLosEventos.clear();
+              filtrosAplicados = false;
+              lastFilteredList = null;
+              cargarSiguientePagina();
+            },
             e -> Log.e("MainActivity", "Error eliminando eventos caducados", e)
     );
   }
@@ -156,12 +183,7 @@ public class MainActivity extends AppCompatActivity {
   @Override
   protected void onResume() {
     super.onResume();
-    // Quan tornem a la pantalla (ex: després de crear un event), refresquem la llista
     cargarEventos();
-
-    if (lastFilteredList != null) {
-      adapter.actualizarLista(lastFilteredList);
-    }
   }
   private void obtenerUbicacionForzada(FusedLocationProviderClient fusedClient) {
     if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
@@ -209,5 +231,26 @@ public class MainActivity extends AppCompatActivity {
     } else {
       Log.e("MainActivity", "Permiso de ubicación no concedido");
     }
+  }
+
+  private void cargarSiguientePagina() {
+    if (cargando || !hayMasPaginas) return;
+    cargando = true;
+
+    repo.getPage(ultimoDocumento,
+            (eventos, nuevoUltimoDoc, hayMas) -> {
+              ultimoDocumento = nuevoUltimoDoc;
+              hayMasPaginas = hayMas;
+              cargando = false;
+              todosLosEventos.addAll(eventos);
+              if (!filtrosAplicados) {
+                adapter.actualizarLista(todosLosEventos);
+              }
+            },
+            e -> {
+              cargando = false;
+              Log.e("MainActivity", "Error cargando página", e);
+            }
+    );
   }
 }

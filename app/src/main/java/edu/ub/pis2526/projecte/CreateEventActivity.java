@@ -53,10 +53,8 @@ public class CreateEventActivity extends AppCompatActivity {
         spinnerGenero.setAdapter(generoAdapter);
 
         btnFecha.setOnClickListener(v -> mostrarSelectorFechaHora());
-        btnCrear.setOnClickListener(v -> {
-            btnCrear.setEnabled(false);  // deshabilitar
-            crearEvento();
-        });
+        btnCrear.setOnClickListener(v -> crearEvento());
+
     }
 
     private void mostrarSelectorFechaHora() {
@@ -115,7 +113,7 @@ public class CreateEventActivity extends AppCompatActivity {
         if (!foto.isEmpty()) {
             evento.setFoto(foto);
         }
-
+        btnCrear.setEnabled(false);
         android.util.Log.d("CREATE_EVENT", "Dades validades. Cridant a save...");
 
         eventRepository.save(evento,
@@ -132,6 +130,7 @@ public class CreateEventActivity extends AppCompatActivity {
                     finish(); // Esto cierra la actividad actual
                 },
                 e -> {
+                    btnCrear.setEnabled(true);
                     android.util.Log.e("CREATE_EVENT", "Callback fallit: " + e.getMessage());
                     Toast.makeText(this, "Error al guardar: " + e.getMessage(), Toast.LENGTH_LONG).show();
                     btnCrear.setEnabled(true); // Solo si quieres reactivar el botón, pero ya no haría falta porque sales de la actividad

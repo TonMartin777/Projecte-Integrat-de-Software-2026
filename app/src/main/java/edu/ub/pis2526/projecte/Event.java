@@ -44,7 +44,6 @@ public class Event {
         this.aforoMaxim = aforoMaxim;
         this.participantes = new ArrayList<>();
         this.foto = null;
-        this.activo = activo;
         setCoordenadas(new double[]{latitud, longitud}); // genera el link automáticamente
 
         this.activo = true;

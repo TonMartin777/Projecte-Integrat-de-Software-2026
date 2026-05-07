@@ -49,6 +49,8 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".FanProfileActivity" />
+
         <activity
             android:name=".MainActivity"
             android:exported="false"

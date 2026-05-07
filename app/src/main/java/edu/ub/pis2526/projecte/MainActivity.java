@@ -130,11 +130,8 @@ public class MainActivity extends AppCompatActivity {
     userButton.setOnClickListener(v -> {
       String rol1 = getIntent().getStringExtra("ROL");
       Intent intent;
-      if ("banda".equals(rol1)) {
-        intent = new Intent(this, UserActivity.class);
-      } else {
-        intent = new Intent(this, FanProfileActivity.class);
-      }
+      intent = new Intent(this, FanProfileActivity.class);
+
       intent.putExtra("NOM_USUARI", getIntent().getStringExtra("NOM_USUARI"));
       intent.putExtra("CORREO_USUARI", getIntent().getStringExtra("CORREO_USUARI"));
       intent.putExtra("ROL", rol1);

@@ -14,7 +14,10 @@ public class User {
         this.nom = nom;
         this.correo = correo;
     }
-
+    public User(String nom) {
+        this.nom = nom;
+        this.correo = ""; // O null
+    }
     public User(String nom, String correo, String rol) {
         this.nom = nom;
         this.correo = correo;

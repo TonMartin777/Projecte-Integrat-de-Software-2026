@@ -47,7 +47,7 @@ public class SignUpActivity extends AppCompatActivity {
         binding.btnRegistrar.setOnClickListener(v -> {
             binding.tvError.setVisibility(View.GONE);
             Spinner spinnerRol = findViewById(R.id.spinnerRol);
-            String rol = spinnerRol.getSelectedItemPosition() == 0 ? "asistente" : "banda";
+            String rol = spinnerRol.getSelectedItem().toString();
             signUpViewModel.signUp(
                     binding.etNom.getText().toString().trim(),
                     binding.etCorreo.getText().toString().trim(),

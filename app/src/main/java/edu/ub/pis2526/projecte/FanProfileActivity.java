@@ -1,6 +1,7 @@
 package edu.ub.pis2526.projecte;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -35,6 +36,9 @@ public class FanProfileActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user);
+
+        Button crearEventBtn = findViewById(R.id.crearEventBtn);
+        crearEventBtn.setVisibility(View.GONE);
 
         eventRepository = new FirestoreEventRepository();
 
@@ -85,42 +89,12 @@ public class FanProfileActivity extends AppCompatActivity {
             editProfileLauncher.launch(intent); // Fem servir el launcher aquí
         });
 
-        Button crearEventBtn = findViewById(R.id.crearEventBtn);
-        crearEventBtn.setOnClickListener(v -> {
-            Intent intent = new Intent(this, CreateEventActivity.class);
-            intent.putExtra("NOM_USUARI", nomUsuarioActual);
-            intent.putExtra("CORREO_USUARI", correoUsuarioActual);
-            startActivity(intent);
-        });
-
         recyclerView = findViewById(R.id.meusEventsList);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         listaMisEventos = new ArrayList<>();
-
         String rol = getIntent().getStringExtra("ROL");
-
-        eventAdapter = new EventAdapter(listaMisEventos, nomUsuarioActual, rol, (selectedEvent, position) -> {
-            new AlertDialog.Builder(this)
-                    .setTitle("Eliminar esdeveniment")
-                    .setMessage("Segur que vols eliminar '" + selectedEvent.getTitulo() + "'?")
-                    .setPositiveButton("Sí, eliminar", (dialog, which) -> {
-                        eventRepository.delete(selectedEvent.getId(), new FirestoreEventRepository.OnDeleteListener() {
-                            @Override
-                            public void onSuccess() {
-                                Toast.makeText(FanProfileActivity.this, "Esdeveniment eliminat", Toast.LENGTH_SHORT).show();
-                                cargarEventosDelUsuario(nomUsuarioActual); // recargar
-                            }
-                            @Override
-                            public void onFailure(Exception e) {
-                                Toast.makeText(FanProfileActivity.this, "Error al eliminar", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    })
-                    .setNegativeButton("Cancel·lar", null)
-                    .show();
-        });
-
+        eventAdapter = new EventAdapter(listaMisEventos, nomUsuarioActual, rol);
         recyclerView.setAdapter(eventAdapter);
 
         // Si tenim el nom de l'usuari, busquem els seus esdeveniments

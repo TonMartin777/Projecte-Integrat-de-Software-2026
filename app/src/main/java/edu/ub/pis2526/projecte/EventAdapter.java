@@ -63,7 +63,6 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
             // El botón unirse está en EventDetailActivity. Allí también debemos comprobar el rol.
         }
 
-
         holder.nombre.setText(event.getTitulo());
         if (event.getFechaHora() != null) {
             holder.fecha.setText(event.getFechaHora().toLocalDate().toString());
@@ -73,6 +72,13 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
                 .load(event.getFoto())
                 .placeholder(R.drawable.ic_launcher_background) // Imatge per defecte mentre carrega
                 .into(holder.imagen);
+
+        // Mostrar el botón solo si hay deleteListener (UserActivity)
+        if (deleteListener != null) {
+            holder.btnOpciones.setVisibility(View.VISIBLE);
+        } else {
+            holder.btnOpciones.setVisibility(View.GONE);
+        }
 
         holder.btnOpciones.setOnClickListener(v -> {
             PopupMenu popup = new PopupMenu(v.getContext(), v);

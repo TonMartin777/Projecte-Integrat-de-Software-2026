@@ -141,6 +141,11 @@ public class EventDetailActivity extends AppCompatActivity {
                                 // Enviar notificación al creador
                                 FirestoreNotificacioRepository notiRepo = new FirestoreNotificacioRepository();
                                 notiRepo.enviarNotificacio(creador, "Nou assistent!", nomUsuari + " s'ha unit a: " + titulo);
+                                notiRepo.enviarNotificacio(
+                                        nomUsuari,
+                                        "Recordatori ⏰",
+                                        "Recorda que demà és l'esdeveniment: " + titulo
+                                );
                             }, e2 -> Log.e("EventDetail", "Error recargando participantes", e2));
                         },
                         e -> Toast.makeText(EventDetailActivity.this, "Error al unirte: " + e.getMessage(), Toast.LENGTH_SHORT).show()

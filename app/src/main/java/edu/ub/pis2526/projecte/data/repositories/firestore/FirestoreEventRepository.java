@@ -129,6 +129,7 @@ public class FirestoreEventRepository implements EventRepository {
         eventoMap.put("aforoMaximo", evento.getAforoMaxim());
         eventoMap.put("creador",       creadorMap);
         eventoMap.put("activo",            evento.isActivo());
+        eventoMap.put("recordatoriEnviat", false);
         if (evento.getLinkGoogleMapsString() != null) {
             eventoMap.put("mapsUrl", evento.getLinkGoogleMapsString());
         }
@@ -410,5 +411,42 @@ public class FirestoreEventRepository implements EventRepository {
                 .update("participantes", com.google.firebase.firestore.FieldValue.arrayRemove(nomUsuari))
                 .addOnSuccessListener(unused -> onSuccess.onSuccess())
                 .addOnFailureListener(onFailure::onFailure);
+    }
+
+    public void getEventsPropersSenseRecordatori(OnEventsLoadedListener listener, OnFailureListener failure) {
+        // Busquem events entre ARA i d'aquí a 24 HORES
+        com.google.firebase.Timestamp limit24h = new com.google.firebase.Timestamp(
+                new java.util.Date(System.currentTimeMillis() + (24 * 3600 * 1000))
+        );
+        com.google.firebase.Timestamp ara = new com.google.firebase.Timestamp(new java.util.Date());
+
+        db.collection("events")
+                .whereEqualTo("recordatoriEnviat", false) // Només els que NO hem avisat
+                .whereGreaterThan("fechaHora", ara)       // Que no hagin passat ja
+                .whereLessThan("fechaHora", limit24h)     // Que comencin en menys de 24h
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    List<Event> esdeveniments = new ArrayList<>();
+                    for (DocumentSnapshot doc : querySnapshot) {
+                        // Per fer-ho ràpid, només agafem el que necessitem pel recordatori
+                        Event event = new Event();
+                        event.setId(doc.getString("id"));
+                        event.setTitulo(doc.getString("titulo"));
+                        List<String> parts = (List<String>) doc.get("participantes");
+                        if (parts != null) {
+                            for (String p : parts) {
+                                event.addParticipante(new User(p));
+                            }
+                        }
+                        esdeveniments.add(event);
+                    }
+                    listener.onEventsLoaded(esdeveniments);
+                })
+                .addOnFailureListener(failure::onFailure);
+    }
+
+    public void marcarComAvisat(String eventId) {
+        // Canviem el semàfor a verd a Firebase
+        db.collection("events").document(eventId).update("recordatoriEnviat", true);
     }
 }

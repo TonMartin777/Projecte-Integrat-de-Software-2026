@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.ub.pis2526.projecte.data.repositories.firestore.FirestoreEventRepository;
+import edu.ub.pis2526.projecte.data.repositories.firestore.FirestoreNotificacioRepository;
 import edu.ub.pis2526.projecte.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
@@ -47,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
 
     binding = ActivityMainBinding.inflate(getLayoutInflater());
     setContentView(binding.getRoot());
+    dispararRecordatoris24h();
 
     repo = new FirestoreEventRepository();
 
@@ -249,5 +251,27 @@ public class MainActivity extends AppCompatActivity {
               Log.e("MainActivity", "Error cargando página", e);
             }
     );
+  }
+
+  private void dispararRecordatoris24h() {
+    FirestoreEventRepository eventRepo = new FirestoreEventRepository();
+    FirestoreNotificacioRepository notiRepo = new FirestoreNotificacioRepository();
+
+    eventRepo.getEventsPropersSenseRecordatori(events -> {
+      for (Event e : events) {
+        // 1. Marquem l'esdeveniment com "avisat" perquè el següent usuari que entri no ho repeteixi
+        eventRepo.marcarComAvisat(e.getId());
+
+        // 2. Avisem a tots els participants!
+        for (User p : e.getParticipantes()) {
+          notiRepo.enviarNotificacio(
+                  p.getNom(),
+                  "Recordatori ⏰",
+                  "Demà comença l'esdeveniment: " + e.getTitulo()
+          );
+        }
+        android.util.Log.d("RECORDATORI", "Enviats recordatoris per a: " + e.getTitulo());
+      }
+    }, e -> android.util.Log.e("RECORDATORI", "Error buscant recordatoris", e));
   }
 }

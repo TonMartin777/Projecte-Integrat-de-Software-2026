@@ -20,12 +20,14 @@ public class Event {
     private String id;
     private int aforoMaxim;
     private boolean activo;
+    private boolean recordatoriEnviat;
 
     // ─── CONSTRUCTORES ───────────────────────────────────────────────────────────
 
     // Constructor vacío requerido por Firestore
     public Event() {
         this.participantes = new ArrayList<>();
+        this.recordatoriEnviat = false;
     }
 
     /**
@@ -139,4 +141,7 @@ public class Event {
     public int getAforoMaxim() {return this.aforoMaxim;}
     public boolean isActivo() { return activo; }
     public void setActivo(boolean activo) { this.activo = activo; }
+
+    public boolean isRecordatoriEnviat() { return recordatoriEnviat; }
+    public void setRecordatoriEnviat(boolean recordatoriEnviat) { this.recordatoriEnviat = recordatoriEnviat; }
 }

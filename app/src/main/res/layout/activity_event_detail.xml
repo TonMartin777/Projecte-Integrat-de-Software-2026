@@ -111,6 +111,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Abrir mapa" />
+        <Button
+            android:id="@+id/btnResenas"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Ver reseñas"/>
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

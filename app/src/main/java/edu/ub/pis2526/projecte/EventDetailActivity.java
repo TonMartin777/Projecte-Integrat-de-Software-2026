@@ -170,5 +170,18 @@ public class EventDetailActivity extends AppCompatActivity {
             btnUnirse.setVisibility(View.GONE);
             // y también ocultar btnParticipantes? Eso es para el creador, se maneja aparte.
         }
+
+        Button btnResenas = findViewById(R.id.btnResenas);
+        if (creador != null && creador.equals(nomUsuari)) {
+            btnResenas.setVisibility(View.VISIBLE);
+            btnResenas.setOnClickListener(v -> {
+                Intent intent = new Intent(EventDetailActivity.this, ResenasActivity.class);
+                intent.putExtra("eventoId", eventoId);
+                intent.putExtra("titulo", titulo);
+                startActivity(intent);
+            });
+        } else {
+            btnResenas.setVisibility(View.GONE);
+        }
     }
 }

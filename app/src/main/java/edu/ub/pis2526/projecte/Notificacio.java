@@ -7,6 +7,9 @@ public class Notificacio {
     private String missatge;
     private long timestamp;     // Per poder-les ordenar de més nova a més vella
     private boolean llegida;    // Per saber si hem de posar el text en negreta o no
+    private String eventoId;
+    private String tituloEvento;
+    private String tipus; // "encuesta" o null
 
     // Constructor buit obligatori per a Firestore
     public Notificacio() {}
@@ -66,4 +69,11 @@ public class Notificacio {
     public void setLlegida(boolean llegida) {
         this.llegida = llegida;
     }
+
+    public String getEventoId() { return eventoId; }
+    public void setEventoId(String eventoId) { this.eventoId = eventoId; }
+    public String getTituloEvento() { return tituloEvento; }
+    public void setTituloEvento(String tituloEvento) { this.tituloEvento = tituloEvento; }
+    public String getTipus() { return tipus; }
+    public void setTipus(String tipus) { this.tipus = tipus; }
 }

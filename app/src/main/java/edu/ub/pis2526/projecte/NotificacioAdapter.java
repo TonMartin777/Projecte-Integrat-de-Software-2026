@@ -14,8 +14,15 @@ public class NotificacioAdapter extends RecyclerView.Adapter<NotificacioAdapter.
 
     private List<Notificacio> notificacions;
 
-    public NotificacioAdapter(List<Notificacio> notificacions) {
+    public interface OnNotificacioClickListener {
+        void onClick(Notificacio notificacio);
+    }
+
+    private OnNotificacioClickListener clickListener;
+
+    public NotificacioAdapter(List<Notificacio> notificacions, OnNotificacioClickListener listener) {
         this.notificacions = notificacions;
+        this.clickListener = listener;
     }
 
     @NonNull
@@ -31,6 +38,11 @@ public class NotificacioAdapter extends RecyclerView.Adapter<NotificacioAdapter.
         Notificacio n = notificacions.get(position);
         holder.titol.setText(n.getTitol());
         holder.missatge.setText(n.getMissatge());
+        holder.itemView.setOnClickListener(v -> {
+            if (clickListener != null && "encuesta".equals(n.getTipus())) {
+                clickListener.onClick(n);
+            }
+        });
     }
 
     @Override

@@ -18,6 +18,8 @@ import com.google.firebase.firestore.Query;
 
 import edu.ub.pis2526.projecte.Event;
 import edu.ub.pis2526.projecte.Generos;
+import edu.ub.pis2526.projecte.Notificacio;
+import edu.ub.pis2526.projecte.Resena;
 import edu.ub.pis2526.projecte.User;
 import edu.ub.pis2526.projecte.domain.repositories.EventRepository;
 
@@ -354,10 +356,38 @@ public class FirestoreEventRepository implements EventRepository {
         Timestamp ahora = new Timestamp(new Date());
         db.collection("events")
                 .whereLessThan("fechaHora", ahora)
+                .whereEqualTo("activo", true)
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
                     for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
+                        // Marcar como inactivo
                         doc.getReference().update("activo", false);
+
+                        // Enviar notificación a cada participante
+                        String eventoId = doc.getString("id");
+                        String titulo = doc.getString("titulo");
+                        List<String> participantes = (List<String>) doc.get("participantes");
+                        if (participantes != null && eventoId != null) {
+                            FirebaseFirestore db2 = FirebaseFirestore.getInstance();
+                            for (String nomParticipante : participantes) {
+                                Notificacio noti = new Notificacio(
+                                        nomParticipante,
+                                        "¿Cómo fue el concierto?",
+                                        "El evento '" + titulo + "' ha finalizado. ¡Cuéntanos tu experiencia!"
+                                );
+                                // Guardamos el eventoId en la notificación para abrir la encuesta
+                                java.util.Map<String, Object> notiMap = new java.util.HashMap<>();
+                                notiMap.put("destinatari", nomParticipante);
+                                notiMap.put("titol", noti.getTitol());
+                                notiMap.put("missatge", noti.getMissatge());
+                                notiMap.put("timestamp", noti.getTimestamp());
+                                notiMap.put("llegida", false);
+                                notiMap.put("eventoId", eventoId);
+                                notiMap.put("tituloEvento", titulo);
+                                notiMap.put("tipus", "encuesta");
+                                db2.collection("notificacions").add(notiMap);
+                            }
+                        }
                     }
                     onSuccess.onSuccess();
                 })
@@ -448,5 +478,31 @@ public class FirestoreEventRepository implements EventRepository {
     public void marcarComAvisat(String eventId) {
         // Canviem el semàfor a verd a Firebase
         db.collection("events").document(eventId).update("recordatoriEnviat", true);
+    }
+
+    public void guardarResena(String eventoId, Resena resena, OnSuccessListener onSuccess, OnFailureListener onFailure) {
+        db.collection("events")
+                .document(eventoId)
+                .collection("resenas")
+                .document(resena.getNomUsuari())
+                .set(resena)
+                .addOnSuccessListener(unused -> onSuccess.onSuccess())
+                .addOnFailureListener(onFailure::onFailure);
+    }
+
+    public void getResenas(String eventoId, OnResenasLoadedListener onLoaded, OnFailureListener onFailure) {
+        db.collection("events")
+                .document(eventoId)
+                .collection("resenas")
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    List<Resena> resenas = querySnapshot.toObjects(Resena.class);
+                    onLoaded.onResenasLoaded(resenas);
+                })
+                .addOnFailureListener(onFailure::onFailure);
+    }
+
+    public interface OnResenasLoadedListener {
+        void onResenasLoaded(List<Resena> resenas);
     }
 }

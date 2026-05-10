@@ -1,5 +1,6 @@
 package edu.ub.pis2526.projecte;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -40,7 +41,13 @@ public class NotificacionsActivity extends AppCompatActivity {
             @Override
             public void onSuccess(List<Notificacio> notificacions) {
                 // Quan arriben les dades, les posem a l'adaptador
-                NotificacioAdapter adapter = new NotificacioAdapter(notificacions);
+                NotificacioAdapter adapter = new NotificacioAdapter(notificacions, notificacio -> {
+                    Intent intent = new Intent(NotificacionsActivity.this, EncuestaActivity.class);
+                    intent.putExtra("eventoId", notificacio.getEventoId());
+                    intent.putExtra("tituloEvento", notificacio.getTituloEvento());
+                    intent.putExtra("NOM_USUARI", getIntent().getStringExtra("NOM_USUARI"));
+                    startActivity(intent);
+                });
                 rvNotificacions.setAdapter(adapter);
             }
 

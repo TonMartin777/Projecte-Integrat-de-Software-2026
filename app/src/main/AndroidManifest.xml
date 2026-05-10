@@ -63,6 +63,10 @@
 
         <activity android:name=".EventParticipantsActivity" />
 
+        <activity android:name=".EncuestaActivity" />
+
+        <activity android:name=".ResenasActivity" />
+
     </application>
 
 </manifest>

@@ -89,11 +89,23 @@ public class FanProfileActivity extends AppCompatActivity {
             editProfileLauncher.launch(intent); // Fem servir el launcher aquí
         });
 
+        crearEventBtn.setVisibility(View.GONE); // Amaguem el botó de crear esdeveniments per als fans
+        crearEventBtn.setOnClickListener(v -> {
+            Intent intent = new Intent(this, CreateEventActivity.class);
+            intent.putExtra("NOM_USUARI", nomUsuarioActual);
+            intent.putExtra("CORREO_USUARI", correoUsuarioActual);
+            startActivity(intent);
+        });
+
         recyclerView = findViewById(R.id.meusEventsList);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         listaMisEventos = new ArrayList<>();
+
         String rol = getIntent().getStringExtra("ROL");
+
+        eventAdapter = new EventAdapter(listaMisEventos, nomUsuarioActual, rol);
+
         eventAdapter = new EventAdapter(listaMisEventos, nomUsuarioActual, rol);
         recyclerView.setAdapter(eventAdapter);
 

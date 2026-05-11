@@ -152,7 +152,7 @@ public class FirestoreEventRepository implements EventRepository {
     public void delete(String eventId, OnDeleteListener listener) {
         db.collection("events")
                 .document(eventId)
-                .delete()
+                .update("activo", false)
                 .addOnSuccessListener(unused -> listener.onSuccess())
                 .addOnFailureListener(listener::onFailure);
     }

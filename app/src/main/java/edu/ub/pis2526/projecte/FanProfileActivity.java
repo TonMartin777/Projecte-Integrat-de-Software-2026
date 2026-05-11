@@ -103,9 +103,6 @@ public class FanProfileActivity extends AppCompatActivity {
         listaMisEventos = new ArrayList<>();
 
         String rol = getIntent().getStringExtra("ROL");
-
-        eventAdapter = new EventAdapter(listaMisEventos, nomUsuarioActual, rol);
-
         eventAdapter = new EventAdapter(listaMisEventos, nomUsuarioActual, rol);
         recyclerView.setAdapter(eventAdapter);
 

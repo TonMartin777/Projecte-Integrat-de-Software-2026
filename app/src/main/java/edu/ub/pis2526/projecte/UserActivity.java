@@ -146,40 +146,7 @@ public class UserActivity extends AppCompatActivity {
         eventRepository.getEventsByCreador(nomUsuario, new FirestoreEventRepository.OnUserEventsListener() {
             @Override
             public void onSuccess(List<Event> eventsCreados) {
-
-                // 2. Un cop tenim els que ha creat, busquem als que s'ha unit
-                eventRepository.getEventsByParticipante(nomUsuario, new FirestoreEventRepository.OnUserEventsListener() {
-                    @Override
-                    public void onSuccess(List<Event> eventsApuntados) {
-
-                        // 3. Juntem les dues llistes
-                        List<Event> totsElsEvents = new ArrayList<>();
-                        totsElsEvents.addAll(eventsCreados);
-
-                        // Afegim els apuntats amb un petit filtre per evitar duplicats
-                        // (per si l'usuari s'hagués unit al seu propi esdeveniment)
-                        for (Event eventApuntat : eventsApuntados) {
-                            boolean existeix = false;
-                            for (Event eventGuardat : totsElsEvents) {
-                                if (eventGuardat.getId().equals(eventApuntat.getId())) {
-                                    existeix = true;
-                                    break;
-                                }
-                            }
-                            if (!existeix) {
-                                totsElsEvents.add(eventApuntat);
-                            }
-                        }
-
-                        // 4. Actualitzem l'Adapter amb la llista fusionada!
-                        eventAdapter.actualizarLista(totsElsEvents);
-                    }
-
-                    @Override
-                    public void onFailure(Exception e) {
-                        Toast.makeText(UserActivity.this, "Error carregant events apuntats", Toast.LENGTH_SHORT).show();
-                    }
-                });
+                eventAdapter.actualizarLista(eventsCreados);
             }
 
             @Override

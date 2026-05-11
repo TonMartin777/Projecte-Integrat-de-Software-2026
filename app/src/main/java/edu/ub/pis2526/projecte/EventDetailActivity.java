@@ -166,11 +166,6 @@ public class EventDetailActivity extends AppCompatActivity {
             btnParticipantes.setVisibility(View.GONE);
         }
 
-        if ("banda".equals(rol) || (creador != null && creador.equals(nomUsuari))) {
-            btnUnirse.setVisibility(View.GONE);
-            // y también ocultar btnParticipantes? Eso es para el creador, se maneja aparte.
-        }
-
         Button btnResenas = findViewById(R.id.btnResenas);
         if (creador != null && creador.equals(nomUsuari)) {
             btnResenas.setVisibility(View.VISIBLE);

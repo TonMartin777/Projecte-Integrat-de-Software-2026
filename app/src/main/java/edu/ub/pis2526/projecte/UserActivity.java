@@ -2,6 +2,7 @@ package edu.ub.pis2526.projecte;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -53,13 +54,13 @@ public class UserActivity extends AppCompatActivity {
         TextView seguidorsTxt = findViewById(R.id.seguidorsTxt);
         TextView telefonTxt = findViewById(R.id.telefonTxt);
         FirestoreUserRepository userRepo = new FirestoreUserRepository();
-        userRepo.getNumSeguidors(nomUsuarioActual, num -> {
-            runOnUiThread(() -> seguidorsTxt.setText("Seguidors: " + num));
-        });
-
-// Amaguem el comptador si és assistent
-        if ("asistente".equals(rol)) {
-            seguidorsTxt.setVisibility(android.view.View.GONE);
+        if ("banda".equals(rol)) {
+            seguidorsTxt.setVisibility(View.VISIBLE);
+            userRepo.getNumSeguidors(nomUsuarioActual, num -> {
+                runOnUiThread(() -> seguidorsTxt.setText("Seguidors: " + num));
+            });
+        } else {
+            seguidorsTxt.setVisibility(View.GONE);
         }
 
         if (nomUsuarioActual != null) nomTxt.setText("Nom: " + nomUsuarioActual);

@@ -16,6 +16,8 @@ import java.time.LocalDateTime;
 import java.util.Calendar;
 
 import edu.ub.pis2526.projecte.data.repositories.firestore.FirestoreEventRepository;
+import edu.ub.pis2526.projecte.data.repositories.firestore.FirestoreNotificacioRepository;
+import edu.ub.pis2526.projecte.data.repositories.firestore.FirestoreUserRepository;
 import edu.ub.pis2526.projecte.domain.repositories.EventRepository;
 
 public class CreateEventActivity extends AppCompatActivity {
@@ -136,4 +138,36 @@ public class CreateEventActivity extends AppCompatActivity {
                     btnCrear.setEnabled(true); // Solo si quieres reactivar el botón, pero ya no haría falta porque sales de la actividad
                 }
         );
+        eventRepository.save(evento,
+                () -> {
+                    // Notifiquem als subscrits
+                    FirestoreUserRepository userRepo = new FirestoreUserRepository();
+                    FirestoreNotificacioRepository notiRepo = new FirestoreNotificacioRepository();
+
+                    userRepo.getSeguidors(nomUsuari, seguidors -> {
+                        for (String seguidor : seguidors) {
+                            notiRepo.enviarNotificacio(
+                                    seguidor,
+                                    "Nou event de " + nomUsuari + "!",
+                                    nomUsuari + " ha creat un nou event: " + titulo
+                            );
+                        }
+                    });
+
+                    Toast.makeText(this, "¡Evento creado!", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(CreateEventActivity.this, UserActivity.class);
+                    intent.putExtra("NOM_USUARI", getIntent().getStringExtra("NOM_USUARI"));
+                    intent.putExtra("CORREO_USUARI", getIntent().getStringExtra("CORREO_USUARI"));
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                    finish();
+                },
+                e -> {
+                    btnCrear.setEnabled(true);
+                    Toast.makeText(this, "Error al guardar: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                }
+        );
+
+
+
     }}

@@ -63,7 +63,7 @@ public class UserActivity extends AppCompatActivity {
             seguidorsTxt.setVisibility(View.GONE);
         }
 
-        if (nomUsuarioActual != null) nomTxt.setText("Nom: " + nomUsuarioActual);
+        if (nomUsuarioActual != null) nomTxt.setText("" + nomUsuarioActual);
         if (correoUsuarioActual != null) correuTxt.setText("Correu: " + correoUsuarioActual);
         telefonTxt.setText("");
 

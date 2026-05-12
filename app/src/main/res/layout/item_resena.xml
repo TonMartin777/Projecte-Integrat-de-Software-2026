@@ -2,40 +2,88 @@
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="8dp"
-    android:layout_marginVertical="4dp"
-    app:cardCornerRadius="8dp"
-    app:cardElevation="2dp">
+    android:layout_marginHorizontal="12dp"
+    android:layout_marginVertical="6dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="4dp">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="12dp">
+        android:padding="16dp">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/imgAvatarResena"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="#1A237E"
+            android:padding="4dp"
+            app:shapeAppearanceOverlay="@style/ShapeAppearance.MaterialComponents.SmallComponent"
+            app:strokeColor="#DDDDDD"
+            app:strokeWidth="1dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/user_icon"
+            app:tint="#FFFFFF" />
 
         <TextView
             android:id="@+id/resenaUsuari"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:text="Nom de l'Usuari"
+            android:textColor="#333333"
+            android:textSize="16sp"
             android:textStyle="bold"
-            android:textSize="15sp"/>
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/imgAvatarResena"
+            app:layout_constraintTop_toTopOf="@id/imgAvatarResena" />
 
-        <TextView
-            android:id="@+id/resenaPuntuacion"
+        <LinearLayout
+            android:id="@+id/layoutPuntuacio"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="14sp"
-            android:layout_marginTop="4dp"/>
+            android:layout_marginTop="2dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            app:layout_constraintStart_toStartOf="@id/resenaUsuari"
+            app:layout_constraintTop_toBottomOf="@id/resenaUsuari">
+
+            <ImageView
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:src="@android:drawable/btn_star_big_on"
+                app:tint="#FFC107" />
+
+            <TextView
+                android:id="@+id/resenaPuntuacion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:text="4.5"
+                android:textColor="#666666"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/resenaMissatge"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:textSize="13sp"
-            android:layout_marginTop="4dp"/>
+            android:layout_marginTop="12dp"
+            android:background="#F8F9FA"
+            android:padding="12dp"
+            android:text="Aquest esdeveniment ha estat increible, m'ha agradat molt l'organització!"
+            android:textColor="#444444"
+            android:textSize="14sp"
+            android:lineSpacingExtra="2dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/imgAvatarResena" />
 
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.cardview.widget.CardView>

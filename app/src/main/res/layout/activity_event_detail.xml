@@ -1,126 +1,192 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginBottom="10dp"
-    tools:context=".EventDetailActivity">
+    android:background="#F5F7F9">
 
-    <LinearLayout
-        android:layout_width="352dp"
-        android:layout_height="634dp"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
-        <ImageView
-            android:id="@+id/detailImagen"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="231dp"
-            android:layout_marginBottom="16dp"
-            app:srcCompat="@drawable/ic_launcher_background" />
+            android:layout_height="wrap_content"
+            android:paddingBottom="100dp">
 
-        <TextView
-            android:id="@+id/detailNombre"
-            android:layout_width="match_parent"
-            android:layout_height="29dp"
-            android:text="Nombre"
-            android:textSize="24dp" />
+            <ImageView
+                android:id="@+id/detailImagen"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:scaleType="centerCrop"
+                android:background="#4CAF50"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_launcher_background" />
 
-        <TextView
-            android:id="@+id/detailDescripcion"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Descripcion"
-            android:textSize="16sp" />
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginTop="-50dp"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="8dp"
+                app:layout_constraintTop_toBottomOf="@id/detailImagen">
 
-        <TextView
-            android:id="@+id/detailGenero"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Genero"
-            android:textSize="16sp" />
-        <TextView
-            android:id="@+id/detailAforo"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Aforo: 0 / 0"
-            android:textSize="16sp"
-            android:layout_marginTop="8dp" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
 
-        <TextView
-            android:id="@+id/detailFecha"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Fecha"
-            android:textSize="16sp" />
+                    <TextView
+                        android:id="@+id/detailNombre"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Nom del Concert"
+                        android:textColor="#333333"
+                        android:textSize="24sp"
+                        android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/detailHora"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Hora"
-            android:textSize="16sp" />
+                    <TextView
+                        android:id="@+id/detailGenero"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Rock"
+                        android:textColor="#6200EE"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/detailUbicacion"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Ubicacion"
-            android:textSize="16sp" />
+                    <TextView
+                        android:id="@+id/detailDescripcion"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:text="Descripció detallada de l'esdeveniment..."
+                        android:textColor="#666666"
+                        android:textSize="15sp" />
 
-        <TextView
-            android:id="@+id/detailCategoria"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Categoria"
-            android:textSize="16sp" />
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginVertical="16dp"
+                        android:background="#EEEEEE" />
 
-        <TextView
-            android:id="@+id/detailCreador"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Creador"
-            android:textSize="16sp" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/detailParticipantes"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Participante"
-            android:textSize="16sp" />
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:orientation="vertical">
+                            <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@android:drawable/ic_menu_myplaces"
+                                app:tint="#999999"/>
+                            <TextView
+                                android:id="@+id/detailAforo"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Aforo: 0 / 0"
+                                android:textSize="12sp" />
+                        </LinearLayout>
 
-        <Button
-            android:id="@+id/btnParticipantes"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Ver participantes"
-            android:visibility="gone"/>
-        <Button
-            android:id="@+id/btnSubscriure"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Subscriure's al creador"
-            android:visibility="gone"/>
-        <Button
-            android:id="@+id/btnUnirse"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Unirse al evento" />
-        <Button
-            android:id="@+id/btnAbrirMapa"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Abrir mapa" />
-        <Button
-            android:id="@+id/btnResenas"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Ver reseñas"/>
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:orientation="vertical">
+                            <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@android:drawable/ic_menu_recent_history"
+                                app:tint="#999999"/>
+                            <TextView
+                                android:id="@+id/detailFecha"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="12 de Maig"
+                                android:textSize="12sp" />
+                            <TextView
+                                android:id="@+id/detailHora"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="20:00h"
+                                android:textSize="12sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
 
-    </LinearLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:paddingHorizontal="30dp"
+                android:orientation="vertical"
+                app:layout_constraintTop_toBottomOf="@id/cardInfo">
+
+                <TextView
+                    android:id="@+id/detailUbicacion"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="📍 Ubicació del concert"
+                    android:layout_marginBottom="8dp"/>
+
+                <TextView
+                    android:id="@+id/detailCreador"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Organitzat per: Creador"
+                    android:textStyle="italic"/>
+
+                <Button
+                    android:id="@+id/btnAbrirMapa"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="Veure al Mapa" />
+
+                <Button
+                    android:id="@+id/btnParticipantes"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Llista de participants"
+                    android:visibility="gone"/>
+
+                <Button
+                    android:id="@+id/btnResenas"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Veure ressenyes"/>
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <Button
+        android:id="@+id/btnUnirse"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_gravity="bottom"
+        android:layout_margin="20dp"
+        android:text="Unir-se a l'esdeveniment"
+        android:backgroundTint="#6200EE"
+        android:textColor="#FFFFFF"
+        app:cornerRadius="30dp" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

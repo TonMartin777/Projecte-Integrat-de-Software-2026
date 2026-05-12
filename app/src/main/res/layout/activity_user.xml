@@ -1,107 +1,153 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
-    android:background="#A29C9A">
+    android:background="#F5F7F9">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/main"
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:context=".UserActivity">
+
+            <View
+                android:id="@+id/headerBackground"
+                android:layout_width="match_parent"
+                android:layout_height="280dp"
+                android:background="#1A237E"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/fotoPerfil"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:layout_marginTop="40dp"
+                android:scaleType="centerCrop"
+                app:strokeColor="#FFFFFF"
+                app:shapeAppearanceOverlay="@style/ShapeAppearance.MaterialComponents.SmallComponent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/user_icon" />
+
+            <TextView
+                android:id="@+id/nomTxt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Nom d'Usuari"
+                android:textColor="#FFFFFF"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/fotoPerfil" />
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/infoCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginEnd="24dp"
+                android:layout_marginTop="-40dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="8dp"
+                app:layout_constraintTop_toBottomOf="@+id/headerBackground">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:id="@+id/correuTxt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:drawablePadding="12dp"
+                        android:gravity="center_vertical"
+                        android:text="correu@example.com"
+                        android:textSize="16sp"
+                        app:drawableStartCompat="@android:drawable/ic_dialog_email" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginVertical="12dp"
+                        android:background="#EEEEEE" />
+
+                    <TextView
+                        android:id="@+id/telefonTxt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:drawablePadding="12dp"
+                        android:gravity="center_vertical"
+                        android:text="+34 600 000 000"
+                        android:textSize="16sp"
+                        app:drawableStartCompat="@android:drawable/ic_menu_call" />
+
+                    <TextView
+                        android:id="@+id/seguidorsTxt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:text="Seguidors: 0"
+                        android:textStyle="bold"
+                        android:visibility="gone" />
+
+                    <Button
+                        android:id="@+id/editPerfilBtn"
+                        style="@style/Widget.MaterialComponents.Button.TextButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="10dp"
+                        android:text="EDITAR PERFIL" />
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:id="@+id/titleEvents"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="24dp"
+                android:text="Els meus esdeveniments"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/infoCard" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/meusEventsList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:paddingHorizontal="16dp"
+                android:nestedScrollingEnabled="false"
+                app:layout_constraintTop_toBottomOf="@+id/titleEvents" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/crearEventBtn"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        tools:context=".UserActivity">
+        android:layout_gravity="bottom|end"
+        android:layout_margin="24dp"
+        android:text="Crear Event"
+        android:textColor="#FFFFFF"
+        app:icon="@android:drawable/ic_input_add"
+        app:iconTint="#FFFFFF"
+        app:backgroundTint="#1A237E" />
 
-        <ImageView
-            android:id="@+id/fotoPerfil"
-            android:layout_width="256dp"
-            android:layout_height="238dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/user_icon" />
-
-        <TextView
-            android:id="@+id/nomTxt"
-            android:layout_width="180dp"
-            android:layout_height="22dp"
-            android:layout_marginTop="20dp"
-            android:text="Nom"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.502"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/fotoPerfil" />
-
-        <TextView
-            android:id="@+id/telefonTxt"
-            android:layout_width="180dp"
-            android:layout_height="22dp"
-            android:layout_marginTop="20dp"
-            android:text="Telèfon"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.502"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/nomTxt" />
-
-        <TextView
-            android:id="@+id/correuTxt"
-            android:layout_width="180dp"
-            android:layout_height="22dp"
-            android:layout_marginTop="4dp"
-            android:text="Correu"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.502"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/telefonTxt" />
-
-        <TextView
-            android:id="@+id/seguidorsTxt"
-            android:layout_width="180dp"
-            android:layout_height="22dp"
-            android:layout_marginTop="8dp"
-            android:text="Seguidors: 0"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.502"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/correuTxt" />
-
-        <Button
-            android:id="@+id/editPerfilBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
-            android:text="Editar Perfil"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/seguidorsTxt" />
-
-        <Button
-            android:id="@+id/crearEventBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="88dp"
-            android:text="Crear Evento"
-            app:layout_constraintBottom_toTopOf="@+id/meusEventsList"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.512"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/seguidorsTxt"
-            app:layout_constraintVertical_bias="0.0" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/meusEventsList"
-            android:layout_width="402dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="64dp"
-            android:nestedScrollingEnabled="false"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editPerfilBtn" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-</androidx.core.widget.NestedScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

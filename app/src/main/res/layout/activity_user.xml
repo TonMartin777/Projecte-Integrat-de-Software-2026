@@ -49,23 +49,34 @@
             android:id="@+id/correuTxt"
             android:layout_width="180dp"
             android:layout_height="22dp"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="4dp"
             android:text="Correu"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.502"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/telefonTxt" />
 
+        <TextView
+            android:id="@+id/seguidorsTxt"
+            android:layout_width="180dp"
+            android:layout_height="22dp"
+            android:layout_marginTop="8dp"
+            android:text="Seguidors: 0"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.502"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/correuTxt" />
+
         <Button
             android:id="@+id/editPerfilBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="40dp"
             android:text="Editar Perfil"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.498"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/correuTxt" />
+            app:layout_constraintTop_toBottomOf="@+id/seguidorsTxt" />
 
         <Button
             android:id="@+id/crearEventBtn"
@@ -75,9 +86,10 @@
             android:text="Crear Evento"
             app:layout_constraintBottom_toTopOf="@+id/meusEventsList"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.501"
+            app:layout_constraintHorizontal_bias="0.512"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/correuTxt" />
+            app:layout_constraintTop_toBottomOf="@+id/seguidorsTxt"
+            app:layout_constraintVertical_bias="0.0" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/meusEventsList"

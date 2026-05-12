@@ -1,9 +1,11 @@
 package edu.ub.pis2526.projecte;
 
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.SeekBar;
+import android.widget.LinearLayout;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,34 +24,39 @@ public class EncuestaActivity extends AppCompatActivity {
         String tituloEvento = getIntent().getStringExtra("tituloEvento");
         String nomUsuari    = getIntent().getStringExtra("NOM_USUARI");
 
-        TextView tvTitulo    = findViewById(R.id.encuestaTitulo);
-        SeekBar seekPuntuacion = findViewById(R.id.seekPuntuacion);
-        TextView tvPuntuacion  = findViewById(R.id.tvPuntuacion);
-        EditText editMissatge  = findViewById(R.id.editMissatge);
+        TextView tvTitulo     = findViewById(R.id.encuestaTitulo);
+        LinearLayout layoutPaso1 = findViewById(R.id.layoutPaso1);
+        LinearLayout layoutPaso2 = findViewById(R.id.layoutPaso2);
+        RatingBar ratingBar   = findViewById(R.id.ratingBar);
+        TextView tvPuntuacion = findViewById(R.id.tvPuntuacion);
+        EditText editMissatge = findViewById(R.id.editMissatge);
         Button btnSiVaig      = findViewById(R.id.btnSiVaig);
         Button btnNoVaig      = findViewById(R.id.btnNoVaig);
+        Button btnEnviar      = findViewById(R.id.btnEnviar);
 
-        tvTitulo.setText("¿Cómo fue: " + tituloEvento + "?");
-        tvPuntuacion.setText("Puntuación: 5");
-        seekPuntuacion.setMax(10);
-        seekPuntuacion.setProgress(5);
+        tvTitulo.setText(tituloEvento);
 
-        seekPuntuacion.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                tvPuntuacion.setText("Puntuación: " + progress);
-            }
-            @Override public void onStartTrackingTouch(SeekBar seekBar) {}
-            @Override public void onStopTrackingTouch(SeekBar seekBar) {}
+        // RatingBar de 5 estrellas → convertimos a puntuación sobre 10
+        ratingBar.setOnRatingBarChangeListener((rb, rating, fromUser) -> {
+            int puntuacion = (int) (rating * 2); // 0.5 estrellas = 1 punto
+            tvPuntuacion.setText(puntuacion + " / 10");
         });
 
+        // PASO 1 — No fui
         btnNoVaig.setOnClickListener(v -> {
             Toast.makeText(this, "Gracias por contestar", Toast.LENGTH_SHORT).show();
             finish();
         });
 
+        // PASO 1 — Sí fui: mostrar paso 2
         btnSiVaig.setOnClickListener(v -> {
-            int puntuacion = seekPuntuacion.getProgress();
+            layoutPaso1.setVisibility(View.GONE);
+            layoutPaso2.setVisibility(View.VISIBLE);
+        });
+
+        // PASO 2 — Enviar reseña
+        btnEnviar.setOnClickListener(v -> {
+            int puntuacion = (int) (ratingBar.getRating() * 2);
             String missatge = editMissatge.getText().toString().trim();
 
             Resena resena = new Resena(nomUsuari, puntuacion, missatge);
@@ -59,7 +66,9 @@ public class EncuestaActivity extends AppCompatActivity {
                         Toast.makeText(this, "Gracias por contestar", Toast.LENGTH_SHORT).show();
                         finish();
                     },
-                    e -> Toast.makeText(this, "Error al guardar: " + e.getMessage(), Toast.LENGTH_SHORT).show()
+                    e -> Toast.makeText(this,
+                            "Error al guardar: " + e.getMessage(),
+                            Toast.LENGTH_SHORT).show()
             );
         });
     }

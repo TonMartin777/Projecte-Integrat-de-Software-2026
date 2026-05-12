@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import edu.ub.pis2526.projecte.data.repositories.firestore.FirestoreEventRepository;
 import edu.ub.pis2526.projecte.data.repositories.firestore.FirestoreNotificacioRepository;
+import edu.ub.pis2526.projecte.data.repositories.firestore.FirestoreUserRepository;
 
 public class EventDetailActivity extends AppCompatActivity {
 
@@ -23,28 +24,29 @@ public class EventDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_detail);
 
-        String titulo = getIntent().getStringExtra("titulo");
+        String titulo      = getIntent().getStringExtra("titulo");
         String descripcion = getIntent().getStringExtra("descripcion");
-        String fecha = getIntent().getStringExtra("fecha");
-        String hora = getIntent().getStringExtra("hora");
-        String foto = getIntent().getStringExtra("foto");
-        int aforoMaximo = getIntent().getIntExtra("aforoMaximo", 0);
-        double lat = getIntent().getDoubleExtra("lat", 0);
-        double lng = getIntent().getDoubleExtra("lng", 0);
-        String creador = getIntent().getStringExtra("creador");
-        String generoStr = getIntent().getStringExtra("genero");
-
-        String rol = getIntent().getStringExtra("ROL");
+        String fecha       = getIntent().getStringExtra("fecha");
+        String hora        = getIntent().getStringExtra("hora");
+        String foto        = getIntent().getStringExtra("foto");
+        int aforoMaximo    = getIntent().getIntExtra("aforoMaximo", 0);
+        double lat         = getIntent().getDoubleExtra("lat", 0);
+        double lng         = getIntent().getDoubleExtra("lng", 0);
+        String creador     = getIntent().getStringExtra("creador");
+        String genero      = getIntent().getStringExtra("genero");
+        String rol         = getIntent().getStringExtra("ROL");
+        String eventoId    = getIntent().getStringExtra("eventoId");
+        String nomUsuari   = getIntent().getStringExtra("NOM_USUARI");
 
         TextView tvCreador = findViewById(R.id.detailCreador);
         TextView tvNombre = findViewById(R.id.detailNombre);
         TextView tvFecha = findViewById(R.id.detailFecha);
         TextView tvDescripcion = findViewById(R.id.detailDescripcion);
-        TextView tvHora = findViewById(R.id.detailHora);
-        TextView tvUbicacion = findViewById(R.id.detailUbicacion);
-        ImageView imgEvento = findViewById(R.id.detailImagen);
-        TextView tvGenero = findViewById(R.id.detailGenero);
-        TextView tvAforo = findViewById(R.id.detailAforo);
+        TextView tvHora        = findViewById(R.id.detailHora);
+        TextView tvUbicacion   = findViewById(R.id.detailUbicacion);
+        ImageView imgEvento    = findViewById(R.id.detailImagen);
+        TextView tvGenero      = findViewById(R.id.detailGenero);
+        TextView tvAforo       = findViewById(R.id.detailAforo);
 
         tvNombre.setText(titulo);
         tvFecha.setText(fecha);
@@ -52,13 +54,13 @@ public class EventDetailActivity extends AppCompatActivity {
         tvHora.setText(hora);
         tvUbicacion.setText("Lat: " + lat + ", Lng: " + lng);
         tvCreador.setText("Creado por: " + creador);
-        tvGenero.setText("Género: " + (generoStr != null && !generoStr.isEmpty() ? generoStr : "No especificado"));
+        tvGenero.setText("Género: " + (genero != null && !genero.isEmpty() ? genero : "No especificado"));
 
         // Obtener el enum de género para la imagen por defecto
         Generos generoEnum = null;
-        if (generoStr != null && !generoStr.isEmpty()) {
+        if (genero != null && !genero.isEmpty()) {
             try {
-                generoEnum = Generos.valueOf(generoStr);
+                generoEnum = Generos.valueOf(genero);
             } catch (IllegalArgumentException ignored) {}
         }
 
@@ -76,7 +78,6 @@ public class EventDetailActivity extends AppCompatActivity {
         Button btnAbrirMapa = findViewById(R.id.btnAbrirMapa);
         btnAbrirMapa.setOnClickListener(v -> {
             String mapsUrl = getIntent().getStringExtra("maps_url");
-
             if (mapsUrl != null && !mapsUrl.isEmpty()) {
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(mapsUrl));
                 startActivity(intent);
@@ -107,10 +108,9 @@ public class EventDetailActivity extends AppCompatActivity {
             tvAforo.setText("Aforo: " + numActual + " / " + aforoMaximo);
 
             if (creador != null && creador.equals(nomUsuari)) {
-                btnUnirse.setVisibility(View.GONE);  // El creador no puede unirse
+                btnUnirse.setVisibility(View.GONE);
                 return;
             }
-
             if (participantes.contains(nomUsuari)) {
                 estaApuntado[0] = true;
                 btnUnirse.setText("Desapuntarse");

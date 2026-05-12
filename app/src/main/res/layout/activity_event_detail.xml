@@ -100,7 +100,12 @@
             android:layout_height="wrap_content"
             android:text="Ver participantes"
             android:visibility="gone"/>
-
+        <Button
+            android:id="@+id/btnSubscriure"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Subscriure's al creador"
+            android:visibility="gone"/>
         <Button
             android:id="@+id/btnUnirse"
             android:layout_width="match_parent"

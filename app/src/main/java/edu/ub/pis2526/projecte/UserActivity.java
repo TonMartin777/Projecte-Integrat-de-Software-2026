@@ -2,6 +2,7 @@ package edu.ub.pis2526.projecte;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.ub.pis2526.projecte.data.repositories.firestore.FirestoreEventRepository;
+import edu.ub.pis2526.projecte.data.repositories.firestore.FirestoreUserRepository;
 
 public class UserActivity extends AppCompatActivity {
 
@@ -49,7 +51,17 @@ public class UserActivity extends AppCompatActivity {
         // Mostra les dades als TextViews
         TextView nomTxt = findViewById(R.id.nomTxt);
         TextView correuTxt = findViewById(R.id.correuTxt);
+        TextView seguidorsTxt = findViewById(R.id.seguidorsTxt);
         TextView telefonTxt = findViewById(R.id.telefonTxt);
+        FirestoreUserRepository userRepo = new FirestoreUserRepository();
+        if ("banda".equals(rol)) {
+            seguidorsTxt.setVisibility(View.VISIBLE);
+            userRepo.getNumSeguidors(nomUsuarioActual, num -> {
+                runOnUiThread(() -> seguidorsTxt.setText("Seguidors: " + num));
+            });
+        } else {
+            seguidorsTxt.setVisibility(View.GONE);
+        }
 
         if (nomUsuarioActual != null) nomTxt.setText("Nom: " + nomUsuarioActual);
         if (correoUsuarioActual != null) correuTxt.setText("Correu: " + correoUsuarioActual);

@@ -131,4 +131,93 @@ public class FirestoreUserRepository {
             }
         }).addOnFailureListener(listener::onUpdateError);
     }
+
+
+
+
+    // subscripcions :
+    public interface OnSubscripcioListener {
+        void onSuccess();
+        void onError(Exception e);
+    }
+
+    public interface OnComprovarSubscripcioListener {
+        void onResult(boolean estaSubscrit);
+    }
+
+    public void subscriure(String nomAssistent, String nomCreador,
+                           OnSubscripcioListener listener) {
+        // Afegim el creador a la llista de subscripcions de l'assistent
+        db.collection(COLLECTION).document(nomAssistent)
+                .update("subscripcions",
+                        com.google.firebase.firestore.FieldValue.arrayUnion(nomCreador))
+                .addOnSuccessListener(unused -> {
+                    // Afegim l'assistent a la llista de seguidors del creador
+                    db.collection(COLLECTION).document(nomCreador)
+                            .update("seguidors",
+                                    com.google.firebase.firestore.FieldValue.arrayUnion(nomAssistent))
+                            .addOnSuccessListener(u -> listener.onSuccess())
+                            .addOnFailureListener(listener::onError);
+                })
+                .addOnFailureListener(listener::onError);
+    }
+
+    public void desSubscriure(String nomAssistent, String nomCreador,
+                              OnSubscripcioListener listener) {
+        db.collection(COLLECTION).document(nomAssistent)
+                .update("subscripcions",
+                        com.google.firebase.firestore.FieldValue.arrayRemove(nomCreador))
+                .addOnSuccessListener(unused -> {
+                    db.collection(COLLECTION).document(nomCreador)
+                            .update("seguidors",
+                                    com.google.firebase.firestore.FieldValue.arrayRemove(nomAssistent))
+                            .addOnSuccessListener(u -> listener.onSuccess())
+                            .addOnFailureListener(listener::onError);
+                })
+                .addOnFailureListener(listener::onError);
+    }
+
+    public void comprovarSubscripcio(String nomAssistent, String nomCreador,
+                                     OnComprovarSubscripcioListener listener) {
+        db.collection(COLLECTION).document(nomAssistent).get()
+                .addOnSuccessListener(doc -> {
+                    if (!doc.exists()) { listener.onResult(false); return; }
+                    java.util.List<String> subscripcions =
+                            (java.util.List<String>) doc.get("subscripcions");
+                    listener.onResult(subscripcions != null &&
+                            subscripcions.contains(nomCreador));
+                })
+                .addOnFailureListener(e -> listener.onResult(false));
+    }
+    public interface OnSeguidorsListener {
+        void onResult(int numSeguidors);
+    }
+
+    public void getNumSeguidors(String nomCreador, OnSeguidorsListener listener) {
+        db.collection(COLLECTION).document(nomCreador).get()
+                .addOnSuccessListener(doc -> {
+                    if (!doc.exists()) { listener.onResult(0); return; }
+                    java.util.List<String> seguidors =
+                            (java.util.List<String>) doc.get("seguidors");
+                    listener.onResult(seguidors != null ? seguidors.size() : 0);
+                })
+                .addOnFailureListener(e -> listener.onResult(0));
+    }
+    public interface OnSeguidorsListListener {
+        void onResult(java.util.List<String> seguidors);
+    }
+
+    public void getSeguidors(String nomCreador, OnSeguidorsListListener listener) {
+        db.collection(COLLECTION).document(nomCreador).get()
+                .addOnSuccessListener(doc -> {
+                    if (!doc.exists()) { listener.onResult(new java.util.ArrayList<>()); return; }
+                    java.util.List<String> seguidors =
+                            (java.util.List<String>) doc.get("seguidors");
+                    listener.onResult(seguidors != null ? seguidors : new java.util.ArrayList<>());
+                })
+                .addOnFailureListener(e -> listener.onResult(new java.util.ArrayList<>()));
+    }
+
+
+
 }

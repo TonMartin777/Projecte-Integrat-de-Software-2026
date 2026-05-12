@@ -32,10 +32,9 @@ public class EventDetailActivity extends AppCompatActivity {
         double lat = getIntent().getDoubleExtra("lat", 0);
         double lng = getIntent().getDoubleExtra("lng", 0);
         String creador = getIntent().getStringExtra("creador");
-        String genero = getIntent().getStringExtra("genero");
+        String generoStr = getIntent().getStringExtra("genero");
 
         String rol = getIntent().getStringExtra("ROL");
-
 
         TextView tvCreador = findViewById(R.id.detailCreador);
         TextView tvNombre = findViewById(R.id.detailNombre);
@@ -53,11 +52,26 @@ public class EventDetailActivity extends AppCompatActivity {
         tvHora.setText(hora);
         tvUbicacion.setText("Lat: " + lat + ", Lng: " + lng);
         tvCreador.setText("Creado por: " + creador);
-        tvGenero.setText("Género: " + (genero != null && !genero.isEmpty() ? genero : "No especificado"));
+        tvGenero.setText("Género: " + (generoStr != null && !generoStr.isEmpty() ? generoStr : "No especificado"));
 
-        Glide.with(this)
-                .load(foto)
-                .into(imgEvento);
+        // Obtener el enum de género para la imagen por defecto
+        Generos generoEnum = null;
+        if (generoStr != null && !generoStr.isEmpty()) {
+            try {
+                generoEnum = Generos.valueOf(generoStr);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        // Cargar imagen en el detalle del evento
+        if (foto == null || foto.isEmpty()) {
+            imgEvento.setImageResource(Event.getImagenPorGenero(generoEnum));
+        } else {
+            Glide.with(this)
+                    .load(foto)
+                    .placeholder(R.drawable.evento_default)
+                    .error(Event.getImagenPorGenero(generoEnum))
+                    .into(imgEvento);
+        }
 
         Button btnAbrirMapa = findViewById(R.id.btnAbrirMapa);
         btnAbrirMapa.setOnClickListener(v -> {
@@ -84,10 +98,10 @@ public class EventDetailActivity extends AppCompatActivity {
         Button btnUnirse = findViewById(R.id.btnUnirse);
         FirestoreEventRepository repo = new FirestoreEventRepository();
 
-// Variable para saber si el usuario está actualmente apuntado
+        // Variable para saber si el usuario está actualmente apuntado
         final boolean[] estaApuntado = {false};
 
-// Cargar participantes para mostrar estado inicial
+        // Cargar participantes para mostrar estado inicial
         repo.getParticipantes(eventoId, participantes -> {
             int numActual = participantes.size();
             tvAforo.setText("Aforo: " + numActual + " / " + aforoMaximo);
@@ -141,11 +155,6 @@ public class EventDetailActivity extends AppCompatActivity {
                                 // Enviar notificación al creador
                                 FirestoreNotificacioRepository notiRepo = new FirestoreNotificacioRepository();
                                 notiRepo.enviarNotificacio(creador, "Nou assistent!", nomUsuari + " s'ha unit a: " + titulo);
-                                notiRepo.enviarNotificacio(
-                                        nomUsuari,
-                                        "Recordatori ⏰",
-                                        "Recorda que demà és l'esdeveniment: " + titulo
-                                );
                             }, e2 -> Log.e("EventDetail", "Error recargando participantes", e2));
                         },
                         e -> Toast.makeText(EventDetailActivity.this, "Error al unirte: " + e.getMessage(), Toast.LENGTH_SHORT).show()

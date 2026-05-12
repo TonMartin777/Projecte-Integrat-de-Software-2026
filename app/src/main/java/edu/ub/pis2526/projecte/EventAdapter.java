@@ -68,10 +68,17 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
             holder.fecha.setText(event.getFechaHora().toLocalDate().toString());
         }
 
-        Glide.with(holder.itemView.getContext())
-                .load(event.getFoto())
-                .placeholder(R.drawable.ic_launcher_background) // Imatge per defecte mentre carrega
-                .into(holder.imagen);
+        if (event.getFoto() == null || event.getFoto().isEmpty()) {
+            // Para imágenes por defecto, asigna directamente el recurso
+            holder.imagen.setImageResource(Event.getImagenPorGenero(event.getGenero()));
+        } else {
+            // Glide solo para fotos personalizadas
+            Glide.with(holder.itemView.getContext())
+                    .load(event.getFoto())
+                    .placeholder(R.drawable.evento_default)
+                    .error(Event.getImagenPorGenero(event.getGenero()))
+                    .into(holder.imagen);
+        }
 
         // Mostrar el botón solo si hay deleteListener (UserActivity)
         if (deleteListener != null) {
@@ -100,6 +107,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
             intent.putExtra("eventoId", event.getId());
             intent.putExtra("NOM_USUARI", nomUsuari);
             intent.putExtra("aforoMaximo", event.getAforoMaxim());
+            intent.putExtra("genero", event.getGenero() != null ? event.getGenero().name() : null);
             if (event.getFechaHora() != null) {
                 intent.putExtra("fecha", event.getFechaHora().toLocalDate().toString());
                 intent.putExtra("hora", event.getFechaHora().toLocalTime().toString());

@@ -152,7 +152,7 @@ public class FirestoreEventRepository implements EventRepository {
     public void delete(String eventId, OnDeleteListener listener) {
         db.collection("events")
                 .document(eventId)
-                .delete()
+                .delete()  // Eliminación real del documento
                 .addOnSuccessListener(unused -> listener.onSuccess())
                 .addOnFailureListener(listener::onFailure);
     }
@@ -261,6 +261,12 @@ public class FirestoreEventRepository implements EventRepository {
                         if (mapsUrl != null) {
                             event.setLinkGoogleMapsString(mapsUrl);
                         }
+                        String generoStr = doc.getString("genero");
+                        if (generoStr != null) {
+                            try {
+                                event.setGenero(Generos.valueOf(generoStr));
+                            } catch (IllegalArgumentException ignored) {}
+                        }
                         userEvents.add(event);
                     }
                     listener.onSuccess(userEvents);
@@ -320,7 +326,12 @@ public class FirestoreEventRepository implements EventRepository {
                             if (mapsUrl != null) {
                                 event.setLinkGoogleMapsString(mapsUrl);
                             }
-
+                            String generoStr = doc.getString("genero");
+                            if (generoStr != null) {
+                                try {
+                                    event.setGenero(Generos.valueOf(generoStr));
+                                } catch (IllegalArgumentException ignored) {}
+                            }
                             userEvents.add(event);
 
                         } catch (Exception e) {

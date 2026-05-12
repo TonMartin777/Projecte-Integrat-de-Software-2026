@@ -142,22 +142,48 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="📍 Ubicació del concert"
-                    android:layout_marginBottom="8dp"/>
+                    android:textSize="15sp"
+                    android:textColor="#444444"
+                    android:layout_marginBottom="12dp"/>
 
-                <TextView
-                    android:id="@+id/detailCreador"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Organitzat per: Creador"
-                    android:textStyle="italic"/>
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="16dp">
+
+                    <TextView
+                        android:id="@+id/detailCreador"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Organitzat per: Creador"
+                        android:textStyle="bold|italic"
+                        android:textColor="#666666"/>
+
+                    <Button
+                        android:id="@+id/btnSubscriure"
+                        style="@style/Widget.MaterialComponents.Button.TextButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Subscriure's"
+                        android:textColor="#1A237E"
+                        android:textSize="12sp"
+                        app:icon="@android:drawable/btn_star_big_off"
+                        app:iconSize="16dp"
+                        android:visibility="visible" />
+                </LinearLayout>
 
                 <Button
                     android:id="@+id/btnAbrirMapa"
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:text="Veure al Mapa" />
+                    android:layout_marginTop="8dp"
+                    android:text="Veure al Mapa"
+                    app:strokeColor="#1A237E"
+                    android:textColor="#1A237E"/>
 
                 <Button
                     android:id="@+id/btnParticipantes"
@@ -174,7 +200,6 @@
                     android:layout_height="wrap_content"
                     android:text="Veure ressenyes"/>
             </LinearLayout>
-
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 

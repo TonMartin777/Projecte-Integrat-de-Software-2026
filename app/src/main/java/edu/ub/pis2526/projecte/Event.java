@@ -19,12 +19,15 @@ public class Event {
     private User creador;
     private String id;
     private int aforoMaxim;
+    private boolean activo;
+    private boolean recordatoriEnviat;
 
     // ─── CONSTRUCTORES ───────────────────────────────────────────────────────────
 
     // Constructor vacío requerido por Firestore
     public Event() {
         this.participantes = new ArrayList<>();
+        this.recordatoriEnviat = false;
     }
 
     /**
@@ -44,6 +47,8 @@ public class Event {
         this.participantes = new ArrayList<>();
         this.foto = null;
         setCoordenadas(new double[]{latitud, longitud}); // genera el link automáticamente
+
+        this.activo = true;
     }
 
     // Factory method para reconstruir desde Firestore
@@ -134,4 +139,40 @@ public class Event {
     public void setCreador(User creador) { this.creador = creador; }
     public void setAforoMaxim(int aforoMaxim) {this.aforoMaxim = aforoMaxim;}
     public int getAforoMaxim() {return this.aforoMaxim;}
+    public boolean isActivo() { return activo; }
+    public void setActivo(boolean activo) { this.activo = activo; }
+
+    public boolean isRecordatoriEnviat() { return recordatoriEnviat; }
+    public void setRecordatoriEnviat(boolean recordatoriEnviat) { this.recordatoriEnviat = recordatoriEnviat; }
+
+    // Para poner las imagenes por defecto
+    // En Event.java o una clase Helper
+    public static int getImagenPorGenero(Generos genero) {
+        if (genero == null) {
+            return R.drawable.evento_default;
+        }
+        switch (genero) {
+            case ALTERNATIVE: return R.drawable.genero_alternative;
+            case BLUES: return R.drawable.genero_blues;
+            case CLASSICAL: return R.drawable.genero_classical;
+            case COUNTRY: return R.drawable.genero_country;
+            case DISCO: return R.drawable.genero_disco;
+            case ELECTRONIC: return R.drawable.genero_electronica;
+            case FOLK: return R.drawable.genero_folk;
+            case FUNK: return R.drawable.genero_funk;
+            case HIP_HOP: return R.drawable.genero_hip_hop;
+            case INDIE: return R.drawable.genero_indie;
+            case JAZZ: return R.drawable.genero_jazz;
+            case LATIN: return R.drawable.genero_latin;
+            case METAL: return R.drawable.genero_metal;
+            case POP: return R.drawable.genero_pop;
+            case PUNK: return R.drawable.genero_punk;
+            case REGGAE: return R.drawable.genero_reggae;
+            case RNB: return R.drawable.genero_rnb;
+            case ROCK: return R.drawable.genero_rock;
+            case SOUL: return R.drawable.genero_soul;
+            default: return R.drawable.evento_default;  // imagen genérica por si no hay coincidencia
+        }
+    }
 }
+

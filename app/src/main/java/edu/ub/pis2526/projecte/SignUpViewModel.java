@@ -27,7 +27,7 @@ public class SignUpViewModel extends ViewModel {
      * Valida les dades i delega el registre al repositori.
      */
     public void signUp(String nom, String correo,
-                       String contrasenya, String confirmaContrasenya) {
+                       String contrasenya, String confirmaContrasenya, String rol) {
 
         // Validacions bàsiques al ViewModel
         if (nom.isEmpty() || correo.isEmpty() || contrasenya.isEmpty()) {
@@ -43,7 +43,7 @@ public class SignUpViewModel extends ViewModel {
             return;
         }
 
-        userRepository.signUp(nom, correo, contrasenya,
+        userRepository.signUp(nom, correo, contrasenya, rol,
                 new FirestoreUserRepository.OnSignUpListener() {
                     @Override
                     public void onSignUpSuccess() {

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:gravity="center">
+
+    <TextView
+        android:id="@+id/encuestaTitulo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:layout_marginBottom="32dp"/>
+
+    <!-- PASO 1: ¿Asististe? -->
+    <LinearLayout
+        android:id="@+id/layoutPaso1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="¿Asististe al evento?"
+            android:textSize="18sp"
+            android:layout_marginBottom="24dp"/>
+
+        <Button
+            android:id="@+id/btnSiVaig"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:text="Sí fui"
+            android:layout_marginBottom="12dp"/>
+
+        <Button
+            android:id="@+id/btnNoVaig"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:text="No fui"/>
+
+    </LinearLayout>
+
+    <!-- PASO 2: Valoración (oculto inicialmente) -->
+    <LinearLayout
+        android:id="@+id/layoutPaso2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="¿Cuánto te gustó?"
+            android:textSize="18sp"
+            android:layout_marginBottom="16dp"/>
+
+        <RatingBar
+            android:id="@+id/ratingBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:numStars="5"
+            android:stepSize="0.5"
+            android:rating="2.5"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:id="@+id/tvPuntuacion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="5 / 10"
+            android:textSize="16sp"
+            android:layout_marginBottom="24dp"/>
+
+        <EditText
+            android:id="@+id/editMissatge"
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:hint="Mensaje opcional..."
+            android:gravity="top"
+            android:inputType="textMultiLine"
+            android:layout_marginBottom="24dp"/>
+
+        <Button
+            android:id="@+id/btnEnviar"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:text="Enviar"/>
+
+    </LinearLayout>
+
+</LinearLayout>

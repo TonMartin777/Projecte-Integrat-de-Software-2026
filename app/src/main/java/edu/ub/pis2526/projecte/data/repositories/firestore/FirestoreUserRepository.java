@@ -29,48 +29,36 @@ public class FirestoreUserRepository {
     /**
      * Comprova si el nom d'usuari ja existeix i, si no, registra l'usuari.
      */
-    public void signUp(String nom, String correo, String contrasenya,
-                       OnSignUpListener listener) {
-
-        // Primer comprovem que el nom no estigui ja agafat
+    public void signUp(String nom, String correo, String contrasenya, String rol, OnSignUpListener listener) {
+        // Comprobar si el nom existe (igual)
         db.collection(COLLECTION)
                 .whereEqualTo("nom", nom)
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
                     if (!querySnapshot.isEmpty()) {
-                        listener.onSignUpError(
-                                new Exception("El nom d'usuari ja existeix")
-                        );
+                        listener.onSignUpError(new Exception("El nom d'usuari ja existeix"));
                         return;
                     }
-
-                    //  si el nom esta lliure, guardem l'usuari
                     Map<String, Object> userMap = new HashMap<>();
                     userMap.put("nom", nom);
                     userMap.put("correo", correo);
                     userMap.put("contrasenya", contrasenya);
-
-                    db.collection(COLLECTION)
-                            .document(nom) // usem el nom com a ID del document
-                            .set(userMap)
-                            .addOnSuccessListener(unused ->
-                                    listener.onSignUpSuccess()
-                            )
+                    userMap.put("rol", rol);
+                    // Si es banda, podrías inicializar campos extra, pero no es necesario ahora
+                    db.collection(COLLECTION).document(nom).set(userMap)
+                            .addOnSuccessListener(unused -> listener.onSignUpSuccess())
                             .addOnFailureListener(listener::onSignUpError);
                 })
                 .addOnFailureListener(listener::onSignUpError);
     }
 
     public interface OnLoginListener {
-        void onLoginSuccess(String nom, String correo);
-
+        void onLoginSuccess(String nom, String correo, String rol);
         void onLoginError(Exception e);
     }
 
     public void login(String nom, String contrasenya, OnLoginListener listener) {
-        db.collection(COLLECTION)
-                .document(nom)
-                .get()
+        db.collection(COLLECTION).document(nom).get()
                 .addOnSuccessListener(document -> {
                     if (!document.exists()) {
                         listener.onLoginError(new Exception("Usuari no trobat"));
@@ -82,7 +70,8 @@ public class FirestoreUserRepository {
                         return;
                     }
                     String correo = document.getString("correo");
-                    listener.onLoginSuccess(nom, correo);
+                    String rol = document.getString("rol");
+                    listener.onLoginSuccess(nom, correo, rol);
                 })
                 .addOnFailureListener(listener::onLoginError);
     }
@@ -142,4 +131,93 @@ public class FirestoreUserRepository {
             }
         }).addOnFailureListener(listener::onUpdateError);
     }
+
+
+
+
+    // subscripcions :
+    public interface OnSubscripcioListener {
+        void onSuccess();
+        void onError(Exception e);
+    }
+
+    public interface OnComprovarSubscripcioListener {
+        void onResult(boolean estaSubscrit);
+    }
+
+    public void subscriure(String nomAssistent, String nomCreador,
+                           OnSubscripcioListener listener) {
+        // Afegim el creador a la llista de subscripcions de l'assistent
+        db.collection(COLLECTION).document(nomAssistent)
+                .update("subscripcions",
+                        com.google.firebase.firestore.FieldValue.arrayUnion(nomCreador))
+                .addOnSuccessListener(unused -> {
+                    // Afegim l'assistent a la llista de seguidors del creador
+                    db.collection(COLLECTION).document(nomCreador)
+                            .update("seguidors",
+                                    com.google.firebase.firestore.FieldValue.arrayUnion(nomAssistent))
+                            .addOnSuccessListener(u -> listener.onSuccess())
+                            .addOnFailureListener(listener::onError);
+                })
+                .addOnFailureListener(listener::onError);
+    }
+
+    public void desSubscriure(String nomAssistent, String nomCreador,
+                              OnSubscripcioListener listener) {
+        db.collection(COLLECTION).document(nomAssistent)
+                .update("subscripcions",
+                        com.google.firebase.firestore.FieldValue.arrayRemove(nomCreador))
+                .addOnSuccessListener(unused -> {
+                    db.collection(COLLECTION).document(nomCreador)
+                            .update("seguidors",
+                                    com.google.firebase.firestore.FieldValue.arrayRemove(nomAssistent))
+                            .addOnSuccessListener(u -> listener.onSuccess())
+                            .addOnFailureListener(listener::onError);
+                })
+                .addOnFailureListener(listener::onError);
+    }
+
+    public void comprovarSubscripcio(String nomAssistent, String nomCreador,
+                                     OnComprovarSubscripcioListener listener) {
+        db.collection(COLLECTION).document(nomAssistent).get()
+                .addOnSuccessListener(doc -> {
+                    if (!doc.exists()) { listener.onResult(false); return; }
+                    java.util.List<String> subscripcions =
+                            (java.util.List<String>) doc.get("subscripcions");
+                    listener.onResult(subscripcions != null &&
+                            subscripcions.contains(nomCreador));
+                })
+                .addOnFailureListener(e -> listener.onResult(false));
+    }
+    public interface OnSeguidorsListener {
+        void onResult(int numSeguidors);
+    }
+
+    public void getNumSeguidors(String nomCreador, OnSeguidorsListener listener) {
+        db.collection(COLLECTION).document(nomCreador).get()
+                .addOnSuccessListener(doc -> {
+                    if (!doc.exists()) { listener.onResult(0); return; }
+                    java.util.List<String> seguidors =
+                            (java.util.List<String>) doc.get("seguidors");
+                    listener.onResult(seguidors != null ? seguidors.size() : 0);
+                })
+                .addOnFailureListener(e -> listener.onResult(0));
+    }
+    public interface OnSeguidorsListListener {
+        void onResult(java.util.List<String> seguidors);
+    }
+
+    public void getSeguidors(String nomCreador, OnSeguidorsListListener listener) {
+        db.collection(COLLECTION).document(nomCreador).get()
+                .addOnSuccessListener(doc -> {
+                    if (!doc.exists()) { listener.onResult(new java.util.ArrayList<>()); return; }
+                    java.util.List<String> seguidors =
+                            (java.util.List<String>) doc.get("seguidors");
+                    listener.onResult(seguidors != null ? seguidors : new java.util.ArrayList<>());
+                })
+                .addOnFailureListener(e -> listener.onResult(new java.util.ArrayList<>()));
+    }
+
+
+
 }

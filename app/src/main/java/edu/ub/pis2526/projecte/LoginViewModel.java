@@ -22,35 +22,36 @@ public class LoginViewModel extends ViewModel {
 
     public void login(String nom, String contrasenya) {
         if (nom.isEmpty() || contrasenya.isEmpty()) {
-            loginState.postValue(new LoginState(false, null, null, "Omple tots els camps"));
+            loginState.postValue(new LoginState(false, null, null, null, "Omple tots els camps"));
             return;
         }
 
-        userRepository.login(nom, contrasenya,
-                new FirestoreUserRepository.OnLoginListener() {
-                    @Override
-                    public void onLoginSuccess(String nom, String correo) {
-                        loginState.postValue(new LoginState(true, nom, correo, null));
-                    }
-                    @Override
-                    public void onLoginError(Exception e) {
-                        loginState.postValue(new LoginState(false, null, null, e.getMessage()));
-                    }
-                }
-        );
+        userRepository.login(nom, contrasenya, new FirestoreUserRepository.OnLoginListener() {
+            @Override
+            public void onLoginSuccess(String nom, String correo, String rol) {
+                loginState.postValue(new LoginState(true, nom, correo, rol, null));
+            }
+            @Override
+            public void onLoginError(Exception e) {
+                loginState.postValue(new LoginState(false, null, null, null, e.getMessage()));
+            }
+        });
     }
 
     public static final class LoginState {
         public final boolean success;
         public final String  nom;
         public final String  correo;
+        public final String rol;
         public final String  errorMessage;
 
-        public LoginState(boolean success, String nom, String correo, String errorMessage) {
+        public LoginState(boolean success, String nom, String correo,String rol, String errorMessage) {
             this.success      = success;
             this.nom          = nom;
             this.correo       = correo;
+            this.rol = rol;
             this.errorMessage = errorMessage;
+
         }
     }
 }

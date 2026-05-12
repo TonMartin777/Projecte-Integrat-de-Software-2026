@@ -33,11 +33,19 @@ public class LoginActivity extends AppCompatActivity {
     private void initObservers() {
         loginViewModel.getLoginState().observe(this, state -> {
             if (state.success) {
-                Intent intent = new Intent(this, MainActivity.class);
-                intent.putExtra("NOM_USUARI",    state.nom);
-                intent.putExtra("CORREO_USUARI", state.correo);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                startActivity(intent);
+                if ("banda".equals(state.rol)) {
+                    Intent intent = new Intent(this, UserActivity.class);
+                    intent.putExtra("NOM_USUARI", state.nom);
+                    intent.putExtra("CORREO_USUARI", state.correo);
+                    intent.putExtra("ROL", state.rol);
+                    startActivity(intent);
+                } else {
+                    Intent intent = new Intent(this, MainActivity.class);
+                    intent.putExtra("NOM_USUARI", state.nom);
+                    intent.putExtra("CORREO_USUARI", state.correo);
+                    intent.putExtra("ROL", state.rol);
+                    startActivity(intent);
+                }
                 finish();
             } else {
                 binding.tvError.setVisibility(View.VISIBLE);

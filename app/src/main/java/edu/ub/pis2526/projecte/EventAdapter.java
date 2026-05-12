@@ -23,22 +23,25 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
     private List<Event> listaCompleta;
     private OnEventDeleteListener deleteListener;
     private String nomUsuari;
+    private String rol;  // en los constructores, guárdalo
 
     public interface OnEventDeleteListener {
         void onDeleteClick(Event event, int position);
     }
 
-    public EventAdapter(List<Event> eventList, String nomUsuari, OnEventDeleteListener listener) {
+    public EventAdapter(List<Event> eventList, String nomUsuari, String rol, OnEventDeleteListener listener) {
         this.eventList = new ArrayList<>(eventList);
         this.listaCompleta = new ArrayList<>(eventList);
         this.nomUsuari = nomUsuari;
+        this.rol = rol;
         this.deleteListener = listener;
     }
 
-    public EventAdapter(List<Event> eventList, String nomUsuari) {
+    public EventAdapter(List<Event> eventList, String nomUsuari, String rol) {
         this.eventList = new ArrayList<>(eventList);
         this.listaCompleta = new ArrayList<>(eventList);
         this.nomUsuari = nomUsuari;
+        this.rol = rol;
         this.deleteListener = null;
     }
 
@@ -53,35 +56,48 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
     @Override
     public void onBindViewHolder(@NonNull EventViewHolder holder, int position) {
         Event event = eventList.get(position);
+        // En onBindViewHolder, para mostrar el botón "Unirse" solo si es asistente:
+        if (rol != null && rol.equals("asistente")) {
+            // muestra botón de unirse (ya lo haces con deleteListener? No, el botón de unirse no está en el adapter, está en el detalle del evento)
+            // En el adapter solo tienes el botón de eliminar (para bandas).
+            // El botón unirse está en EventDetailActivity. Allí también debemos comprobar el rol.
+        }
 
         holder.nombre.setText(event.getTitulo());
         if (event.getFechaHora() != null) {
             holder.fecha.setText(event.getFechaHora().toLocalDate().toString());
         }
 
-        Glide.with(holder.itemView.getContext())
-                .load(event.getFoto())
-                .placeholder(R.drawable.ic_launcher_background)
-                .into(holder.imagen);
+        if (event.getFoto() == null || event.getFoto().isEmpty()) {
+            // Para imágenes por defecto, asigna directamente el recurso
+            holder.imagen.setImageResource(Event.getImagenPorGenero(event.getGenero()));
+        } else {
+            // Glide solo para fotos personalizadas
+            Glide.with(holder.itemView.getContext())
+                    .load(event.getFoto())
+                    .placeholder(R.drawable.evento_default)
+                    .error(Event.getImagenPorGenero(event.getGenero()))
+                    .into(holder.imagen);
+        }
 
-        // Solo mostrar botón si hay listener (solo en UserActivity)
+        // Mostrar el botón solo si hay deleteListener (UserActivity)
         if (deleteListener != null) {
             holder.btnOpciones.setVisibility(View.VISIBLE);
-            holder.btnOpciones.setOnClickListener(v -> {
-                PopupMenu popup = new PopupMenu(v.getContext(), v);
-                popup.getMenu().add("Eliminar");
-                popup.setOnMenuItemClickListener(item -> {
-                    if (item.getTitle().equals("Eliminar")) {
-                        deleteListener.onDeleteClick(event, position);
-                    }
-                    return true;
-                });
-                popup.show();
-            });
         } else {
             holder.btnOpciones.setVisibility(View.GONE);
-            holder.btnOpciones.setOnClickListener(null);
         }
+
+        holder.btnOpciones.setOnClickListener(v -> {
+            PopupMenu popup = new PopupMenu(v.getContext(), v);
+            popup.getMenu().add("Eliminar");
+            popup.setOnMenuItemClickListener(item -> {
+                if (item.getTitle().equals("Eliminar") && deleteListener != null) {
+                    deleteListener.onDeleteClick(event, position);
+                }
+                return true;
+            });
+            popup.show();
+        });
 
         holder.itemView.setOnClickListener(v -> {
             Context context = v.getContext();
@@ -90,8 +106,9 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
             intent.putExtra("descripcion", event.getDescripcion());
             intent.putExtra("eventoId", event.getId());
             intent.putExtra("NOM_USUARI", nomUsuari);
-            intent.putExtra("genero", event.getGenero() != null ? event.getGenero().name() : "");
+            intent.putExtra("ROL", rol);
             intent.putExtra("aforoMaximo", event.getAforoMaxim());
+            intent.putExtra("genero", event.getGenero() != null ? event.getGenero().name() : null);
             if (event.getFechaHora() != null) {
                 intent.putExtra("fecha", event.getFechaHora().toLocalDate().toString());
                 intent.putExtra("hora", event.getFechaHora().toLocalTime().toString());

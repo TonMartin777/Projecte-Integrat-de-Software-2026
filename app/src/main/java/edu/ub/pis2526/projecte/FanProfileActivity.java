@@ -1,10 +1,8 @@
 package edu.ub.pis2526.projecte;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,9 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.ub.pis2526.projecte.data.repositories.firestore.FirestoreEventRepository;
-import edu.ub.pis2526.projecte.data.repositories.firestore.FirestoreUserRepository;
 
-public class UserActivity extends AppCompatActivity {
+public class FanProfileActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private EventAdapter eventAdapter;
@@ -40,28 +37,19 @@ public class UserActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user);
 
+        Button crearEventBtn = findViewById(R.id.crearEventBtn);
+        crearEventBtn.setVisibility(View.GONE);
+
         eventRepository = new FirestoreEventRepository();
 
         // Recuperem les dades i les guardem a les variables globals
         nomUsuarioActual = getIntent().getStringExtra("NOM_USUARI");
         correoUsuarioActual = getIntent().getStringExtra("CORREO_USUARI");
 
-        String rol = getIntent().getStringExtra("ROL");
-
         // Mostra les dades als TextViews
         TextView nomTxt = findViewById(R.id.nomTxt);
         TextView correuTxt = findViewById(R.id.correuTxt);
-        TextView seguidorsTxt = findViewById(R.id.seguidorsTxt);
         TextView telefonTxt = findViewById(R.id.telefonTxt);
-        FirestoreUserRepository userRepo = new FirestoreUserRepository();
-        if ("banda".equals(rol)) {
-            seguidorsTxt.setVisibility(View.VISIBLE);
-            userRepo.getNumSeguidors(nomUsuarioActual, num -> {
-                runOnUiThread(() -> seguidorsTxt.setText("Seguidors: " + num));
-            });
-        } else {
-            seguidorsTxt.setVisibility(View.GONE);
-        }
 
         if (nomUsuarioActual != null) nomTxt.setText("Nom: " + nomUsuarioActual);
         if (correoUsuarioActual != null) correuTxt.setText("Correu: " + correoUsuarioActual);
@@ -101,7 +89,7 @@ public class UserActivity extends AppCompatActivity {
             editProfileLauncher.launch(intent); // Fem servir el launcher aquí
         });
 
-        Button crearEventBtn = findViewById(R.id.crearEventBtn);
+        crearEventBtn.setVisibility(View.GONE); // Amaguem el botó de crear esdeveniments per als fans
         crearEventBtn.setOnClickListener(v -> {
             Intent intent = new Intent(this, CreateEventActivity.class);
             intent.putExtra("NOM_USUARI", nomUsuarioActual);
@@ -114,27 +102,8 @@ public class UserActivity extends AppCompatActivity {
 
         listaMisEventos = new ArrayList<>();
 
-        eventAdapter = new EventAdapter(listaMisEventos, nomUsuarioActual, rol, (selectedEvent, position) -> {
-            new AlertDialog.Builder(this)
-                    .setTitle("Eliminar esdeveniment")
-                    .setMessage("Segur que vols eliminar '" + selectedEvent.getTitulo() + "'?")
-                    .setPositiveButton("Sí, eliminar", (dialog, which) -> {
-                        eventRepository.delete(selectedEvent.getId(), new FirestoreEventRepository.OnDeleteListener() {
-                            @Override
-                            public void onSuccess() {
-                                Toast.makeText(UserActivity.this, "Esdeveniment eliminat", Toast.LENGTH_SHORT).show();
-                                cargarEventosDelUsuario(nomUsuarioActual); // recargar
-                            }
-                            @Override
-                            public void onFailure(Exception e) {
-                                Toast.makeText(UserActivity.this, "Error al eliminar", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    })
-                    .setNegativeButton("Cancel·lar", null)
-                    .show();
-        });
-
+        String rol = getIntent().getStringExtra("ROL");
+        eventAdapter = new EventAdapter(listaMisEventos, nomUsuarioActual, rol);
         recyclerView.setAdapter(eventAdapter);
 
         // Si tenim el nom de l'usuari, busquem els seus esdeveniments
@@ -153,17 +122,14 @@ public class UserActivity extends AppCompatActivity {
     }
 
     private void cargarEventosDelUsuario(String nomUsuario) {
-
-        // 1. Primer busquem els esdeveniments que ha creat ell
-        eventRepository.getEventsByCreador(nomUsuario, new FirestoreEventRepository.OnUserEventsListener() {
+        eventRepository.getEventsByParticipante(nomUsuario, new FirestoreEventRepository.OnUserEventsListener() {
             @Override
-            public void onSuccess(List<Event> eventsCreados) {
-                eventAdapter.actualizarLista(eventsCreados);
+            public void onSuccess(List<Event> events) {
+                eventAdapter.actualizarLista(events);
             }
-
             @Override
             public void onFailure(Exception e) {
-                Toast.makeText(UserActivity.this, "Error carregant esdeveniments creats", Toast.LENGTH_SHORT).show();
+                Toast.makeText(FanProfileActivity.this, "Error carregant esdeveniments", Toast.LENGTH_SHORT).show();
             }
         });
     }

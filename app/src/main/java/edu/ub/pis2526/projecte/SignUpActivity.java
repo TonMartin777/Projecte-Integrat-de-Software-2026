@@ -3,6 +3,7 @@ package edu.ub.pis2526.projecte;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Spinner;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
@@ -17,10 +18,8 @@ public class SignUpActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         binding = ActivitySignUpBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
         initViewModel();
         initWidgetListeners();
     }
@@ -47,12 +46,14 @@ public class SignUpActivity extends AppCompatActivity {
     private void initWidgetListeners() {
         binding.btnRegistrar.setOnClickListener(v -> {
             binding.tvError.setVisibility(View.GONE);
-
+            Spinner spinnerRol = findViewById(R.id.spinnerRol);
+            String rol = spinnerRol.getSelectedItem().toString();
             signUpViewModel.signUp(
                     binding.etNom.getText().toString().trim(),
                     binding.etCorreo.getText().toString().trim(),
                     binding.etContrasenya.getText().toString(),
-                    binding.etConfirmaContrasenya.getText().toString()
+                    binding.etConfirmaContrasenya.getText().toString(),
+                    rol
             );
         });
     }

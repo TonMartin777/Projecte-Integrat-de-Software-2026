@@ -49,6 +49,8 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".FanProfileActivity" />
+
         <activity
             android:name=".MainActivity"
             android:exported="false"
@@ -59,9 +61,11 @@
 
         <activity android:name=".NotificacionsActivity" android:exported="false" />
 
-        <activity android:name=".MapActivity" />
-
         <activity android:name=".EventParticipantsActivity" />
+
+        <activity android:name=".EncuestaActivity" />
+
+        <activity android:name=".ResenasActivity" />
 
     </application>
 

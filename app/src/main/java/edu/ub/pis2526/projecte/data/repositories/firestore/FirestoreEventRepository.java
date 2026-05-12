@@ -13,9 +13,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import com.google.firebase.firestore.Query;
+
 
 import edu.ub.pis2526.projecte.Event;
 import edu.ub.pis2526.projecte.Generos;
+import edu.ub.pis2526.projecte.Notificacio;
+import edu.ub.pis2526.projecte.Resena;
 import edu.ub.pis2526.projecte.User;
 import edu.ub.pis2526.projecte.domain.repositories.EventRepository;
 
@@ -25,6 +29,84 @@ public class FirestoreEventRepository implements EventRepository {
 
     public FirestoreEventRepository() {
         this.db = FirebaseFirestore.getInstance();
+    }
+    private static final int PAGE_SIZE = 20;
+
+    public void getPage(DocumentSnapshot ultimoDoc, OnPageLoadedListener onLoaded, OnFailureListener onFailure) {
+        com.google.firebase.firestore.Query query = db.collection("events")
+                .whereEqualTo("activo", true)
+                .orderBy("fechaHora")
+                .limit(PAGE_SIZE);
+
+        if (ultimoDoc != null) {
+            query = query.startAfter(ultimoDoc);
+        }
+
+        query.get().addOnSuccessListener(querySnapshot -> {
+            List<Event> eventos = new ArrayList<>();
+            DocumentSnapshot nuevoUltimoDoc = null;
+
+            if (!querySnapshot.isEmpty()) {
+                nuevoUltimoDoc = querySnapshot.getDocuments()
+                        .get(querySnapshot.size() - 1);
+            }
+
+            for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
+                Event evento = parsearEvento(doc);
+                if (evento != null) eventos.add(evento);
+            }
+
+            boolean hayMas = querySnapshot.size() == PAGE_SIZE;
+            onLoaded.onPageLoaded(eventos, nuevoUltimoDoc, hayMas);
+        }).addOnFailureListener(onFailure::onFailure);
+    }
+
+    public interface OnPageLoadedListener {
+        void onPageLoaded(List<Event> eventos, DocumentSnapshot ultimoDoc, boolean hayMas);
+    }
+
+    private Event parsearEvento(DocumentSnapshot doc) {
+        try {
+            String id          = doc.getString("id");
+            String titulo      = doc.getString("titulo");
+            String descripcion = doc.getString("descripcion");
+            String foto        = doc.getString("foto");
+            int aforo = doc.contains("aforoMaximo") ? doc.getLong("aforoMaximo").intValue() : 0;
+
+            Timestamp ts = doc.getTimestamp("fechaHora");
+            LocalDateTime fechaHora = null;
+            if (ts != null) {
+                fechaHora = ts.toDate().toInstant()
+                        .atZone(ZoneOffset.UTC).toLocalDateTime();
+            }
+
+            Map<String, Object> creadorMap = (Map<String, Object>) doc.get("creador");
+            User creador = new User();
+            if (creadorMap != null) {
+                creador.setNom((String) creadorMap.get("nom"));
+                creador.setCorreo((String) creadorMap.get("correo"));
+            }
+
+            Event evento = Event.fromFirestore(id, titulo, descripcion, foto, fechaHora, creador, aforo);
+
+            Double lat = doc.getDouble("lat");
+            Double lng = doc.getDouble("lng");
+            if (lat != null && lng != null) evento.setCoordenadas(new double[]{lat, lng});
+
+            String mapsUrl = doc.getString("mapsUrl");
+            if (mapsUrl != null) evento.setLinkGoogleMapsString(mapsUrl);
+
+            String generoStr = doc.getString("genero");
+            if (generoStr != null) {
+                try { evento.setGenero(Generos.valueOf(generoStr)); }
+                catch (IllegalArgumentException ignored) {}
+            }
+
+            return evento;
+        } catch (Exception e) {
+            Log.e("FIRESTORE", "Error parseando evento: " + doc.getId(), e);
+            return null;
+        }
     }
 
     @Override
@@ -48,6 +130,8 @@ public class FirestoreEventRepository implements EventRepository {
         eventoMap.put("participantes", new ArrayList<>());
         eventoMap.put("aforoMaximo", evento.getAforoMaxim());
         eventoMap.put("creador",       creadorMap);
+        eventoMap.put("activo",            evento.isActivo());
+        eventoMap.put("recordatoriEnviat", false);
         if (evento.getLinkGoogleMapsString() != null) {
             eventoMap.put("mapsUrl", evento.getLinkGoogleMapsString());
         }
@@ -68,7 +152,7 @@ public class FirestoreEventRepository implements EventRepository {
     public void delete(String eventId, OnDeleteListener listener) {
         db.collection("events")
                 .document(eventId)
-                .delete()
+                .delete()  // Eliminación real del documento
                 .addOnSuccessListener(unused -> listener.onSuccess())
                 .addOnFailureListener(listener::onFailure);
     }
@@ -76,6 +160,7 @@ public class FirestoreEventRepository implements EventRepository {
     @Override
     public void getAll(OnEventsLoadedListener onLoaded, OnFailureListener onFailure) {
         db.collection("events")
+                .whereEqualTo("activo", true)
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
                     List<Event> eventos = new ArrayList<>();
@@ -96,9 +181,11 @@ public class FirestoreEventRepository implements EventRepository {
                         }
 
                         Map<String, Object> creadorMap = (Map<String, Object>) doc.get("creador");
-                        User creador = new User(
-                                creadorMap != null ? (String) creadorMap.get("nom") : ""
-                        );
+                        User creador = new User();
+                        if (creadorMap != null) {
+                            creador.setNom((String) creadorMap.get("nom"));
+                            creador.setCorreo((String) creadorMap.get("correo"));
+                        }
 
                         Event evento = Event.fromFirestore(id, titulo, descripcion, foto, fechaHora, creador, aforo);
 
@@ -123,7 +210,7 @@ public class FirestoreEventRepository implements EventRepository {
                     }
                     onLoaded.onEventsLoaded(eventos);
                 })
-                .addOnFailureListener(onFailure::onFailure);
+                .addOnFailureListener(onFailure::onFailure); // Solo eventos activos
     }
 
     public interface OnUserEventsListener {
@@ -155,7 +242,7 @@ public class FirestoreEventRepository implements EventRepository {
                             );
                         }
                         Map<String, Object> creadorMap = (Map<String, Object>) doc.get("creador");
-                        User creador = new User("");
+                        User creador = new User();
                         if (creadorMap != null) {
                             creador = new User(
                                     (String) creadorMap.get("nom"),
@@ -173,6 +260,12 @@ public class FirestoreEventRepository implements EventRepository {
                         String mapsUrl = doc.getString("mapsUrl");
                         if (mapsUrl != null) {
                             event.setLinkGoogleMapsString(mapsUrl);
+                        }
+                        String generoStr = doc.getString("genero");
+                        if (generoStr != null) {
+                            try {
+                                event.setGenero(Generos.valueOf(generoStr));
+                            } catch (IllegalArgumentException ignored) {}
                         }
                         userEvents.add(event);
                     }
@@ -212,7 +305,7 @@ public class FirestoreEventRepository implements EventRepository {
                             }
 
                             Map<String, Object> creadorMap = (Map<String, Object>) doc.get("creador");
-                            User creador = new User("");
+                            User creador = new User();
                             if (creadorMap != null) {
                                 creador = new User(
                                         (String) creadorMap.get("nom"),
@@ -233,7 +326,12 @@ public class FirestoreEventRepository implements EventRepository {
                             if (mapsUrl != null) {
                                 event.setLinkGoogleMapsString(mapsUrl);
                             }
-
+                            String generoStr = doc.getString("genero");
+                            if (generoStr != null) {
+                                try {
+                                    event.setGenero(Generos.valueOf(generoStr));
+                                } catch (IllegalArgumentException ignored) {}
+                            }
                             userEvents.add(event);
 
                         } catch (Exception e) {
@@ -269,10 +367,38 @@ public class FirestoreEventRepository implements EventRepository {
         Timestamp ahora = new Timestamp(new Date());
         db.collection("events")
                 .whereLessThan("fechaHora", ahora)
+                .whereEqualTo("activo", true)
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
                     for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
-                        doc.getReference().delete();
+                        // Marcar como inactivo
+                        doc.getReference().update("activo", false);
+
+                        // Enviar notificación a cada participante
+                        String eventoId = doc.getString("id");
+                        String titulo = doc.getString("titulo");
+                        List<String> participantes = (List<String>) doc.get("participantes");
+                        if (participantes != null && eventoId != null) {
+                            FirebaseFirestore db2 = FirebaseFirestore.getInstance();
+                            for (String nomParticipante : participantes) {
+                                Notificacio noti = new Notificacio(
+                                        nomParticipante,
+                                        "¿Cómo fue el concierto?",
+                                        "El evento '" + titulo + "' ha finalizado. ¡Cuéntanos tu experiencia!"
+                                );
+                                // Guardamos el eventoId en la notificación para abrir la encuesta
+                                java.util.Map<String, Object> notiMap = new java.util.HashMap<>();
+                                notiMap.put("destinatari", nomParticipante);
+                                notiMap.put("titol", noti.getTitol());
+                                notiMap.put("missatge", noti.getMissatge());
+                                notiMap.put("timestamp", noti.getTimestamp());
+                                notiMap.put("llegida", false);
+                                notiMap.put("eventoId", eventoId);
+                                notiMap.put("tituloEvento", titulo);
+                                notiMap.put("tipus", "encuesta");
+                                db2.collection("notificacions").add(notiMap);
+                            }
+                        }
                     }
                     onSuccess.onSuccess();
                 })
@@ -318,5 +444,76 @@ public class FirestoreEventRepository implements EventRepository {
     public interface OnParticipantesConCorreosListener {
         void onSuccess(List<Map<String, String>> participantes);
         void onFailure(Exception e);
+    }
+
+    public void desunirse(String eventoId, String nomUsuari, OnSuccessListener onSuccess, OnFailureListener onFailure) {
+        db.collection("events")
+                .document(eventoId)
+                .update("participantes", com.google.firebase.firestore.FieldValue.arrayRemove(nomUsuari))
+                .addOnSuccessListener(unused -> onSuccess.onSuccess())
+                .addOnFailureListener(onFailure::onFailure);
+    }
+
+    public void getEventsPropersSenseRecordatori(OnEventsLoadedListener listener, OnFailureListener failure) {
+        // Busquem events entre ARA i d'aquí a 24 HORES
+        com.google.firebase.Timestamp limit24h = new com.google.firebase.Timestamp(
+                new java.util.Date(System.currentTimeMillis() + (24 * 3600 * 1000))
+        );
+        com.google.firebase.Timestamp ara = new com.google.firebase.Timestamp(new java.util.Date());
+
+        db.collection("events")
+                .whereEqualTo("recordatoriEnviat", false) // Només els que NO hem avisat
+                .whereGreaterThan("fechaHora", ara)       // Que no hagin passat ja
+                .whereLessThan("fechaHora", limit24h)     // Que comencin en menys de 24h
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    List<Event> esdeveniments = new ArrayList<>();
+                    for (DocumentSnapshot doc : querySnapshot) {
+                        // Per fer-ho ràpid, només agafem el que necessitem pel recordatori
+                        Event event = new Event();
+                        event.setId(doc.getString("id"));
+                        event.setTitulo(doc.getString("titulo"));
+                        List<String> parts = (List<String>) doc.get("participantes");
+                        if (parts != null) {
+                            for (String p : parts) {
+                                event.addParticipante(new User(p));
+                            }
+                        }
+                        esdeveniments.add(event);
+                    }
+                    listener.onEventsLoaded(esdeveniments);
+                })
+                .addOnFailureListener(failure::onFailure);
+    }
+
+    public void marcarComAvisat(String eventId) {
+        // Canviem el semàfor a verd a Firebase
+        db.collection("events").document(eventId).update("recordatoriEnviat", true);
+    }
+
+    public void guardarResena(String eventoId, Resena resena, OnSuccessListener onSuccess, OnFailureListener onFailure) {
+        db.collection("events")
+                .document(eventoId)
+                .collection("resenas")
+                .document(resena.getNomUsuari())
+                .set(resena)
+                .addOnSuccessListener(unused -> onSuccess.onSuccess())
+                .addOnFailureListener(onFailure::onFailure);
+    }
+
+    public void getResenas(String eventoId, OnResenasLoadedListener onLoaded, OnFailureListener onFailure) {
+        db.collection("events")
+                .document(eventoId)
+                .collection("resenas")
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    List<Resena> resenas = querySnapshot.toObjects(Resena.class);
+                    onLoaded.onResenasLoaded(resenas);
+                })
+                .addOnFailureListener(onFailure::onFailure);
+    }
+
+    public interface OnResenasLoadedListener {
+        void onResenasLoaded(List<Resena> resenas);
     }
 }

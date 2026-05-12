@@ -31,15 +31,15 @@ public class SignUpViewModel extends ViewModel {
 
         // Validacions bàsiques al ViewModel
         if (nom.isEmpty() || correo.isEmpty() || contrasenya.isEmpty()) {
-            signUpState.postValue(new SignUpState(false, "Omple tots els camps"));
+            signUpState.postValue(new SignUpState(false, "Rellena todos los campos"));
             return;
         }
         if (!contrasenya.equals(confirmaContrasenya)) {
-            signUpState.postValue(new SignUpState(false, "Les contrasenyes no coincideixen"));
+            signUpState.postValue(new SignUpState(false, "Las contraseñas no coinciden"));
             return;
         }
         if (contrasenya.length() < 6) {
-            signUpState.postValue(new SignUpState(false, "La contrasenya ha de tenir mínim 6 caràcters"));
+            signUpState.postValue(new SignUpState(false, "La contraseña tiene que tener al menos 6 caracteres"));
             return;
         }
 

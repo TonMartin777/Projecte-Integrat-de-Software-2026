@@ -95,7 +95,7 @@ public class EventDetailActivity extends AppCompatActivity {
                         public void onSuccess() {
                             estaSubscrit = false;
                             actualitzarInterficieSub(btnSub);
-                            Toast.makeText(EventDetailActivity.this, "Has deixat de seguir a " + creador, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(EventDetailActivity.this, "Has dejado de seguir a " + creador, Toast.LENGTH_SHORT).show();
                         }
                         @Override
                         public void onError(Exception e) { Toast.makeText(EventDetailActivity.this, "Error", Toast.LENGTH_SHORT).show(); }
@@ -106,7 +106,7 @@ public class EventDetailActivity extends AppCompatActivity {
                         public void onSuccess() {
                             estaSubscrit = true;
                             actualitzarInterficieSub(btnSub);
-                            Toast.makeText(EventDetailActivity.this, "Ara segueixes a " + creador + "!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(EventDetailActivity.this, "Ahora sigues a " + creador + "!", Toast.LENGTH_SHORT).show();
                         }
                         @Override
                         public void onError(Exception e) { Toast.makeText(EventDetailActivity.this, "Error", Toast.LENGTH_SHORT).show(); }
@@ -163,7 +163,7 @@ public class EventDetailActivity extends AppCompatActivity {
                 repo.unirse(eventoId, nomUsuari, () -> {
                     estaApuntado[0] = true;
                     btnUnirse.setText("Desapuntarse");
-                    new FirestoreNotificacioRepository().enviarNotificacio(creador, "Nou assistent!", nomUsuari + " s'ha unit a: " + titulo);
+                    new FirestoreNotificacioRepository().enviarNotificacio(creador, "Nuevo assistente!", nomUsuari + " se ha unido a: " + titulo);
                 }, e -> {});
             }
         });
@@ -190,10 +190,10 @@ public class EventDetailActivity extends AppCompatActivity {
     // Mètode per actualitzar visualment el botó de subscripció
     private void actualitzarInterficieSub(Button btn) {
         if (estaSubscrit) {
-            btn.setText("Subscrit");
+            btn.setText("Suscrito");
             btn.setCompoundDrawablesWithIntrinsicBounds(android.R.drawable.btn_star_big_on, 0, 0, 0);
         } else {
-            btn.setText("Subscriure's");
+            btn.setText("Suscribirse");
             btn.setCompoundDrawablesWithIntrinsicBounds(android.R.drawable.btn_star_big_off, 0, 0, 0);
         }
     }

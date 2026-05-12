@@ -61,7 +61,7 @@
         android:background="@drawable/bg_search_rounded"
         app:iconifiedByDefault="false"
         app:queryBackground="@android:color/transparent"
-        app:queryHint="Cerca esdeveniments..."
+        app:queryHint="Busca eventos..."
         app:layout_constraintEnd_toStartOf="@+id/btnFiltrar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/cardTopBar" />

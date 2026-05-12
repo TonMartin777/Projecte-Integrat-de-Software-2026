@@ -51,8 +51,8 @@ public class FanProfileActivity extends AppCompatActivity {
         TextView correuTxt = findViewById(R.id.correuTxt);
         TextView telefonTxt = findViewById(R.id.telefonTxt);
 
-        if (nomUsuarioActual != null) nomTxt.setText("Nom: " + nomUsuarioActual);
-        if (correoUsuarioActual != null) correuTxt.setText("Correu: " + correoUsuarioActual);
+        if (nomUsuarioActual != null) nomTxt.setText(nomUsuarioActual);
+        if (correoUsuarioActual != null) correuTxt.setText("Correo: " + correoUsuarioActual);
         telefonTxt.setText("");
 
         // --- RECUPEREM EL RECEPTOR PER L'EDICIÓ DEL PERFIL ---
@@ -67,8 +67,8 @@ public class FanProfileActivity extends AppCompatActivity {
                         if (nouNom != null) nomUsuarioActual = nouNom;
                         if (nouCorreu != null) correoUsuarioActual = nouCorreu;
 
-                        nomTxt.setText("Nom: " + nomUsuarioActual);
-                        correuTxt.setText("Correu: " + correoUsuarioActual);
+                        nomTxt.setText(nomUsuarioActual);
+                        correuTxt.setText("Correo: " + correoUsuarioActual);
 
                         if (novaFoto != null) {
                             ImageView fotoPerfil = findViewById(R.id.fotoPerfil);
@@ -129,7 +129,7 @@ public class FanProfileActivity extends AppCompatActivity {
             }
             @Override
             public void onFailure(Exception e) {
-                Toast.makeText(FanProfileActivity.this, "Error carregant esdeveniments", Toast.LENGTH_SHORT).show();
+                Toast.makeText(FanProfileActivity.this, "Error cargando eventos", Toast.LENGTH_SHORT).show();
             }
         });
     }

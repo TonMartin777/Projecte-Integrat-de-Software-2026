@@ -22,7 +22,7 @@ public class LoginViewModel extends ViewModel {
 
     public void login(String nom, String contrasenya) {
         if (nom.isEmpty() || contrasenya.isEmpty()) {
-            loginState.postValue(new LoginState(false, null, null, null, "Omple tots els camps"));
+            loginState.postValue(new LoginState(false, null, null, null, "Rellena todos los campos"));
             return;
         }
 

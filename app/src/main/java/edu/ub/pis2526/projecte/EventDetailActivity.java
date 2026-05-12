@@ -17,6 +17,7 @@
     import edu.ub.pis2526.projecte.data.repositories.firestore.FirestoreNotificacioRepository;
     import edu.ub.pis2526.projecte.data.repositories.firestore.FirestoreUserRepository;
 
+    // Actividad para mostrar el detalle de un evento seleccionado
     public class EventDetailActivity extends AppCompatActivity {
 
         @Override

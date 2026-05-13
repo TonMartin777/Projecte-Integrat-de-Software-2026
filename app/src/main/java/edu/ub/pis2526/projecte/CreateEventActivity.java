@@ -103,7 +103,7 @@ public class CreateEventActivity extends AppCompatActivity {
         String nomUsuari = getIntent().getStringExtra("NOM_USUARI");
         String correoUsuari = getIntent().getStringExtra("CORREO_USUARI");
         User creador = new User(
-                nomUsuari != null ? nomUsuari : "usuari_desconegut",
+                nomUsuari != null ? nomUsuari : "usuario_desconocido",
                 correoUsuari != null ? correoUsuari : ""
         );
 
@@ -116,11 +116,11 @@ public class CreateEventActivity extends AppCompatActivity {
             evento.setFoto(foto);
         }
         btnCrear.setEnabled(false);
-        android.util.Log.d("CREATE_EVENT", "Dades validades. Cridant a save...");
+        android.util.Log.d("CREATE_EVENT", "Datos validos. Llamando a save...");
 
         eventRepository.save(evento,
                 () -> {
-                    android.util.Log.d("CREATE_EVENT", "Callback exitós. Tancant pantalla.");
+                    android.util.Log.d("CREATE_EVENT", "Callback exitoso. Cerrando pantalla.");
                     Toast.makeText(this, "¡Evento creado!", Toast.LENGTH_SHORT).show();
 
                     // Ir directamente a la pantalla del usuario
@@ -133,7 +133,7 @@ public class CreateEventActivity extends AppCompatActivity {
                 },
                 e -> {
                     btnCrear.setEnabled(true);
-                    android.util.Log.e("CREATE_EVENT", "Callback fallit: " + e.getMessage());
+                    android.util.Log.e("CREATE_EVENT", "Callback ha fallado: " + e.getMessage());
                     Toast.makeText(this, "Error al guardar: " + e.getMessage(), Toast.LENGTH_LONG).show();
                     btnCrear.setEnabled(true); // Solo si quieres reactivar el botón, pero ya no haría falta porque sales de la actividad
                 }
@@ -148,8 +148,8 @@ public class CreateEventActivity extends AppCompatActivity {
                         for (String seguidor : seguidors) {
                             notiRepo.enviarNotificacio(
                                     seguidor,
-                                    "Nou event de " + nomUsuari + "!",
-                                    nomUsuari + " ha creat un nou event: " + titulo
+                                    "Nuevo evento de " + nomUsuari + "!",
+                                    nomUsuari + " ha creado un nuevo evento: " + titulo
                             );
                         }
                     });

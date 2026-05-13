@@ -283,8 +283,8 @@ public class MainActivity extends AppCompatActivity {
                 for (User p : e.getParticipantes()) {
                     notiRepo.enviarNotificacio(
                             p.getNom(),
-                            "Recordatori ⏰",
-                            "Demà comença l'esdeveniment: " + e.getTitulo()
+                            "Recordatorio ⏰",
+                            "Mañana empieza el evento: " + e.getTitulo()
                     );
                 }
                 android.util.Log.d("RECORDATORI", "Enviats recordatoris per a: " + e.getTitulo());

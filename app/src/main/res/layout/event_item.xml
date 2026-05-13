@@ -51,7 +51,7 @@
             android:layout_height="40dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@android:drawable/ic_menu_more"
-            android:contentDescription="Opcions" />
+            android:contentDescription="Opciones" />
 
     </LinearLayout>
 </androidx.cardview.widget.CardView>

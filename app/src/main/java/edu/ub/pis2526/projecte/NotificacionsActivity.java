@@ -30,7 +30,7 @@ public class NotificacionsActivity extends AppCompatActivity {
         if (usuariNom != null) {
             carregarNotificacions(usuariNom);
         } else {
-            Toast.makeText(this, "Error: No s'ha trobat l'usuari", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Error: No se ha encontrado el usuario", Toast.LENGTH_SHORT).show();
         }
     }
 

@@ -77,11 +77,11 @@ public class EditProfileActivity extends AppCompatActivity {
     private void pujarFotoISalvar(String nomUsuari) {
         // Comprovació de seguretat: que el nom no estigui buit
         if (nomUsuari == null || nomUsuari.trim().isEmpty()) {
-            Toast.makeText(this, "Error: El nom d'usuari no pot estar buit", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Error: El nombre de usuario no puede estar vacio", Toast.LENGTH_LONG).show();
             return;
         }
 
-        Toast.makeText(this, "Iniciant la pujada de la foto...", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Iniciando la subida de la foto...", Toast.LENGTH_SHORT).show();
 
         StorageReference ref = FirebaseStorage.getInstance().getReference()
                 .child("perfils/" + nomUsuari + ".jpg");
@@ -104,7 +104,7 @@ public class EditProfileActivity extends AppCompatActivity {
                 })
                 .addOnFailureListener(e -> {
                     // Ha fallat la pujada de l'arxiu a Firebase
-                    Toast.makeText(this, "Error al guardar l'arxiu al núvol: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "Error al guardar el arxivo a la nube: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 });
     }
 
@@ -117,7 +117,7 @@ public class EditProfileActivity extends AppCompatActivity {
 
                     @Override
                     public void onUpdateSuccess() {
-                        Toast.makeText(EditProfileActivity.this, "Perfil actualitzat!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(EditProfileActivity.this, "Perfil actualizado!", Toast.LENGTH_SHORT).show();
 
                         // --- PREPAREM EL PAQUET DE TORNADA ---
                         Intent intentResultat = new Intent();

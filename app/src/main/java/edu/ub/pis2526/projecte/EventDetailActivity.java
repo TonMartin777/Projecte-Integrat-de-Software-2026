@@ -1,189 +1,200 @@
-    package edu.ub.pis2526.projecte;
-    import com.bumptech.glide.Glide;
+package edu.ub.pis2526.projecte;
 
-    import android.content.Intent;
-    import android.net.Uri;
-    import android.os.Bundle;
-    import android.util.Log;
-    import android.view.View;
-    import android.widget.Button;
-    import android.widget.ImageView;
-    import android.widget.TextView;
-    import android.widget.Toast;
+import com.bumptech.glide.Glide;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
-    import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 
-    import edu.ub.pis2526.projecte.data.repositories.firestore.FirestoreEventRepository;
-    import edu.ub.pis2526.projecte.data.repositories.firestore.FirestoreNotificacioRepository;
-    import edu.ub.pis2526.projecte.data.repositories.firestore.FirestoreUserRepository;
+import edu.ub.pis2526.projecte.data.repositories.firestore.FirestoreEventRepository;
+import edu.ub.pis2526.projecte.data.repositories.firestore.FirestoreNotificacioRepository;
+import edu.ub.pis2526.projecte.data.repositories.firestore.FirestoreUserRepository;
 
-    // Actividad para mostrar el detalle de un evento seleccionado
-    public class EventDetailActivity extends AppCompatActivity {
+public class EventDetailActivity extends AppCompatActivity {
 
-        @Override
-        protected void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            setContentView(R.layout.activity_event_detail);
+    private FirestoreUserRepository userRepository;
+    private boolean estaSubscrit = false;
 
-            String titulo      = getIntent().getStringExtra("titulo");
-            String descripcion = getIntent().getStringExtra("descripcion");
-            String fecha       = getIntent().getStringExtra("fecha");
-            String hora        = getIntent().getStringExtra("hora");
-            String foto        = getIntent().getStringExtra("foto");
-            int aforoMaximo    = getIntent().getIntExtra("aforoMaximo", 0);
-            double lat         = getIntent().getDoubleExtra("lat", 0);
-            double lng         = getIntent().getDoubleExtra("lng", 0);
-            String creador     = getIntent().getStringExtra("creador");
-            String genero      = getIntent().getStringExtra("genero");
-            String rol         = getIntent().getStringExtra("ROL");
-            String eventoId    = getIntent().getStringExtra("eventoId");
-            String nomUsuari   = getIntent().getStringExtra("NOM_USUARI");
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_event_detail);
 
-            TextView tvCreador = findViewById(R.id.detailCreador);
-            TextView tvNombre = findViewById(R.id.detailNombre);
-            TextView tvFecha = findViewById(R.id.detailFecha);
-            TextView tvDescripcion = findViewById(R.id.detailDescripcion);
-            TextView tvHora        = findViewById(R.id.detailHora);
-            TextView tvUbicacion   = findViewById(R.id.detailUbicacion);
-            ImageView imgEvento    = findViewById(R.id.detailImagen);
-            TextView tvGenero      = findViewById(R.id.detailGenero);
-            TextView tvAforo       = findViewById(R.id.detailAforo);
+        // Repositoris
+        userRepository = new FirestoreUserRepository();
+        FirestoreEventRepository repo = new FirestoreEventRepository();
 
-            tvNombre.setText(titulo);
-            tvFecha.setText(fecha);
-            tvDescripcion.setText(descripcion);
-            tvHora.setText(hora);
-            tvUbicacion.setText("Lat: " + lat + ", Lng: " + lng);
-            tvCreador.setText("Creado por: " + creador);
-            tvGenero.setText("Género: " + (genero != null && !genero.isEmpty() ? genero : "No especificado"));
+        // Recuperar dades de l'Intent
+        String titulo      = getIntent().getStringExtra("titulo");
+        String descripcion = getIntent().getStringExtra("descripcion");
+        String fecha       = getIntent().getStringExtra("fecha");
+        String hora        = getIntent().getStringExtra("hora");
+        String foto        = getIntent().getStringExtra("foto");
+        int aforoMaximo    = getIntent().getIntExtra("aforoMaximo", 0);
+        double lat         = getIntent().getDoubleExtra("lat", 0);
+        double lng         = getIntent().getDoubleExtra("lng", 0);
+        String creador     = getIntent().getStringExtra("creador"); // El nom de la banda/artista
+        String genero      = getIntent().getStringExtra("genero");
+        String eventoId    = getIntent().getStringExtra("eventoId");
+        String nomUsuari   = getIntent().getStringExtra("NOM_USUARI"); // Usuari loguejat
 
-            // Obtener el enum de género para la imagen por defecto
-            Generos generoEnum = null;
-            if (genero != null && !genero.isEmpty()) {
-                try {
-                    generoEnum = Generos.valueOf(genero);
-                } catch (IllegalArgumentException ignored) {}
-            }
+        // Referències UI
+        TextView tvCreador = findViewById(R.id.detailCreador);
+        TextView tvNombre = findViewById(R.id.detailNombre);
+        TextView tvFecha = findViewById(R.id.detailFecha);
+        TextView tvDescripcion = findViewById(R.id.detailDescripcion);
+        TextView tvHora        = findViewById(R.id.detailHora);
+        TextView tvUbicacion   = findViewById(R.id.detailUbicacion);
+        ImageView imgEvento    = findViewById(R.id.detailImagen);
+        TextView tvGenero      = findViewById(R.id.detailGenero);
+        TextView tvAforo       = findViewById(R.id.detailAforo);
+        Button btnSub          = findViewById(R.id.btnSubscriure);
 
-            // Cargar imagen en el detalle del evento
-            if (foto == null || foto.isEmpty()) {
-                imgEvento.setImageResource(Event.getImagenPorGenero(generoEnum));
-            } else {
-                Glide.with(this)
-                        .load(foto)
-                        .placeholder(R.drawable.evento_default)
-                        .error(Event.getImagenPorGenero(generoEnum))
-                        .into(imgEvento);
-            }
+        // Assignar dades
+        tvNombre.setText(titulo);
+        tvFecha.setText(fecha);
+        tvDescripcion.setText(descripcion);
+        tvHora.setText(hora);
+        tvUbicacion.setText("Lat: " + lat + ", Lng: " + lng);
+        tvCreador.setText("Creado por: " + creador);
+        tvGenero.setText("Género: " + (genero != null && !genero.isEmpty() ? genero : "No especificado"));
 
-            Button btnAbrirMapa = findViewById(R.id.btnAbrirMapa);
-            btnAbrirMapa.setOnClickListener(v -> {
-                String mapsUrl = getIntent().getStringExtra("maps_url");
-                if (mapsUrl != null && !mapsUrl.isEmpty()) {
-                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(mapsUrl));
-                    startActivity(intent);
-                } else {
-                    if (lat != 0 && lng != 0) {
-                        Uri gmmIntentUri = Uri.parse("geo:" + lat + "," + lng + "?q=" + lat + "," + lng + "(" + titulo + ")");
-                        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
-                        mapIntent.setPackage("com.google.android.apps.maps");
-                        startActivity(mapIntent);
-                    } else {
-                        Toast.makeText(this, "Ubicación no disponible", Toast.LENGTH_SHORT).show();
-                    }
-                }
+        // Gestió de la imatge
+        Generos generoEnum = null;
+        if (genero != null && !genero.isEmpty()) {
+            try { generoEnum = Generos.valueOf(genero); } catch (IllegalArgumentException ignored) {}
+        }
+
+        if (foto == null || foto.isEmpty()) {
+            imgEvento.setImageResource(Event.getImagenPorGenero(generoEnum));
+        } else {
+            Glide.with(this).load(foto).placeholder(R.drawable.evento_default).error(Event.getImagenPorGenero(generoEnum)).into(imgEvento);
+        }
+
+        // --- LÒGICA DE SUBSCRIPCIÓ ---
+        if (creador != null && nomUsuari != null && !creador.equals(nomUsuari)) {
+            btnSub.setVisibility(View.VISIBLE);
+
+            // Comprovar si ja està subscrit
+            userRepository.comprovarSubscripcio(nomUsuari, creador, esta -> {
+                estaSubscrit = esta;
+                actualitzarInterficieSub(btnSub);
             });
 
-            Button btnUnirse = findViewById(R.id.btnUnirse);
-            FirestoreEventRepository repo = new FirestoreEventRepository();
-
-            // Variable para saber si el usuario está actualmente apuntado
-            final boolean[] estaApuntado = {false};
-
-            // Cargar participantes para mostrar estado inicial
-            repo.getParticipantes(eventoId, participantes -> {
-                int numActual = participantes.size();
-                tvAforo.setText("Aforo: " + numActual + " / " + aforoMaximo);
-
-                if (creador != null && creador.equals(nomUsuari)) {
-                    btnUnirse.setVisibility(View.GONE);
-                    return;
-                }
-                if (participantes.contains(nomUsuari)) {
-                    estaApuntado[0] = true;
-                    btnUnirse.setText("Desapuntarse");
-                    btnUnirse.setEnabled(true);
-                } else if (numActual >= aforoMaximo) {
-                    btnUnirse.setText("Concierto lleno");
-                    btnUnirse.setEnabled(false);
+            btnSub.setOnClickListener(v -> {
+                if (estaSubscrit) {
+                    userRepository.desSubscriure(nomUsuari, creador, new FirestoreUserRepository.OnSubscripcioListener() {
+                        @Override
+                        public void onSuccess() {
+                            estaSubscrit = false;
+                            actualitzarInterficieSub(btnSub);
+                            Toast.makeText(EventDetailActivity.this, "Has dejado de seguir a " + creador, Toast.LENGTH_SHORT).show();
+                        }
+                        @Override
+                        public void onError(Exception e) { Toast.makeText(EventDetailActivity.this, "Error", Toast.LENGTH_SHORT).show(); }
+                    });
                 } else {
+                    userRepository.subscriure(nomUsuari, creador, new FirestoreUserRepository.OnSubscripcioListener() {
+                        @Override
+                        public void onSuccess() {
+                            estaSubscrit = true;
+                            actualitzarInterficieSub(btnSub);
+                            Toast.makeText(EventDetailActivity.this, "Ahora sigues a " + creador + "!", Toast.LENGTH_SHORT).show();
+                        }
+                        @Override
+                        public void onError(Exception e) { Toast.makeText(EventDetailActivity.this, "Error", Toast.LENGTH_SHORT).show(); }
+                    });
+                }
+            });
+        } else {
+            btnSub.setVisibility(View.GONE);
+        }
+
+        // Mapa
+        Button btnAbrirMapa = findViewById(R.id.btnAbrirMapa);
+        btnAbrirMapa.setOnClickListener(v -> {
+            if (lat != 0 && lng != 0) {
+                Uri gmmIntentUri = Uri.parse("geo:" + lat + "," + lng + "?q=" + lat + "," + lng + "(" + titulo + ")");
+                Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+                mapIntent.setPackage("com.google.android.apps.maps");
+                startActivity(mapIntent);
+            }
+        });
+
+        // --- BOTÓ UNIR-SE / DESAPUNTAR-SE ---
+        Button btnUnirse = findViewById(R.id.btnUnirse);
+        final boolean[] estaApuntado = {false};
+
+        repo.getParticipantes(eventoId, participantes -> {
+            int numActual = participantes.size();
+            tvAforo.setText("Aforo: " + numActual + " / " + aforoMaximo);
+
+            if (creador != null && creador.equals(nomUsuari)) {
+                btnUnirse.setVisibility(View.GONE);
+                return;
+            }
+            if (participantes.contains(nomUsuari)) {
+                estaApuntado[0] = true;
+                btnUnirse.setText("Desapuntarse");
+            } else if (numActual >= aforoMaximo) {
+                btnUnirse.setText("Concierto lleno");
+                btnUnirse.setEnabled(false);
+            } else {
+                estaApuntado[0] = false;
+                btnUnirse.setText("Unirse al evento");
+            }
+        }, e -> Log.e("EventDetail", "Error", e));
+
+        btnUnirse.setOnClickListener(v -> {
+            if (estaApuntado[0]) {
+                repo.desunirse(eventoId, nomUsuari, () -> {
                     estaApuntado[0] = false;
                     btnUnirse.setText("Unirse al evento");
-                    btnUnirse.setEnabled(true);
-                }
-            }, e -> Log.e("EventDetail", "Error cargando participantes", e));
-
-            // Listener del botón (se ejecuta al hacer clic)
-            btnUnirse.setOnClickListener(v -> {
-                if (estaApuntado[0]) {
-                    // Desapuntarse
-                    repo.desunirse(eventoId, nomUsuari,
-                            () -> {
-                                // Recargar participantes para actualizar UI
-                                repo.getParticipantes(eventoId, nuevosParticipantes -> {
-                                    int numActual = nuevosParticipantes.size();
-                                    tvAforo.setText("Aforo: " + numActual + " / " + aforoMaximo);
-                                    estaApuntado[0] = false;
-                                    btnUnirse.setText("Unirse al evento");
-                                    btnUnirse.setEnabled(true);
-                                    Toast.makeText(EventDetailActivity.this, "Te has desapuntado", Toast.LENGTH_SHORT).show();
-                                }, e2 -> Log.e("EventDetail", "Error recargando participantes", e2));
-                            },
-                            e -> Toast.makeText(EventDetailActivity.this, "Error al desapuntarte: " + e.getMessage(), Toast.LENGTH_SHORT).show()
-                    );
-                } else {
-                    // Unirse
-                    repo.unirse(eventoId, nomUsuari,
-                            () -> {
-                                repo.getParticipantes(eventoId, nuevosParticipantes -> {
-                                    int numActual = nuevosParticipantes.size();
-                                    tvAforo.setText("Aforo: " + numActual + " / " + aforoMaximo);
-                                    estaApuntado[0] = true;
-                                    btnUnirse.setText("Desapuntarse");
-                                    // Enviar notificación al creador
-                                    FirestoreNotificacioRepository notiRepo = new FirestoreNotificacioRepository();
-                                    notiRepo.enviarNotificacio(creador, "Nou assistent!", nomUsuari + " s'ha unit a: " + titulo);
-                                }, e2 -> Log.e("EventDetail", "Error recargando participantes", e2));
-                            },
-                            e -> Toast.makeText(EventDetailActivity.this, "Error al unirte: " + e.getMessage(), Toast.LENGTH_SHORT).show()
-                    );
-                }
-            });
-
-            // Mostrar botón de participantes solo si el usuario actual es el creador
-            Button btnParticipantes = findViewById(R.id.btnParticipantes);
-            if (creador != null && creador.equals(nomUsuari)) {
-                btnParticipantes.setVisibility(View.VISIBLE);
-                btnParticipantes.setOnClickListener(v -> {
-                    Intent intent = new Intent(EventDetailActivity.this, EventParticipantsActivity.class);
-                    intent.putExtra("EVENT_ID", eventoId);
-                    startActivity(intent);
-                });
+                    Toast.makeText(this, "Te has desapuntado", Toast.LENGTH_SHORT).show();
+                }, e -> {});
             } else {
-                btnParticipantes.setVisibility(View.GONE);
+                repo.unirse(eventoId, nomUsuari, () -> {
+                    estaApuntado[0] = true;
+                    btnUnirse.setText("Desapuntarse");
+                    new FirestoreNotificacioRepository().enviarNotificacio(creador, "Nuevo assistente!", nomUsuari + " se ha unido a: " + titulo);
+                }, e -> {});
             }
+        });
 
-            Button btnResenas = findViewById(R.id.btnResenas);
-            if (creador != null && creador.equals(nomUsuari)) {
-                btnResenas.setVisibility(View.VISIBLE);
-                btnResenas.setOnClickListener(v -> {
-                    Intent intent = new Intent(EventDetailActivity.this, ResenasActivity.class);
-                    intent.putExtra("eventoId", eventoId);
-                    intent.putExtra("titulo", titulo);
-                    startActivity(intent);
-                });
-            } else {
-                btnResenas.setVisibility(View.GONE);
-            }
+        // Botons extres (Participants i Ressenyes)
+        Button btnParticipantes = findViewById(R.id.btnParticipantes);
+        btnParticipantes.setVisibility((creador != null && creador.equals(nomUsuari)) ? View.VISIBLE : View.GONE);
+        btnParticipantes.setOnClickListener(v -> {
+            Intent i = new Intent(this, EventParticipantsActivity.class);
+            i.putExtra("EVENT_ID", eventoId);
+            startActivity(i);
+        });
+
+        Button btnResenas = findViewById(R.id.btnResenas);
+        btnResenas.setVisibility(View.VISIBLE); // Ho poso visible per a tothom per poder-les llegir
+        btnResenas.setOnClickListener(v -> {
+            Intent i = new Intent(this, ResenasActivity.class);
+            i.putExtra("eventoId", eventoId);
+            i.putExtra("titulo", titulo);
+            startActivity(i);
+        });
+    }
+
+    // Mètode per actualitzar visualment el botó de subscripció
+    private void actualitzarInterficieSub(Button btn) {
+        if (estaSubscrit) {
+            btn.setText("Suscrito");
+            btn.setCompoundDrawablesWithIntrinsicBounds(android.R.drawable.btn_star_big_on, 0, 0, 0);
+        } else {
+            btn.setText("Suscribirse");
+            btn.setCompoundDrawablesWithIntrinsicBounds(android.R.drawable.btn_star_big_off, 0, 0, 0);
         }
     }
+}

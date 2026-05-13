@@ -2,24 +2,34 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:background="#F5F5F5">
+    android:background="#F5F7F9">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Les meves notificacions"
+        android:text="Mis notificaciones"
         android:textSize="20sp"
         android:textStyle="bold"
+        android:textColor="#1A237E"
         android:padding="16dp"
-        android:background="@color/white"
+        android:background="#FFFFFF"
         android:elevation="4dp"/>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvNotificacions"
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:clipToPadding="false"
-        android:paddingTop="8dp" />
+        android:layout_margin="16dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="4dp">
 
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvNotificacions"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp" />
+    </androidx.cardview.widget.CardView>
 </LinearLayout>

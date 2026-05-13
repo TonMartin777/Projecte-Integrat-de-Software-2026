@@ -57,14 +57,14 @@ public class UserActivity extends AppCompatActivity {
         if ("banda".equals(rol)) {
             seguidorsTxt.setVisibility(View.VISIBLE);
             userRepo.getNumSeguidors(nomUsuarioActual, num -> {
-                runOnUiThread(() -> seguidorsTxt.setText("Seguidors: " + num));
+                runOnUiThread(() -> seguidorsTxt.setText("Seguidores: " + num));
             });
         } else {
             seguidorsTxt.setVisibility(View.GONE);
         }
 
-        if (nomUsuarioActual != null) nomTxt.setText("Nom: " + nomUsuarioActual);
-        if (correoUsuarioActual != null) correuTxt.setText("Correu: " + correoUsuarioActual);
+        if (nomUsuarioActual != null) nomTxt.setText("" + nomUsuarioActual);
+        if (correoUsuarioActual != null) correuTxt.setText("Correo: " + correoUsuarioActual);
         telefonTxt.setText("");
 
         // --- RECUPEREM EL RECEPTOR PER L'EDICIÓ DEL PERFIL ---
@@ -79,8 +79,8 @@ public class UserActivity extends AppCompatActivity {
                         if (nouNom != null) nomUsuarioActual = nouNom;
                         if (nouCorreu != null) correoUsuarioActual = nouCorreu;
 
-                        nomTxt.setText("Nom: " + nomUsuarioActual);
-                        correuTxt.setText("Correu: " + correoUsuarioActual);
+                        nomTxt.setText(nomUsuarioActual);
+                        correuTxt.setText("Correo: " + correoUsuarioActual);
 
                         if (novaFoto != null) {
                             ImageView fotoPerfil = findViewById(R.id.fotoPerfil);
@@ -116,13 +116,13 @@ public class UserActivity extends AppCompatActivity {
 
         eventAdapter = new EventAdapter(listaMisEventos, nomUsuarioActual, rol, (selectedEvent, position) -> {
             new AlertDialog.Builder(this)
-                    .setTitle("Eliminar esdeveniment")
-                    .setMessage("Segur que vols eliminar '" + selectedEvent.getTitulo() + "'?")
+                    .setTitle("Eliminar evento")
+                    .setMessage("Seguro que quieres eliminar '" + selectedEvent.getTitulo() + "'?")
                     .setPositiveButton("Sí, eliminar", (dialog, which) -> {
                         eventRepository.delete(selectedEvent.getId(), new FirestoreEventRepository.OnDeleteListener() {
                             @Override
                             public void onSuccess() {
-                                Toast.makeText(UserActivity.this, "Esdeveniment eliminat", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(UserActivity.this, "Evento eliminado", Toast.LENGTH_SHORT).show();
                                 cargarEventosDelUsuario(nomUsuarioActual); // recargar
                             }
                             @Override
@@ -131,7 +131,7 @@ public class UserActivity extends AppCompatActivity {
                             }
                         });
                     })
-                    .setNegativeButton("Cancel·lar", null)
+                    .setNegativeButton("Cancelar", null)
                     .show();
         });
 
@@ -163,7 +163,7 @@ public class UserActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Exception e) {
-                Toast.makeText(UserActivity.this, "Error carregant esdeveniments creats", Toast.LENGTH_SHORT).show();
+                Toast.makeText(UserActivity.this, "Error cargando eventos creados", Toast.LENGTH_SHORT).show();
             }
         });
     }

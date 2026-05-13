@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
+    android:background="#FFFFFF"
     android:padding="24dp">
 
     <TextView
@@ -11,6 +13,7 @@
         android:text="Ordenar por"
         android:textSize="18sp"
         android:textStyle="bold"
+        android:textColor="#1A237E"
         android:layout_marginBottom="12dp"/>
 
     <RadioGroup
@@ -24,20 +27,21 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Sin orden"
-            android:checked="true"/>
+            android:textColor="#333333"/>
 
         <RadioButton
             android:id="@+id/radioFechaAsc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Fecha (más próximos primero)"/>
+            android:text="Fecha (más próximos primero)"
+            android:textColor="#333333"/>
 
         <RadioButton
             android:id="@+id/radioLejaniaAsc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Distancia (más cercanos primero)"/>
-
+            android:text="Distancia (más cercanos primero)"
+            android:textColor="#333333"/>
     </RadioGroup>
 
     <TextView
@@ -46,6 +50,7 @@
         android:text="Filtrar por fecha"
         android:textSize="18sp"
         android:textStyle="bold"
+        android:textColor="#1A237E"
         android:layout_marginBottom="12dp"/>
 
     <Button
@@ -53,6 +58,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Desde: cualquier fecha"
+        android:textColor="#1A237E"
+        android:backgroundTint="@android:color/transparent"
+        android:background="@drawable/btn_outline_primary"
+        app:cornerRadius="30dp"
         android:layout_marginBottom="8dp"/>
 
     <Button
@@ -60,6 +69,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Hasta: cualquier fecha"
+        android:textColor="#1A237E"
+        android:backgroundTint="@android:color/transparent"
+        android:background="@drawable/btn_outline_primary"
+        app:cornerRadius="30dp"
         android:layout_marginBottom="24dp"/>
 
     <TextView
@@ -68,6 +81,7 @@
         android:text="Filtrar por ubicación"
         android:textSize="18sp"
         android:textStyle="bold"
+        android:textColor="#1A237E"
         android:layout_marginBottom="12dp"/>
 
     <SeekBar
@@ -76,13 +90,16 @@
         android:layout_height="wrap_content"
         android:max="100"
         android:progress="100"
-        android:layout_marginBottom="4dp"/>
+        android:layout_marginBottom="4dp"
+        android:progressTint="#6200EE"
+        android:thumbTint="#6200EE"/>
 
     <TextView
         android:id="@+id/txtDistancia"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Distancia máxima: sin límite"
+        android:textColor="#666666"
         android:layout_marginBottom="24dp"/>
 
     <TextView
@@ -91,25 +108,33 @@
         android:text="Filtrar por género"
         android:textSize="18sp"
         android:textStyle="bold"
+        android:textColor="#1A237E"
         android:layout_marginBottom="12dp"/>
 
     <Spinner
         android:id="@+id/spinnerGeneroFiltro"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
+        android:background="@drawable/bg_spinner_rounded"
         android:layout_marginBottom="24dp"/>
 
     <Button
         android:id="@+id/btnAplicar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="56dp"
         android:text="Aplicar filtros"
+        android:textColor="#FFFFFF"
+        android:backgroundTint="#6200EE"
+        app:cornerRadius="30dp"
         android:layout_marginBottom="8dp"/>
 
     <Button
         android:id="@+id/btnLimpiar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Limpiar filtros"/>
-
+        android:layout_height="56dp"
+        android:text="Limpiar filtros"
+        android:textColor="#1A237E"
+        android:backgroundTint="@android:color/transparent"
+        android:background="@drawable/btn_outline_primary"
+        app:cornerRadius="30dp"/>
 </LinearLayout>

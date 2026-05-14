@@ -49,11 +49,9 @@ public class FanProfileActivity extends AppCompatActivity {
         // Mostra les dades als TextViews
         TextView nomTxt = findViewById(R.id.nomTxt);
         TextView correuTxt = findViewById(R.id.correuTxt);
-        TextView telefonTxt = findViewById(R.id.telefonTxt);
 
         if (nomUsuarioActual != null) nomTxt.setText(nomUsuarioActual);
         if (correoUsuarioActual != null) correuTxt.setText("Correo: " + correoUsuarioActual);
-        telefonTxt.setText("");
 
         // --- RECUPEREM EL RECEPTOR PER L'EDICIÓ DEL PERFIL ---
         editProfileLauncher = registerForActivityResult(

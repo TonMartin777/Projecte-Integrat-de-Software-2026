@@ -163,7 +163,6 @@ public class EventDetailActivity extends AppCompatActivity {
                     if (currentParticipantsCount < aforoMaximo) {
                         btnUnirse.setEnabled(true);
                     }
-                    Toast.makeText(this, "Te has desapuntado", Toast.LENGTH_SHORT).show();
                 }, e -> {});
             } else {
                 repo.unirse(eventoId, nomUsuari, () -> {

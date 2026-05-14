@@ -21,6 +21,7 @@ public class EventDetailActivity extends AppCompatActivity {
 
     private FirestoreUserRepository userRepository;
     private boolean estaSubscrit = false;
+    private int currentParticipantsCount = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,8 +134,8 @@ public class EventDetailActivity extends AppCompatActivity {
         final boolean[] estaApuntado = {false};
 
         repo.getParticipantes(eventoId, participantes -> {
-            int numActual = participantes.size();
-            tvAforo.setText("Aforo: " + numActual + " / " + aforoMaximo);
+            currentParticipantsCount = participantes.size();
+            tvAforo.setText("Aforo: " + currentParticipantsCount + " / " + aforoMaximo);
 
             if (creador != null && creador.equals(nomUsuari)) {
                 btnUnirse.setVisibility(View.GONE);
@@ -143,7 +144,7 @@ public class EventDetailActivity extends AppCompatActivity {
             if (participantes.contains(nomUsuari)) {
                 estaApuntado[0] = true;
                 btnUnirse.setText("Desapuntarse");
-            } else if (numActual >= aforoMaximo) {
+            } else if (currentParticipantsCount >= aforoMaximo) {
                 btnUnirse.setText("Concierto lleno");
                 btnUnirse.setEnabled(false);
             } else {
@@ -157,12 +158,22 @@ public class EventDetailActivity extends AppCompatActivity {
                 repo.desunirse(eventoId, nomUsuari, () -> {
                     estaApuntado[0] = false;
                     btnUnirse.setText("Unirse al evento");
-                    Toast.makeText(this, "Te has desapuntado", Toast.LENGTH_SHORT).show();
+                    currentParticipantsCount--;
+                    tvAforo.setText("Aforo: " + currentParticipantsCount + " / " + aforoMaximo);
+                    if (currentParticipantsCount < aforoMaximo) {
+                        btnUnirse.setEnabled(true);
+                    }
                 }, e -> {});
             } else {
                 repo.unirse(eventoId, nomUsuari, () -> {
                     estaApuntado[0] = true;
                     btnUnirse.setText("Desapuntarse");
+                    currentParticipantsCount++;
+                    tvAforo.setText("Aforo: " + currentParticipantsCount + " / " + aforoMaximo);
+                    if (currentParticipantsCount >= aforoMaximo) {
+                        btnUnirse.setEnabled(false);
+                        btnUnirse.setText("Concierto lleno");
+                    }
                     new FirestoreNotificacioRepository().enviarNotificacio(creador, "Nuevo assistente!", nomUsuari + " se ha unido a: " + titulo);
                 }, e -> {});
             }

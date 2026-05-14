@@ -83,15 +83,6 @@
                         android:layout_marginVertical="12dp"
                         android:background="#EEEEEE" />
 
-                    <TextView
-                        android:id="@+id/telefonTxt"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:drawablePadding="12dp"
-                        android:gravity="center_vertical"
-                        android:text="+34 600 000 000"
-                        android:textSize="16sp"
-                        app:drawableStartCompat="@android:drawable/ic_menu_call" />
 
                     <TextView
                         android:id="@+id/seguidorsTxt"

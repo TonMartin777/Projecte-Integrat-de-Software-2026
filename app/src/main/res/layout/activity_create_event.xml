@@ -22,7 +22,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="A fer música!"
+                android:text="A hacer música!"
                 android:textSize="24sp"
                 android:textStyle="bold"
                 android:textColor="#1A237E"
@@ -116,7 +116,7 @@
                 android:id="@+id/btnCrear"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                android:text="Crear concert"
+                android:text="Crear concierto"
                 android:textColor="#FFFFFF"
                 android:backgroundTint="#6200EE"
                 app:cornerRadius="30dp"/>

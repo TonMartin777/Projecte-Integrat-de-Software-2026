@@ -52,7 +52,6 @@ public class UserActivity extends AppCompatActivity {
         TextView nomTxt = findViewById(R.id.nomTxt);
         TextView correuTxt = findViewById(R.id.correuTxt);
         TextView seguidorsTxt = findViewById(R.id.seguidorsTxt);
-        TextView telefonTxt = findViewById(R.id.telefonTxt);
         FirestoreUserRepository userRepo = new FirestoreUserRepository();
         if ("banda".equals(rol)) {
             seguidorsTxt.setVisibility(View.VISIBLE);
@@ -65,7 +64,6 @@ public class UserActivity extends AppCompatActivity {
 
         if (nomUsuarioActual != null) nomTxt.setText("" + nomUsuarioActual);
         if (correoUsuarioActual != null) correuTxt.setText("Correo: " + correoUsuarioActual);
-        telefonTxt.setText("");
 
         // --- RECUPEREM EL RECEPTOR PER L'EDICIÓ DEL PERFIL ---
         editProfileLauncher = registerForActivityResult(
